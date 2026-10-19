@@ -1,0 +1,5 @@
+# Shown in Settings → About Luma. The source link also becomes a QR code (tools/support-qr.sh).
+author=@0xProbabillity
+x=https://x.com/0xProbabillity
+github=https://github.com/0xProbabillity
+source=https://github.com/0xProbabillity/luma-tv

@@ -1,0 +1,6 @@
+# Tips shown in Settings → Support the author. One coin per line: name | network note | address.
+# After changing an address, run tools/support-qr.sh to redraw the QR codes (needs qrencode).
+Bitcoin|BTC · native SegWit address|bc1q07hfz95crdalcrnywjavdpc4pdvllct83as5re
+Ethereum & co.|Same address on Ethereum, Base, BNB Chain, Arbitrum|0x4ed3aF428e938a0CC8e60df86D714B4a7F0928F0
+TON|Toncoin and USDT on TON · no memo needed|UQBCDKDp11tBIwTon4ItzTPcQgNGcaqTM6Gn31KwSN7qWdmM
+TRON|TRX and USDT (TRC-20)|TWtWLJp2Hc6242RynhU1B4Uujru3tppb3B
