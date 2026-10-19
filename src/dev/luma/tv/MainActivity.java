@@ -29,6 +29,17 @@ public final class MainActivity extends Activity {
     private SharedPreferences prefs;
     private SonicFeedback sonic;
     private HouseWidgets houseWidgets;
+    /** House Control TV is installed and enabled: only then does Home show the scenes and the 3D home. */
+    private boolean house;
+    private static final String HOUSE_CONTROL="dev.housecontrol.tv";
+    private final BroadcastReceiver packages=new BroadcastReceiver(){
+        @Override public void onReceive(Context context,Intent intent){
+            Uri data=intent.getData();if(data==null||!HOUSE_CONTROL.equals(data.getSchemeSpecificPart()))return;
+            // An update removes and re-adds the package; only the final state matters.
+            if(Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())&&intent.getBooleanExtra(Intent.EXTRA_REPLACING,false))return;
+            syncHouse();
+        }
+    };
     private FrameLayout root, content, hero;
     private final ArrayList<Animator> pageAnimations=new ArrayList<>();
     private View sceneryShade;
@@ -71,6 +82,9 @@ public final class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         sonic=new SonicFeedback(this);
+        house=houseInstalled();
+        IntentFilter filter=new IntentFilter();filter.addAction(Intent.ACTION_PACKAGE_ADDED);filter.addAction(Intent.ACTION_PACKAGE_REMOVED);filter.addAction(Intent.ACTION_PACKAGE_CHANGED);filter.addDataScheme("package");
+        registerReceiver(packages,filter);
         createShell();
         discover();
     }
@@ -83,6 +97,7 @@ public final class MainActivity extends Activity {
         handler.post(clockTick);
         if(loaded && page.equals("home")){selectedPackage="com.google.android.youtube.tv";showGreeting();root.post(()->{holdGreeting=true;focusFirst();});}
         if (loaded) discover();
+        syncHouse();
         wallpaper.syncAmbient();
         if(houseWidgets!=null)houseWidgets.setActive(true);
     }
@@ -92,7 +107,7 @@ public final class MainActivity extends Activity {
         wallpaper.pauseAmbient();wallpaper.rest();
     }
     @Override public void onWindowFocusChanged(boolean focused) { super.onWindowFocusChanged(focused);if(wallpaper!=null)wallpaper.syncAmbient(); }
-    @Override protected void onDestroy() { if(wallpaper!=null){wallpaper.pauseAmbient();wallpaper.surfaceThread.quitSafely();}super.onDestroy(); handler.removeCallbacksAndMessages(null); loader.shutdownNow(); if(sonic!=null)sonic.release(); }
+    @Override protected void onDestroy() { try{unregisterReceiver(packages);}catch(IllegalArgumentException ignored){} if(wallpaper!=null){wallpaper.pauseAmbient();wallpaper.surfaceThread.quitSafely();}super.onDestroy(); handler.removeCallbacksAndMessages(null); loader.shutdownNow(); if(sonic!=null)sonic.release(); }
     @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.hasCategory(Intent.CATEGORY_HOME)){selectedPackage="com.google.android.youtube.tv";showPage("home", true);}
@@ -101,6 +116,13 @@ public final class MainActivity extends Activity {
     @Override public void dump(String prefix,FileDescriptor fd,PrintWriter writer,String[] args) {
         super.dump(prefix,fd,writer,args);
         if(wallpaper!=null)writer.println(prefix+"Luma ambient: running="+wallpaper.ambientRunning+" ticks="+wallpaper.ambientTicks+" seconds="+wallpaper.ambientSeconds+" style="+wallpaper.requestedStyle+" page="+page);
+    }
+    private boolean houseInstalled(){try{return getPackageManager().getApplicationInfo(HOUSE_CONTROL,0).enabled;}catch(PackageManager.NameNotFoundException e){return false;}}
+    /** Rebuilds Home when House Control TV is installed, removed, switched on or off. */
+    private void syncHouse(){
+        boolean now=houseInstalled();if(now==house)return;house=now;
+        if(!now)lastHome=null;
+        if(page.equals("home"))showPage("home",started);
     }
     private int px(float value) { return Math.round(value * unit); }
     private boolean motion() { return prefs.getBoolean("motion", true) && ValueAnimator.areAnimatorsEnabled(); }
@@ -241,9 +263,10 @@ public final class MainActivity extends Activity {
         hero.addView(heroTitle,pos(home?440:860,52,0,0));
         heroDescription=text(home ? GREETING_LINE : "Everything installed on this TV.", 15, 0xD9FFFFFF, "sans-serif");
         heroDescription.setSingleLine(true); heroDescription.setEllipsize(android.text.TextUtils.TruncateAt.END); heroDescription.setShadowLayer(px(8),0,px(1),0x55000000); hero.addView(heroDescription,pos(home?440:860,22,1,56));
-        content.addView(hero,pos(864,84,48,home?84:100));
+        // Without House Control, the greeting moves down to sit just above the favourites and the wallpaper stays open above it.
+        content.addView(hero,pos(864,84,48,home?(house?84:268):100));
         heroKey=home?"@greeting":"";
-        if(home){
+        if(home&&house){
             houseWidgets=new HouseWidgets(this,unit,new HouseWidgets.Callbacks(){
                 public void up(){tabs.get(0).requestFocus();}
                 public void down(float x){focusNearestTile(x);}
@@ -550,6 +573,7 @@ public final class MainActivity extends Activity {
         startActivity(homeIntent().setComponent(new ComponentName(other.activityInfo.packageName,other.activityInfo.name)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
     private void sceneApps(){
+        if(!house){notice("Scene apps","Scenes come from House Control TV. Install it to control your lights from Home.");return;}
         JSONArray scenes=lastHome==null?null:lastHome.optJSONObject("plan").optJSONArray("scenes");
         if(scenes==null||scenes.length()==0){notice("Scene apps","Open Home once so Luma can load your scenes from House Control.");return;}
         ArrayList<String> ids=new ArrayList<>(),names=new ArrayList<>();for(int i=0;i<scenes.length();i++){JSONObject scene=scenes.optJSONObject(i);ids.add(scene.optString("id"));names.add(scene.optString("name")+"   →   "+appLabel(sceneApp(scene.optString("id"))));}
@@ -636,7 +660,7 @@ public final class MainActivity extends Activity {
         controls.add(option(list,"Living wallpaper",null,"ambient",()->wallpaper.syncAmbient(),()->preview(THUMBS[prefs.getInt("wallpaper",0)],"Living wallpaper","Clouds drift and water moves very slowly. Pauses whenever an app is open.")));
         controls.add(option(list,"Navigation sounds",null,"sound",()->{},()->preview(0,"Navigation sounds","Soft, quiet feedback as you move and open apps.")));
         caption(list,"Home",false);
-        controls.add(option(list,"Scene apps",()->"Choose",null,this::sceneApps,()->preview(0,"Scene apps","Open an app after a scene — Movie can start Netflix as the lights go down.")));
+        if(house)controls.add(option(list,"Scene apps",()->"Choose",null,this::sceneApps,()->preview(0,"Scene apps","Open an app after a scene — Movie can start Netflix as the lights go down.")));
         controls.add(option(list,"Home screen",()->lumaIsHome()?"Luma":"TV default",null,this::homeScreen,
             ()->preview(0,"Home screen",lumaIsHome()?"Luma opens when you press Home. Choose to return to your TV's own home screen.":"Your TV's own home screen opens when you press Home.")));
         caption(list,"System",false);
@@ -720,7 +744,7 @@ public final class MainActivity extends Activity {
                     movement.press(e.getAction()==KeyEvent.ACTION_DOWN);return false;
                 }
                 if(e.getAction()!=KeyEvent.ACTION_DOWN) return false;
-                if(key==KeyEvent.KEYCODE_DPAD_UP && index<6){if(page.equals("home")&&houseWidgets!=null){int[] l=new int[2];getLocationOnScreen(l);houseWidgets.focusNearest(l[0]+getWidth()/2f);}else tabs.get(1).requestFocus();return true;}
+                if(key==KeyEvent.KEYCODE_DPAD_UP && index<6){if(page.equals("home")&&houseWidgets!=null){int[] l=new int[2];getLocationOnScreen(l);houseWidgets.focusNearest(l[0]+getWidth()/2f);}else tabs.get(pageTab()).requestFocus();return true;}
                 int next=-1;
                 if(key==KeyEvent.KEYCODE_DPAD_LEFT && index%6>0) next=index-1;
                 if(key==KeyEvent.KEYCODE_DPAD_RIGHT && index%6<5 && index+1<tiles.size()) next=index+1;

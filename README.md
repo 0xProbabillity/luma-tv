@@ -21,6 +21,9 @@
 
 ## What it does
 
+Luma works on its own: it needs no smart home, account or other app. Everything below except the scene block
+works on any Android TV.
+
 - **A quiet Home.** A greeting, your favourite apps as large cards, and nothing you did not put there. Moving
   to an app shows its name and a line about it; hold OK on any app to show it on Home, move it or hide it.
 - **Every app, one tab away.** *Apps* lists everything installed on the TV, hidden apps included.
@@ -30,9 +33,11 @@
 - **Feels like a TV, not a phone.** Springy focus, cards that tilt toward the direction you move, a pill that
   slides along the tab bar, and soft, quiet navigation sounds. *Fluid motion* and *Navigation sounds* turn off
   in Settings, and Android's own animation settings are respected.
-- **Your smart home, if you have one.** With [House Control TV](https://github.com/0xProbabillity/house-control-tv)
-  installed, Home also shows five scene buttons and a live 3D model of your home. A scene can open an app as the
-  lights go down: *Movie* starts Netflix.
+- **Your smart home, if you have one.** The scene block appears only when
+  [House Control TV](https://github.com/0xProbabillity/house-control-tv) is installed: Home then also shows five
+  scene buttons and a live 3D model of your home, and a scene can open an app as the lights go down (*Movie*
+  starts Netflix). Without it, Home is just your greeting and favourites over the wallpaper, and Luma picks House
+  Control up as soon as you install it.
 - **Easy to leave.** Settings → *Home screen* hands Home back to your TV's own launcher, and
   `./luma.sh restore` undoes everything the installer changed.
 
@@ -110,7 +115,8 @@ the couch.
   the line in `.local/greeting.txt` (ignored by git).
 - **Favourites.** Hold OK on an app → *Show on Home*, *Move left* / *right*, *Move to first position* or *Hide from Home*. The first-run order is in `FIRST` in
   `MainActivity.java`.
-- **Scene apps.** Settings → *Scene apps* chooses the app each House Control scene opens, or none.
+- **Scene apps.** With House Control TV installed, Settings → *Scene apps* chooses the app each scene opens, or
+  none.
 - **Forks.** The author, links and tip addresses shown in Settings → *About* and *Support the author* are in
   [`res/raw/about.txt`](res/raw/about.txt) and [`res/raw/support.txt`](res/raw/support.txt);
   `tools/support-qr.sh` redraws their QR codes (needs `qrencode`).
@@ -119,8 +125,9 @@ the couch.
 
 Luma has no analytics, advertising ID, accessibility service or account. The list of apps, your favourites and
 settings stay on the TV. Its only network access is to House Control TV on the TV itself (`127.0.0.1`), for the
-3D preview; that web view refuses every other address. The scene buttons talk to House Control over Android's
-Binder, and House Control only answers a Luma signed with the key it trusts. Luma never sees a password or token.
+3D preview, and only when House Control is installed; that web view refuses every other address. The scene
+buttons talk to House Control over Android's Binder, and House Control only answers a Luma signed with the key it
+trusts. Luma never sees a password or token.
 
 ## How it is built
 
