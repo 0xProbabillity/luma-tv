@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/home.jpg" width="900" alt="Luma's Home: a greeting, five scene buttons, a 3D model of the home and a row of favourite apps over a fjord at dusk">
+  <img src="docs/home.jpg" width="900" alt="Luma's Home by day: Hello, Alex with the date, five round scene buttons, a 3D model of the home floating on pale silver silk and a row of favourite apps">
 </p>
 
 <h1 align="center">Luma</h1>
@@ -24,32 +24,31 @@
 Luma works on its own: it needs no smart home, account or other app. Everything below except the scene block
 works on any Android TV.
 
-- **A quiet Home.** A greeting, your favourite apps as large cards, and nothing you did not put there. Moving
-  to an app shows its name and a line about it; hold OK on any app to show it on Home, move it or hide it.
+- **A quiet Home.** A greeting with today's date, your favourite apps as large cards, and nothing you did not put
+  there. Moving to an app shows its name and a line about it; hold OK on any app to show it on Home, move it or
+  hide it.
 - **Every app, one tab away.** *Apps* lists everything installed on the TV, hidden apps included.
-- **Living wallpapers.** Seven of them, from a Norwegian fjord at dusk to the Milky Way. On the fjord, clouds
-  drift and the water moves very slowly, with real depth: the sky and the mountains travel at different speeds
-  as you move. Everything pauses while an app is open.
+- **Light by day, dark at night.** The default wallpaper, *Silver*, is pale silver silk from sunrise to sunset and
+  graphite silk after dark, and the whole interface turns light or dark with it. Sunrise and sunset are worked out
+  for your TV's time zone, with no location permission and no network.
+- **Living wallpapers.** Eight of them, from silver silk and a Norwegian fjord at dusk to the Milky Way. On the
+  fjord, clouds drift and the water moves very slowly, with real depth: the sky and the mountains travel at
+  different speeds as you move. Everything pauses while an app is open.
 - **Feels like a TV, not a phone.** Springy focus, cards that tilt toward the direction you move, a pill that
   slides along the tab bar, and soft, quiet navigation sounds. *Fluid motion* and *Navigation sounds* turn off
   in Settings, and Android's own animation settings are respected.
 - **Your smart home, if you have one.** The scene block appears only when
   [House Control TV](https://github.com/0xProbabillity/house-control-tv) is installed: Home then also shows five
-  scene buttons and a live 3D model of your home, and a scene can open an app as the lights go down (*Movie*
-  starts Netflix). Without it, Home is just your greeting and favourites over the wallpaper, and Luma picks House
+  round scene buttons and a live 3D model of your home floating on the wallpaper, and a scene can open an app as
+  the lights go down (*Movie* starts Netflix). Without it, Home is just your greeting and favourites over the wallpaper, and Luma picks House
   Control up as soon as you install it.
 - **Easy to leave.** Settings → *Home screen* hands Home back to your TV's own launcher, and
   `./luma.sh restore` undoes everything the installer changed.
 
 <p align="center">
-  <a href="docs/luma-tour.mp4"><img src="docs/luma-preview.webp" width="900" alt="Moving along the tab bar into Settings and through the wallpapers"></a><br>
-  <sub>Recorded on a real TV with the isolated demo home · <a href="docs/luma-tour.mp4">watch the one-minute tour, with its sounds</a></sub>
-</p>
-
-<p align="center">
-  <img src="docs/scenes.jpg" width="49%" alt="A scene button in focus, with its description in the greeting">
+  <img src="docs/scenes.jpg" width="49%" alt="At night: the Cozy scene button in focus, with its description in the greeting, on graphite silk">
   <img src="docs/wallpapers.jpg" width="49%" alt="The wallpaper picker previewing the Milky Way">
-  <img src="docs/settings.jpg" width="49%" alt="Settings: wallpaper, clock, motion and sound, home screen">
+  <img src="docs/settings.jpg" width="49%" alt="Settings in the light look: wallpaper, your name, clock, motion and sound">
   <img src="docs/support.jpg" width="49%" alt="Settings → Support the author: four QR codes for tips in crypto">
 </p>
 
@@ -111,8 +110,9 @@ the couch.
 
 ## Make it yours
 
-- **Greeting.** Home says "Hello". Build with your own: `LUMA_GREETING="Hello Alex" ./luma.sh install`, or put
-  the line in `.local/greeting.txt` (ignored by git).
+- **Greeting.** Home says "Hello". Settings → *Your name* makes it "Hello, Alex"; the name stays on the TV. To
+  build a different default greeting: `LUMA_GREETING="Hi there" ./luma.sh install`, or put the line in
+  `.local/greeting.txt` (ignored by git).
 - **Favourites.** Hold OK on an app → *Show on Home*, *Move left* / *right*, *Move to first position* or *Hide from Home*. The first-run order is in `FIRST` in
   `MainActivity.java`.
 - **Scene apps.** With House Control TV installed, Settings → *Scene apps* chooses the app each scene opens, or
@@ -123,8 +123,8 @@ the couch.
 
 ## Privacy
 
-Luma has no analytics, advertising ID, accessibility service or account. The list of apps, your favourites and
-settings stay on the TV. Its only network access is to House Control TV on the TV itself (`127.0.0.1`), for the
+Luma has no analytics, advertising ID, accessibility service or account. The list of apps, your favourites,
+your name and settings stay on the TV. Day and night come from the TV's clock and time zone, not its location. Its only network access is to House Control TV on the TV itself (`127.0.0.1`), for the
 3D preview, and only when House Control is installed; that web view refuses every other address. The scene
 buttons talk to House Control over Android's Binder, and House Control only answers a Luma signed with the key it
 trusts. Luma never sees a password or token.
@@ -144,6 +144,10 @@ animation tuned for small TV chips: on a 2 GB TV stick, moving around Home keeps
   [Kloppenheim 06 (Pure Sky)](https://polyhaven.com/a/kloppenheim_06_puresky) and
   [Kiara 1 Dawn](https://polyhaven.com/a/kiara_1_dawn) from [Poly Haven](https://polyhaven.com), reprojected by
   [`artwork/reproject.py`](artwork/reproject.py).
+- **Silver**: the same drape rendered twice in Blender, pale and graphite, by
+  [`artwork/silver_silk.py`](artwork/silver_silk.py); [`artwork/silver_assets.py`](artwork/silver_assets.py) makes
+  the wallpapers and the day/night thumbnail. [`tools/zones.py`](tools/zones.py) writes the time-zone table used
+  for sunrise and sunset (from the public-domain `zone.tab`).
 - **Silk**: rendered in Blender by [`artwork/silk.py`](artwork/silk.py).
 - **Graphite**: plain dark, for when you want nothing at all.
 
