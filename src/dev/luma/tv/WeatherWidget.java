@@ -34,7 +34,7 @@ final class WeatherWidget extends Widget {
     WeatherWidget(Context context,WidgetBoard.Host host){
         super(context,host,WidgetBoard.width("weather"));
         Glyph pin=new Glyph(context).kind("pin").color(ink(0xB3));addView(pin,pos(10,10,PAD,18));
-        city=text(Daylight.city(),13,ink(0xE6),"sans-serif-medium");addView(city,pos(150,16,PAD+15,15));
+        city=text(city(),13,ink(0xE6),"sans-serif-medium");addView(city,pos(150,16,PAD+15,15));
         temp=text("—",44,ink(0xFF),"sans-serif-light");temp.setLetterSpacing(-.03f);addView(temp,pos(140,50,PAD-3,36));
         glyph=new Glyph(context).kind("partly").color(ink(0xF2));addView(glyph,pos(34,34,w-PAD-34,14));
         condition=text("",12.5f,ink(0xD9),"sans-serif-medium");condition.setGravity(Gravity.RIGHT);addView(condition,pos(140,16,w-PAD-140,56));
@@ -60,18 +60,22 @@ final class WeatherWidget extends Widget {
         if(motion())animate().scaleX(s).scaleY(s).translationY(focused?-px(3):0).setDuration(focused?460:300).setInterpolator(focused?spring:ease).start();else{setScaleX(s);setScaleY(s);}
         setElevation(px(focused?10:0));
     }
+    /** The time zone's main city, or Miami in the promo demo (Promo). */
+    String city(){return Promo.on?Promo.CITY:Daylight.city();}
+    double[] place(){return Promo.on?Promo.MIAMI:Daylight.place(getContext());}
     static boolean fahrenheit(android.content.SharedPreferences prefs){
         String unit=prefs.getString("temp_unit","auto");if(!unit.equals("auto"))return unit.equals("f");
+        if(Promo.on)return true;
         // By the TV's time zone, not its language: many TVs outside the US run in US English.
         String zone=TimeZone.getDefault().getID();
         if(zone.startsWith("US/")||zone.equals("Pacific/Honolulu")||zone.startsWith("America/Indiana/")||zone.startsWith("America/Kentucky/")||zone.startsWith("America/North_Dakota/"))return true;
         return zone.startsWith("America/")&&Arrays.asList("New_York","Chicago","Denver","Los_Angeles","Phoenix","Anchorage","Adak","Boise","Detroit","Juneau","Menominee","Metlakatla","Nome","Sitka","Yakutat").contains(zone.substring(8));
     }
-    private String key(){double[] p=Daylight.place(getContext());return (p==null?"?":String.format(Locale.US,"%.2f,%.2f",p[0],p[1]))+(fahrenheit(host.prefs())?"F":"C");}
+    private String key(){double[] p=place();return (p==null?"?":String.format(Locale.US,"%.2f,%.2f",p[0],p[1]))+(fahrenheit(host.prefs())?"F":"C");}
     void load(boolean force){
         long at=host.prefs().getLong("weather_at",0);
         if(loading||!force&&data!=null&&System.currentTimeMillis()-at<FRESH)return;
-        final double[] place=Daylight.place(getContext());if(place==null){showError("Set the TV's time zone to see the weather");return;}
+        final double[] place=place();if(place==null){showError("Set the TV's time zone to see the weather");return;}
         loading=true;final boolean f=fahrenheit(host.prefs());final String key=key();
         WidgetBoard.IO.execute(()->{
             JSONObject result=null;
@@ -129,9 +133,9 @@ final class WeatherWidget extends Widget {
         slots.animate().cancel();slots.animate().alpha(0).translationY(px(3)).setDuration(110).withEndAction(()->{build.run();slots.setTranslationY(-px(3));slots.animate().alpha(1).translationY(0).setDuration(300).setInterpolator(ease).start();}).start();
     }
     private void heroNow(){
-        if(data==null){host.hero("weather",Daylight.city(),error.getVisibility()==VISIBLE?error.getText()+". OK tries again.":"Loading the forecast…");return;}
+        if(data==null){host.hero("weather",city(),error.getVisibility()==VISIBLE?error.getText()+". OK tries again.":"Loading the forecast…");return;}
         try{JSONObject now=data.getJSONObject("current"),day=data.getJSONObject("daily");
-            String title=Daylight.city()+"  "+deg(now.getDouble("temperature_2m"));
+            String title=city()+"  "+deg(now.getDouble("temperature_2m"));
             String detail=Glyph.weatherName(now.optInt("weather_code"))+". High "+deg(day.getJSONArray("temperature_2m_max").getDouble(0))+", low "+deg(day.getJSONArray("temperature_2m_min").getDouble(0))+" · OK shows "+(daily?"the next hours":"the next days");
             host.hero("weather:"+daily,title,detail);
         }catch(JSONException ignored){}

@@ -50,6 +50,7 @@ final class UpNextWidget extends Widget {
 
     private ArrayList<Item> load(Context context){
         ArrayList<Item> items=new ArrayList<>();HashSet<String> seen=new HashSet<>();
+        if(Promo.on){for(Object[] v:Promo.VIDEOS){Item i=new Item();i.pkg="com.google.android.youtube.tv";i.key="promo:"+v[0];i.title=(String)v[0];i.line=(String)v[1];i.detail=(String)v[2];i.art="res:"+v[3];i.progress=(Float)v[4]>0?(Float)v[4]:-1;items.add(i);}return items;}
         boolean listings=context.checkSelfPermission(LISTINGS)==PackageManager.PERMISSION_GRANTED;
         if(listings)for(Item i:watchNext(context))if(items.size()<SLOTS&&seen.add(i.key)){items.add(i);}
         HashSet<String> withPrograms=new HashSet<>();for(Item i:items)withPrograms.add(i.pkg);
@@ -192,6 +193,7 @@ final class UpNextWidget extends Widget {
     }
     private static byte[] read(Context context,String link)throws Exception{
         InputStream in;
+        if(link.startsWith("res:")){try(InputStream s=context.getResources().openRawResource(Integer.parseInt(link.substring(4)));java.io.ByteArrayOutputStream out=new java.io.ByteArrayOutputStream()){byte[] buf=new byte[65536];int n;while((n=s.read(buf))>0)out.write(buf,0,n);return out.toByteArray();}}
         if(link.startsWith("http://")||link.startsWith("https://")){HttpURLConnection c=(HttpURLConnection)new URL(link).openConnection();c.setConnectTimeout(6000);c.setReadTimeout(8000);in=c.getInputStream();}
         else in=context.getContentResolver().openInputStream(Uri.parse(link));
         try(InputStream s=in;java.io.ByteArrayOutputStream out=new java.io.ByteArrayOutputStream()){byte[] buf=new byte[16384];int n;while((n=s.read(buf))>0&&out.size()<6_000_000)out.write(buf,0,n);return out.toByteArray();}

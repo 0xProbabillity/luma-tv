@@ -24,6 +24,7 @@ final class InputsWidget extends Widget {
      *  vendor. Streaming apps' own inputs (IPTV and the like) are left out. */
     static ArrayList<Input> list(Context context){
         ArrayList<Input> out=new ArrayList<>();
+        if(Promo.on){promo(out);count=out.size();return out;}
         TvInputManager manager=(TvInputManager)context.getSystemService(Context.TV_INPUT_SERVICE);
         List<TvInputInfo> all;
         try{all=manager==null?Collections.emptyList():manager.getTvInputList();}catch(RuntimeException e){all=Collections.emptyList();}
@@ -55,6 +56,13 @@ final class InputsWidget extends Widget {
         try{Object d=TvInputInfo.class.getMethod("getHdmiDeviceInfo").invoke(info);if(d!=null)return new int[]{(int)d.getClass().getMethod("getVendorId").invoke(d),(int)d.getClass().getMethod("getDeviceType").invoke(d)};}
         catch(ReflectiveOperationException|RuntimeException ignored){}
         return new int[]{-1,-1};
+    }
+    /** The promo demo's ports: a PlayStation that is on, an Xbox and an Apple TV asleep, and the tuner. */
+    private static void promo(ArrayList<Input> out){
+        String[][] made={{"PS5","1","0"},{"Xbox Series X","2","1"},{"Apple TV","3","1"}};
+        for(String[] m:made){Devices.Device d=Devices.identify(m[0],-1,Devices.PLAYBACK);Input in=new Input();in.id="promo:"+m[1];in.port="HDMI "+m[1];in.cec=true;in.made=true;
+            in.name=d.name;in.glyph=d.glyph;in.color=d.color;in.state=Integer.parseInt(m[2]);out.add(in);}
+        Input tv=new Input();tv.id="promo:tv";tv.tuner=true;tv.made=true;tv.name="Live TV";tv.glyph="antenna";out.add(tv);
     }
     private static void pretend(ArrayList<Input> out){
         String[][] made={{"PS5","0"},{"Xbox Series X","1"},{"NintendoSwitch","0"}};int i=0;
@@ -109,6 +117,7 @@ final class InputsWidget extends Widget {
         }
     }
     private void open(Input in){
+        if(in.id.startsWith("promo:"))return;
         Intent view=new Intent(Intent.ACTION_VIEW,TvContract.buildChannelUriForPassthroughInput(in.id));
         try{host.activity().startActivity(view);host.activity().overridePendingTransition(0,0);}
         catch(ActivityNotFoundException e){host.start(new Intent(android.provider.Settings.ACTION_SETTINGS));}

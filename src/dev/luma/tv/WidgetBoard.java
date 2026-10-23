@@ -47,12 +47,15 @@ final class WidgetBoard extends FrameLayout {
     /** All widgets in the saved order, and which of them are on. A widget added in a later version goes in after
      *  the one it follows in IDS. */
     static ArrayList<String> order(SharedPreferences prefs){
-        ArrayList<String> ids=new ArrayList<>();for(String id:prefs.getString("widget_order","").split(","))if(Arrays.asList(IDS).contains(id)&&!ids.contains(id))ids.add(id);
+        ArrayList<String> ids=new ArrayList<>();if(Promo.on){ids.addAll(Arrays.asList(Promo.ORDER));return ids;}
+        for(String id:prefs.getString("widget_order","").split(","))if(Arrays.asList(IDS).contains(id)&&!ids.contains(id))ids.add(id);
         for(int i=0;i<IDS.length;i++)if(!ids.contains(IDS[i]))ids.add(i==0?0:ids.indexOf(IDS[i-1])+1,IDS[i]);
         return ids;
     }
     static boolean on(SharedPreferences prefs,String id){return !Arrays.asList(prefs.getString("widget_off","").split(",")).contains(id);}
-    static void save(SharedPreferences prefs,List<String> order,Set<String> off){prefs.edit().putString("widget_order",String.join(",",order)).putString("widget_off",String.join(",",off)).apply();}
+    static void save(SharedPreferences prefs,List<String> order,Set<String> off){
+        if(Promo.on){prefs.edit().putString("widget_off",String.join(",",off)).apply();return;} // the promo order is not the user's
+        prefs.edit().putString("widget_order",String.join(",",order)).putString("widget_off",String.join(",",off)).apply();}
     /** Pages of widget ids: the house alone, the others packed left to right into rows of ROW_W. Smart Home needs
      *  House Control TV and Inputs a TV with inputs; without them they are skipped. */
     static ArrayList<ArrayList<String>> pages(SharedPreferences prefs,boolean house,boolean inputs){
