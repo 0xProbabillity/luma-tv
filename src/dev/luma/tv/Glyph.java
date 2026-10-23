@@ -130,6 +130,17 @@ final class Glyph extends View {
             case "box":
                 r.set(cx-10*u,cy-3.5f*u,cx+10*u,cy+4.5f*u);c.drawRoundRect(r,2.4f*u,2.4f*u,paint);
                 paint.setStyle(Paint.Style.FILL);c.drawCircle(cx-6*u,cy+0.5f*u,1.1f*u,paint);break;
+            case "switch":
+                r.set(cx-10.5f*u,cy-7*u,cx-5.5f*u,cy+7*u);c.drawRoundRect(r,2.5f*u,2.5f*u,paint);
+                r.set(cx+5.5f*u,cy-7*u,cx+10.5f*u,cy+7*u);c.drawRoundRect(r,2.5f*u,2.5f*u,paint);
+                r.set(cx-5.5f*u,cy-6*u,cx+5.5f*u,cy+6*u);c.drawRoundRect(r,1*u,1*u,paint);
+                paint.setStyle(Paint.Style.FILL);c.drawCircle(cx-8*u,cy-3*u,1.1f*u,paint);c.drawCircle(cx+8*u,cy+2.5f*u,1.1f*u,paint);break;
+            case "speaker":
+                r.set(cx-11*u,cy-3*u,cx+11*u,cy+3.5f*u);c.drawRoundRect(r,3*u,3*u,paint);
+                paint.setStyle(Paint.Style.FILL);for(int i=-2;i<=2;i++)c.drawCircle(cx+i*3.6f*u,cy+0.25f*u,0.9f*u,paint);break;
+            case "disc":
+                c.drawCircle(cx,cy,9*u,paint);c.drawCircle(cx,cy,2.4f*u,paint);
+                r.set(cx-5.8f*u,cy-5.8f*u,cx+5.8f*u,cy+5.8f*u);c.drawArc(r,200,60,false,paint);break;
             case "lock":
                 r.set(cx-6.5f*u,cy-1.5f*u,cx+6.5f*u,cy+8.5f*u);c.drawRoundRect(r,2*u,2*u,paint);
                 r.set(cx-4*u,cy-9*u,cx+4*u,cy+1*u);c.drawArc(r,180,180,false,paint);c.drawLine(cx-4*u,cy-5*u,cx-4*u,cy-1.5f*u,paint);c.drawLine(cx+4*u,cy-5*u,cx+4*u,cy-1.5f*u,paint);break;

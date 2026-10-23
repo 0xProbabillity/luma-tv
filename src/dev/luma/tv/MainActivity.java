@@ -131,6 +131,7 @@ public final class MainActivity extends Activity {
         super.onNewIntent(intent);
         String look=intent.getStringExtra("luma.daylight");
         if(look!=null&&look.matches("day|night|auto")){daylightOverride=look;if(started)syncDaylight();}
+        String inputs=intent.getStringExtra("luma.inputs");if(inputs!=null){InputsWidget.demo=inputs.equals("demo");showPage(page,true);} // arrives while paused
         if (intent.hasCategory(Intent.CATEGORY_HOME)){selectedPackage="com.google.android.youtube.tv";if(started)homePage=0;showPage("home", true);} // Home pressed on Home: back to the first page
     }
     @Override public void onRequestPermissionsResult(int code,String[] permissions,int[] results){
@@ -870,11 +871,12 @@ public final class MainActivity extends Activity {
             FrameLayout o=openOverlay(0xB3000000);
             overlayCancel=()->root.post(()->{showPage("settings",false);controlsFocus(widgetsRow);});
             FrameLayout panel=new FrameLayout(MainActivity.this);panel.setBackground(shape(0xF51C1C1E,26));panel.setElevation(px(24));panel.setClipChildren(false);
-            FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(px(760),px(440));lp.gravity=Gravity.CENTER;o.addView(panel,lp);
+            float h=Math.max(440,98+order.size()*61+20); // grows with the number of widgets
+            FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(px(760),px(h));lp.gravity=Gravity.CENTER;o.addView(panel,lp);
             panel.addView(text("Home widgets",24,Color.WHITE,"sans-serif-medium"),pos(420,32,28,26));
             hint=text("",13,0xB3FFFFFF,"sans-serif");hint.setSingleLine(true);panel.addView(hint,pos(420,18,29,64));setHint();
             list.setOrientation(LinearLayout.VERTICAL);list.setClipChildren(false);list.setClipToPadding(false);list.setPadding(px(8),0,px(8),0);
-            panel.addView(list,pos(436,320,20,98));
+            panel.addView(list,pos(436,order.size()*61,20,98));
             pages.setClipChildren(false);panel.addView(pages,pos(262,370,472,34));
             for(String id:order)list.addView(row(id),rowParams());
             drawPages();
@@ -892,7 +894,7 @@ public final class MainActivity extends Activity {
             View disc=new View(MainActivity.this);row.addView(disc,pos(32,32,12,11));
             Glyph glyph=new Glyph(MainActivity.this).kind(WidgetBoard.glyph(id));row.addView(glyph,pos(18,18,19,18));
             TextView name=text(WidgetBoard.title(id),15,Color.WHITE,"sans-serif-medium");row.addView(name,pos(280,19,56,9));
-            TextView about=text(available(id)?WidgetBoard.about(id):id.equals("inputs")?"This TV has no HDMI inputs: a TV stick is plugged into one.":"Install House Control TV to add your home.",11.5f,0x99FFFFFF,"sans-serif");
+            TextView about=text(available(id)?WidgetBoard.about(id):id.equals("inputs")?"Only on TVs: a TV stick has no HDMI inputs.":"Install House Control TV to add your home.",11.5f,0x99FFFFFF,"sans-serif");
             about.setSingleLine(true);about.setEllipsize(android.text.TextUtils.TruncateAt.END);row.addView(about,pos(288,15,56,31));
             View track=new View(MainActivity.this),knob=new View(MainActivity.this);row.addView(track,pos(40,24,368,15));row.addView(knob,pos(20,20,370,17));
             TextView grip=text("≡",22,0xFF111827,"sans-serif-medium");grip.setGravity(Gravity.CENTER);grip.setAlpha(0);row.addView(grip,pos(40,24,368,13));

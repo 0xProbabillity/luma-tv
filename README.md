@@ -30,8 +30,9 @@ works on any Android TV.
 - **Home widgets, page by page.** Above your apps, Home can show *Up Next* (the shows and videos you were
   watching, from the Continue watching list that YouTube, Netflix and other apps share with Android TV: OK
   resumes where you stopped), *Weather* (now, the next hours or the coming days), *Now Playing* (music playing on
-  the TV, with play, pause and skip), *Inputs* (on a TV: its HDMI ports and live TV, named as in the TV's settings
-  or after the device plugged in, OK switches to it and Home comes back) and *Control* (Wi-Fi, picture and sound,
+  the TV, with play, pause and skip), *Inputs* (on a TV: its HDMI ports and live TV; a PlayStation, Xbox, Nintendo
+  Switch, Apple TV, Chromecast, Fire TV, soundbar and more are recognised over HDMI-CEC and shown under their own
+  name and colour; OK switches to it and Home comes back) and *Control* (Wi-Fi, picture and sound,
   accessories, settings). Left and Right turn the pages; your apps stay underneath.
 - **Every app, one tab away.** *Apps* lists everything installed on the TV, hidden apps included.
 - **Light by day, dark at night.** The default wallpaper, *Silver*, is pale silver silk from sunrise to sunset and
@@ -125,6 +126,10 @@ the couch.
   to the list show how Home will look. Settings → *Temperature* picks Celsius or Fahrenheit (automatic: by time
   zone). Up Next and Now Playing ask for access the first time; `./luma.sh widgets` allows both, and usage access
   for recent apps, from the computer in one go.
+- **Device recognition.** [`Devices.java`](src/dev/luma/tv/Devices.java) maps the name and vendor a device announces
+  over HDMI-CEC to a friendly name, glyph and colour; [`tools/DevicesTest.java`](tools/DevicesTest.java) checks it
+  without a TV. `adb shell am start -n dev.luma.tv/.MainActivity --es luma.inputs demo` shows made-up consoles on
+  a TV's ports to preview the look (`off` ends it).
 - **Scene apps.** With House Control TV installed, Settings → *Scene apps* chooses the app each scene opens, or
   none.
 - **Forks.** The author, links and tip addresses shown in Settings → *About* and *Support the author* are in

@@ -54,7 +54,7 @@ abstract class Widget extends FrameLayout {
     /** A tile in the style of Control Center: a round glyph, a name and a status line; the glyph turns blue when on.
      *  Control and Inputs use it. */
     final class Tile extends FrameLayout {
-        final View disc;final Glyph glyph;final TextView name,state;boolean focused,on;String key,detail="";
+        final View disc;final Glyph glyph;final TextView name,state;boolean focused,on;String key,detail="";int tint=0xFF0A84FF;
         Tile(String kind,String title,float tileW,float tileH,int index,Runnable action){
             super(Widget.this.getContext());setClipChildren(false);key=title;
             disc=new View(getContext());addView(disc,pos(36,36,12,(tileH-36)/2));
@@ -66,7 +66,7 @@ abstract class Widget extends FrameLayout {
         }
         void paint(){
             setBackground(round(focused?focusFill():restFill(),20));
-            int discFill=on?0xFF0A84FF:focused?(light()?0x33FFFFFF:0x1A000000):(light()?0x14000000:0x24FFFFFF);
+            int discFill=on?tint:focused?(light()?0x33FFFFFF:0x1A000000):(light()?0x14000000:0x24FFFFFF);
             disc.setBackground(oval(discFill));
             glyph.color(on?Color.WHITE:focused?focusInk():ink(0xE6));
             name.setTextColor(focused?focusInk():ink(0xF2));state.setTextColor(focused?(focusInk()&0x00FFFFFF|0xA6000000):ink(0x99));
