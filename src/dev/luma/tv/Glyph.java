@@ -112,6 +112,24 @@ final class Glyph extends View {
                 paint.setStyle(Paint.Style.FILL);boolean next=kind.equals("next");float d=next?1:-1;
                 triangle(c,cx-d*3.6f*u,cy,12*u,next);triangle(c,cx+d*3.4f*u,cy,12*u,next);
                 r.set(cx+d*8.4f*u-1.1f*u,cy-6.6f*u,cx+d*8.4f*u+1.1f*u,cy+6.6f*u);c.drawRoundRect(r,u,u,paint);break;}
+            case "hdmi":
+                path.moveTo(cx-10*u,cy-4.5f*u);path.lineTo(cx+10*u,cy-4.5f*u);path.lineTo(cx+10*u,cy+0.5f*u);path.lineTo(cx+6.5f*u,cy+4.5f*u);
+                path.lineTo(cx-6.5f*u,cy+4.5f*u);path.lineTo(cx-10*u,cy+0.5f*u);path.close();c.drawPath(path,paint);
+                c.drawLine(cx-5.5f*u,cy-1*u,cx+5.5f*u,cy-1*u,paint);break;
+            case "antenna":
+                c.drawLine(cx,cy-2*u,cx-7*u,cy-10*u,paint);c.drawLine(cx,cy-2*u,cx+7*u,cy-10*u,paint);
+                r.set(cx-9*u,cy-2*u,cx+9*u,cy+9*u);c.drawRoundRect(r,2*u,2*u,paint);
+                paint.setStyle(Paint.Style.FILL);c.drawCircle(cx+5*u,cy+3.5f*u,1.2f*u,paint);break;
+            case "gamepad":
+                path.moveTo(cx-6*u,cy-5*u);path.lineTo(cx+6*u,cy-5*u);path.cubicTo(cx+10*u,cy-5*u,cx+11*u,cy+2*u,cx+10.5f*u,cy+5*u);
+                path.cubicTo(cx+10*u,cy+8*u,cx+7*u,cy+8.5f*u,cx+5*u,cy+5.5f*u);path.lineTo(cx+3.5f*u,cy+3.5f*u);path.lineTo(cx-3.5f*u,cy+3.5f*u);
+                path.lineTo(cx-5*u,cy+5.5f*u);path.cubicTo(cx-7*u,cy+8.5f*u,cx-10*u,cy+8*u,cx-10.5f*u,cy+5*u);path.cubicTo(cx-11*u,cy+2*u,cx-10*u,cy-5*u,cx-6*u,cy-5*u);
+                path.close();c.drawPath(path,paint);
+                c.drawLine(cx-7*u,cy-0.5f*u,cx-3*u,cy-0.5f*u,paint);c.drawLine(cx-5*u,cy-2.5f*u,cx-5*u,cy+1.5f*u,paint);
+                paint.setStyle(Paint.Style.FILL);c.drawCircle(cx+4.5f*u,cy-1.8f*u,1.1f*u,paint);c.drawCircle(cx+6.8f*u,cy+0.6f*u,1.1f*u,paint);break;
+            case "box":
+                r.set(cx-10*u,cy-3.5f*u,cx+10*u,cy+4.5f*u);c.drawRoundRect(r,2.4f*u,2.4f*u,paint);
+                paint.setStyle(Paint.Style.FILL);c.drawCircle(cx-6*u,cy+0.5f*u,1.1f*u,paint);break;
             case "lock":
                 r.set(cx-6.5f*u,cy-1.5f*u,cx+6.5f*u,cy+8.5f*u);c.drawRoundRect(r,2*u,2*u,paint);
                 r.set(cx-4*u,cy-9*u,cx+4*u,cy+1*u);c.drawArc(r,180,180,false,paint);c.drawLine(cx-4*u,cy-5*u,cx-4*u,cy-1.5f*u,paint);c.drawLine(cx+4*u,cy-5*u,cx+4*u,cy-1.5f*u,paint);break;

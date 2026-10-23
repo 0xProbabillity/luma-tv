@@ -51,6 +51,28 @@ abstract class Widget extends FrameLayout {
         v.setOnClickListener(view->{host.open();press(v,scale);click.run();});
         paint.accept(false);
     }
+    /** A tile in the style of Control Center: a round glyph, a name and a status line; the glyph turns blue when on.
+     *  Control and Inputs use it. */
+    final class Tile extends FrameLayout {
+        final View disc;final Glyph glyph;final TextView name,state;boolean focused,on;String key,detail="";
+        Tile(String kind,String title,float tileW,float tileH,int index,Runnable action){
+            super(Widget.this.getContext());setClipChildren(false);key=title;
+            disc=new View(getContext());addView(disc,pos(36,36,12,(tileH-36)/2));
+            glyph=new Glyph(getContext()).kind(kind);addView(glyph,pos(20,20,20,(tileH-20)/2));
+            name=text(title,13.5f,ink(0xF2),"sans-serif-medium");addView(name,pos(tileW-62,17,58,tileH/2-17));
+            state=text("",11.5f,ink(0x99),"sans-serif");addView(state,pos(tileW-62,15,58,tileH/2+3));
+            setPivotX(px(tileW/2));setPivotY(px(tileH/2));
+            control(this,index,1.06f,f->{focused=f;paint();},()->new String[]{"tile:"+key,name.getText().toString(),detail},action);
+        }
+        void paint(){
+            setBackground(round(focused?focusFill():restFill(),20));
+            int discFill=on?0xFF0A84FF:focused?(light()?0x33FFFFFF:0x1A000000):(light()?0x14000000:0x24FFFFFF);
+            disc.setBackground(oval(discFill));
+            glyph.color(on?Color.WHITE:focused?focusInk():ink(0xE6));
+            name.setTextColor(focused?focusInk():ink(0xF2));state.setTextColor(focused?(focusInk()&0x00FFFFFF|0xA6000000):ink(0x99));
+        }
+        void set(String status,String hero,boolean active){if(!status.contentEquals(state.getText()))state.setText(status);detail=hero;if(active!=on){on=active;paint();}}
+    }
     void press(View v,float scale){
         if(!motion())return;v.animate().cancel();
         v.animate().scaleX(scale*.96f).scaleY(scale*.96f).setDuration(70).setInterpolator(ease).withEndAction(()->v.animate().scaleX(v.hasFocus()?scale:1).scaleY(v.hasFocus()?scale:1).setDuration(420).setInterpolator(spring).start()).start();

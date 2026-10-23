@@ -330,7 +330,7 @@ public final class MainActivity extends Activity {
         heroDescription=text(home ? greetingLine() : "Everything installed on this TV.", 16, ink(0xB3), "sans-serif");
         heroDescription.setSingleLine(true); heroDescription.setEllipsize(android.text.TextUtils.TruncateAt.END); shadow(heroDescription,8); hero.addView(heroDescription,pos(home?392:860,22,1,60));
         // Without widgets, the greeting moves down to sit just above the favourites and the wallpaper stays open above it.
-        ArrayList<ArrayList<String>> layout=home?WidgetBoard.pages(prefs,house):new ArrayList<>();
+        ArrayList<ArrayList<String>> layout=home?WidgetBoard.pages(prefs,house,!InputsWidget.list(this).isEmpty()):new ArrayList<>();
         boolean housePage=false;for(ArrayList<String> p:layout)housePage|=p.contains("house");
         content.addView(hero,pos(864,88,48,home?(!layout.isEmpty()?96:272):100));
         heroKey=home?"@greeting":"";
@@ -813,7 +813,7 @@ public final class MainActivity extends Activity {
         caption(list,"Home",false);
         widgetsRow=controls.size();
         controls.add(option(list,"Home widgets",this::widgetSummary,null,this::widgetEditor,
-            ()->preview(0,"Home widgets","Choose what Home shows above your apps — "+(house?"Smart Home, ":"")+"Up Next, Weather, Now Playing and Control — and their order. Left and Right turn the pages.")));
+            ()->preview(0,"Home widgets","Choose what Home shows above your apps — "+(house?"Smart Home, ":"")+"Up Next, Weather, "+(InputsWidget.count>0?"Inputs, ":"")+"Now Playing and Control — and their order. Left and Right turn the pages.")));
         controls.add(option(list,"Temperature",()->new String[]{"Automatic","Celsius","Fahrenheit"}[unitIndex()],null,this::temperatureMenu,
             ()->preview(0,"Temperature","Weather in Celsius or Fahrenheit. Automatic follows the TV's region. The forecast is for "+Daylight.city()+", the main city of the TV's time zone.")));
         if(house)controls.add(option(list,"Scene apps",()->"Choose",null,this::sceneApps,()->preview(0,"Scene apps","Open an app after a scene — Movie can start Netflix as the lights go down.")));
@@ -848,7 +848,7 @@ public final class MainActivity extends Activity {
         settingsGlide=ValueAnimator.ofInt(y,target);settingsGlide.setDuration(420);settingsGlide.setInterpolator(ease);
         settingsGlide.addUpdateListener(a->sv.scrollTo(0,(int)a.getAnimatedValue()));settingsGlide.start();
     }
-    private String widgetSummary(){int n=0;for(String id:WidgetBoard.IDS)if(WidgetBoard.on(prefs,id)&&(house||!id.equals("house")))n++;return n==0?"Off":n+" on";}
+    private String widgetSummary(){boolean inputs=!InputsWidget.list(this).isEmpty();int n=0;for(String id:WidgetBoard.IDS)if(WidgetBoard.on(prefs,id)&&(house||!id.equals("house"))&&(inputs||!id.equals("inputs")))n++;return n==0?"Off":n+" on";}
     private int unitIndex(){String u=prefs.getString("temp_unit","auto");return u.equals("c")?1:u.equals("f")?2:0;}
     private void temperatureMenu(){
         menu("Temperature",new String[]{"Automatic","Celsius","Fahrenheit"},unitIndex(),choice->{
@@ -882,7 +882,8 @@ public final class MainActivity extends Activity {
             root.post(()->list.getChildAt(0).requestFocus());
         }
         LinearLayout.LayoutParams rowParams(){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,px(54));p.bottomMargin=px(7);return p;}
-        boolean available(String id){return !id.equals("house")||house;}
+        final boolean inputs=!InputsWidget.list(MainActivity.this).isEmpty();
+        boolean available(String id){return id.equals("house")?house:id.equals("inputs")?inputs:true;}
         void setHint(){hint.setText(moving!=null?"Up and Down move it. OK puts it down.":"OK turns a widget on or off. Hold OK to move it.");}
         GradientDrawable oval(int color){GradientDrawable d=new GradientDrawable();d.setShape(GradientDrawable.OVAL);d.setColor(color);return d;}
         View row(String id){
@@ -891,7 +892,7 @@ public final class MainActivity extends Activity {
             View disc=new View(MainActivity.this);row.addView(disc,pos(32,32,12,11));
             Glyph glyph=new Glyph(MainActivity.this).kind(WidgetBoard.glyph(id));row.addView(glyph,pos(18,18,19,18));
             TextView name=text(WidgetBoard.title(id),15,Color.WHITE,"sans-serif-medium");row.addView(name,pos(280,19,56,9));
-            TextView about=text(available(id)?WidgetBoard.about(id):"Install House Control TV to add your home.",11.5f,0x99FFFFFF,"sans-serif");
+            TextView about=text(available(id)?WidgetBoard.about(id):id.equals("inputs")?"This TV has no HDMI inputs: a TV stick is plugged into one.":"Install House Control TV to add your home.",11.5f,0x99FFFFFF,"sans-serif");
             about.setSingleLine(true);about.setEllipsize(android.text.TextUtils.TruncateAt.END);row.addView(about,pos(288,15,56,31));
             View track=new View(MainActivity.this),knob=new View(MainActivity.this);row.addView(track,pos(40,24,368,15));row.addView(knob,pos(20,20,370,17));
             TextView grip=text("≡",22,0xFF111827,"sans-serif-medium");grip.setGravity(Gravity.CENTER);grip.setAlpha(0);row.addView(grip,pos(40,24,368,13));
@@ -944,7 +945,7 @@ public final class MainActivity extends Activity {
         void drawPages(){
             pages.removeAllViews();
             pages.addView(text("Your Home",13,0x99FFFFFF,"sans-serif-medium"),pos(240,16,2,0));
-            ArrayList<ArrayList<String>> layout=WidgetBoard.pages(prefs,house);
+            ArrayList<ArrayList<String>> layout=WidgetBoard.pages(prefs,house,inputs);
             if(layout.isEmpty()){TextView t=text("Only the greeting and your apps.",12.5f,0x80FFFFFF,"sans-serif");pages.addView(t,pos(250,18,2,30));return;}
             float mw=122,mh=69,k=(mw-16)/WidgetBoard.ROW_W;
             for(int p=0;p<Math.min(6,layout.size());p++){

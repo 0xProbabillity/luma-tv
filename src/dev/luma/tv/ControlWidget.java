@@ -1,7 +1,6 @@
 package dev.luma.tv;
 
 import android.content.*;
-import android.graphics.Color;
 import android.net.*;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -17,27 +16,6 @@ final class ControlWidget extends Widget {
     final Tile network,picture,accessories,settings;
     final Runnable tick=new Runnable(){public void run(){if(!active)return;update();postDelayed(this,15000);}};
 
-    final class Tile extends FrameLayout {
-        final View disc;final Glyph glyph;final TextView name,state;boolean focused,on;String detail="";
-        Tile(String kind,String title,int index,Runnable action){
-            super(ControlWidget.this.getContext());setClipChildren(false);
-            disc=new View(getContext());addView(disc,pos(36,36,12,(tileH-36)/2));
-            glyph=new Glyph(getContext()).kind(kind);addView(glyph,pos(20,20,20,(tileH-20)/2));
-            name=text(title,13.5f,ink(0xF2),"sans-serif-medium");addView(name,pos(tileW-62,17,58,tileH/2-17));
-            state=text("",11.5f,ink(0x99),"sans-serif");addView(state,pos(tileW-62,15,58,tileH/2+3));
-            setPivotX(px(tileW/2));setPivotY(px(tileH/2));
-            control(this,index,1.06f,f->{focused=f;paint();},()->new String[]{"control:"+title,title,detail},action);
-        }
-        void paint(){
-            setBackground(round(focused?focusFill():restFill(),20));
-            int discFill=on?0xFF0A84FF:focused?(light()?0x33FFFFFF:0x1A000000):(light()?0x14000000:0x24FFFFFF);
-            disc.setBackground(oval(discFill));
-            glyph.color(on?Color.WHITE:focused?focusInk():ink(0xE6));
-            name.setTextColor(focused?focusInk():ink(0xF2));state.setTextColor(focused?(focusInk()&0x00FFFFFF|0xA6000000):ink(0x99));
-        }
-        void set(String status,String hero,boolean active){if(!status.contentEquals(state.getText()))state.setText(status);detail=hero;if(active!=on){on=active;paint();}}
-    }
-
     ControlWidget(Context context,WidgetBoard.Host host){
         super(context,host,WidgetBoard.width("control"));
         network=tile("wifi","Wi-Fi",0,0,0,()->open(Settings.ACTION_WIFI_SETTINGS));
@@ -48,7 +26,7 @@ final class ControlWidget extends Widget {
         settings.set("Apps, storage and more","All of the TV's settings: apps, storage, date, language and more.",false);
         update();
     }
-    private Tile tile(String kind,String title,int index,int col,int row,Runnable action){Tile t=new Tile(kind,title,index,action);addView(t,pos(tileW,tileH,PAD+col*(tileW+GAP),PAD+row*(tileH+GAP)));return t;}
+    private Tile tile(String kind,String title,int index,int col,int row,Runnable action){Tile t=new Tile(kind,title,tileW,tileH,index,action);addView(t,pos(tileW,tileH,PAD+col*(tileW+GAP),PAD+row*(tileH+GAP)));return t;}
     private void open(String action){try{host.start(new Intent(action));}catch(RuntimeException e){host.start(new Intent(Settings.ACTION_SETTINGS));}}
     @Override void setActive(boolean value){boolean was=active;super.setActive(value);removeCallbacks(tick);if(value&&!was)post(tick);}
     @Override void refresh(){update();}

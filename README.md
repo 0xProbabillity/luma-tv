@@ -30,8 +30,9 @@ works on any Android TV.
 - **Home widgets, page by page.** Above your apps, Home can show *Up Next* (the shows and videos you were
   watching, from the Continue watching list that YouTube, Netflix and other apps share with Android TV: OK
   resumes where you stopped), *Weather* (now, the next hours or the coming days), *Now Playing* (music playing on
-  the TV, with play, pause and skip) and *Control* (Wi-Fi, picture and sound, accessories, settings). Left and
-  Right turn the pages; your apps stay underneath.
+  the TV, with play, pause and skip), *Inputs* (on a TV: its HDMI ports and live TV, named as in the TV's settings
+  or after the device plugged in, OK switches to it and Home comes back) and *Control* (Wi-Fi, picture and sound,
+  accessories, settings). Left and Right turn the pages; your apps stay underneath.
 - **Every app, one tab away.** *Apps* lists everything installed on the TV, hidden apps included.
 - **Light by day, dark at night.** The default wallpaper, *Silver*, is pale silver silk from sunrise to sunset and
   graphite silk after dark, and the whole interface turns light or dark with it. Sunrise and sunset are worked out

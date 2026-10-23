@@ -16,7 +16,7 @@ import java.util.concurrent.*;
 final class WidgetBoard extends FrameLayout {
     static final float W=960,H=392,X=48,ROW_Y=190,ROW_H=186,ROW_W=864,GAP=16,DOTS_Y=380;
     /** Every widget, in the default order. */
-    static final String[] IDS={"house","upnext","weather","music","control"};
+    static final String[] IDS={"house","upnext","weather","inputs","control","music"};
     /** Widgets do their network and disk work here, away from the launcher's own loader (wallpapers, apps). */
     static final ExecutorService IO=Executors.newFixedThreadPool(2,r->{Thread t=new Thread(r,"Luma widgets");t.setDaemon(true);t.setPriority(Thread.MIN_PRIORITY+1);return t;});
 
@@ -33,28 +33,33 @@ final class WidgetBoard extends FrameLayout {
         void launch(String pkg);void start(Intent intent);
         SharedPreferences prefs();Activity activity();
     }
-    static String title(String id){switch(id){case "house":return "Smart Home";case "upnext":return "Up Next";case "weather":return "Weather";case "music":return "Now Playing";default:return "Control";}}
-    static String glyph(String id){switch(id){case "house":return "home";case "upnext":return "tv";case "weather":return "partly";case "music":return "note";default:return "gear";}}
+    static String title(String id){switch(id){case "house":return "Smart Home";case "inputs":return "Inputs";case "upnext":return "Up Next";case "weather":return "Weather";case "music":return "Now Playing";default:return "Control";}}
+    static String glyph(String id){switch(id){case "house":return "home";case "inputs":return "hdmi";case "upnext":return "tv";case "weather":return "partly";case "music":return "note";default:return "gear";}}
     static String about(String id){switch(id){
         case "house":return "Scenes and your live 3D home, from House Control TV.";
         case "upnext":return "Pick up shows and videos where you left off, and your recent apps.";
         case "weather":return "Now, the next hours and the coming days where you are.";
         case "music":return "What's playing on this TV, with play, pause and skip.";
+        case "inputs":return "Your HDMI devices and live TV: switch to a console or a set-top box in one press.";
         default:return "Wi-Fi, picture and sound, accessories and settings in one place.";}}
-    static float width(String id){switch(id){case "upnext":return 560;case "weather":return 288;default:return 424;}}
+    static float width(String id){switch(id){case "upnext":return 560;case "weather":return 288;case "inputs":return InputsWidget.widthFor(InputsWidget.count);default:return 424;}}
 
-    /** All widgets in the saved order (new ones appended), and which of them are on. */
+    /** All widgets in the saved order, and which of them are on. A widget added in a later version goes in after
+     *  the one it follows in IDS. */
     static ArrayList<String> order(SharedPreferences prefs){
         ArrayList<String> ids=new ArrayList<>();for(String id:prefs.getString("widget_order","").split(","))if(Arrays.asList(IDS).contains(id)&&!ids.contains(id))ids.add(id);
-        for(String id:IDS)if(!ids.contains(id))ids.add(id);return ids;
+        for(int i=0;i<IDS.length;i++)if(!ids.contains(IDS[i]))ids.add(i==0?0:ids.indexOf(IDS[i-1])+1,IDS[i]);
+        return ids;
     }
     static boolean on(SharedPreferences prefs,String id){return !Arrays.asList(prefs.getString("widget_off","").split(",")).contains(id);}
     static void save(SharedPreferences prefs,List<String> order,Set<String> off){prefs.edit().putString("widget_order",String.join(",",order)).putString("widget_off",String.join(",",off)).apply();}
-    /** Pages of widget ids: the house alone, the others packed left to right into rows of ROW_W. */
-    static ArrayList<ArrayList<String>> pages(SharedPreferences prefs,boolean house){
+    /** Pages of widget ids: the house alone, the others packed left to right into rows of ROW_W. Smart Home needs
+     *  House Control TV and Inputs a TV with inputs; without them they are skipped. */
+    static ArrayList<ArrayList<String>> pages(SharedPreferences prefs,boolean house,boolean inputs){
         ArrayList<ArrayList<String>> pages=new ArrayList<>();ArrayList<String> row=null;float used=0;
         for(String id:order(prefs)){
             if(!on(prefs,id))continue;
+            if(id.equals("inputs")&&!inputs)continue;
             if(id.equals("house")){if(!house)continue;pages.add(new ArrayList<>(Collections.singletonList(id)));row=null;continue;}
             float w=width(id);
             if(row==null||used+GAP+w>ROW_W){row=new ArrayList<>();pages.add(row);used=w;}else used+=GAP+w;
@@ -97,6 +102,7 @@ final class WidgetBoard extends FrameLayout {
             case "weather":return new WeatherWidget(c,host);
             case "music":return new NowPlayingWidget(c,host);
             case "control":return new ControlWidget(c,host);
+            case "inputs":return new InputsWidget(c,host);
             default:return null;
         }
     }
