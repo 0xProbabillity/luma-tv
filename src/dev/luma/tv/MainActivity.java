@@ -131,7 +131,7 @@ public final class MainActivity extends Activity {
         super.onNewIntent(intent);
         String look=intent.getStringExtra("luma.daylight");
         if(look!=null&&look.matches("day|night|auto")){daylightOverride=look;if(started)syncDaylight();}
-        String demo=intent.getStringExtra("luma.demo");if(demo!=null){Promo.on=demo.equals("promo");if(Promo.on)Promo.start();homePage=0;showPage("home",true);}
+        String demo=intent.getStringExtra("luma.demo");if(demo!=null){Promo.on=demo.equals("promo");if(Promo.on)Promo.start();board=null;homePage=0;showPage("home",true);} // board=null: start on the first page
         String inputs=intent.getStringExtra("luma.inputs");if(inputs!=null){InputsWidget.demo=inputs.equals("demo");showPage(page,true);} // arrives while paused
         if (intent.hasCategory(Intent.CATEGORY_HOME)){selectedPackage="com.google.android.youtube.tv";if(started)homePage=0;showPage("home", true);} // Home pressed on Home: back to the first page
     }

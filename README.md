@@ -59,6 +59,13 @@ works on any Android TV.
   <img src="docs/support.jpg" width="49%" alt="Settings → Support the author: four QR codes for tips in crypto">
 </p>
 
+<p align="center">
+  <img src="docs/widgets.jpg" width="100%" alt="Home widgets: Up Next with three videos and their progress, and the weather in Miami for the next hours">
+  <img src="docs/inputs.jpg" width="49%" alt="Inputs with a recognised PlayStation 5, Xbox Series X and Apple TV on HDMI 1 to 3, next to Now Playing">
+  <img src="docs/widget-editor.jpg" width="49%" alt="Settings → Home widgets: switches for each widget and miniature pages of Home">
+</p>
+<p align="center"><sub>Shown with Luma's promo demo (<code>--es luma.demo promo</code>): the videos, the song and the consoles are made up.</sub></p>
+
 ## Requirements
 
 | | You need |
