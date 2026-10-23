@@ -27,6 +27,11 @@ works on any Android TV.
 - **A quiet Home.** A greeting with today's date, your favourite apps as large cards, and nothing you did not put
   there. Moving to an app shows its name and a line about it; hold OK on any app to show it on Home, move it or
   hide it.
+- **Home widgets, page by page.** Above your apps, Home can show *Up Next* (the shows and videos you were
+  watching, from the Continue watching list that YouTube, Netflix and other apps share with Android TV: OK
+  resumes where you stopped), *Weather* (now, the next hours or the coming days), *Now Playing* (music playing on
+  the TV, with play, pause and skip) and *Control* (Wi-Fi, picture and sound, accessories, settings). Left and
+  Right turn the pages; your apps stay underneath.
 - **Every app, one tab away.** *Apps* lists everything installed on the TV, hidden apps included.
 - **Light by day, dark at night.** The default wallpaper, *Silver*, is pale silver silk from sunrise to sunset and
   graphite silk after dark, and the whole interface turns light or dark with it. Sunrise and sunset are worked out
@@ -115,6 +120,10 @@ the couch.
   `.local/greeting.txt` (ignored by git).
 - **Favourites.** Hold OK on an app → *Show on Home*, *Move left* / *right*, *Move to first position* or *Hide from Home*. The first-run order is in `FIRST` in
   `MainActivity.java`.
+- **Home widgets.** Settings → *Home widgets*: OK turns a widget on or off, hold OK to move it. Small pages next
+  to the list show how Home will look. Settings → *Temperature* picks Celsius or Fahrenheit (automatic: by time
+  zone). Up Next and Now Playing ask for access the first time; `./luma.sh widgets` allows both, and usage access
+  for recent apps, from the computer in one go.
 - **Scene apps.** With House Control TV installed, Settings → *Scene apps* chooses the app each scene opens, or
   none.
 - **Forks.** The author, links and tip addresses shown in Settings → *About* and *Support the author* are in
@@ -124,8 +133,12 @@ the couch.
 ## Privacy
 
 Luma has no analytics, advertising ID, accessibility service or account. The list of apps, your favourites,
-your name and settings stay on the TV. Day and night come from the TV's clock and time zone, not its location. Its only network access is to House Control TV on the TV itself (`127.0.0.1`), for the
-3D preview, and only when House Control is installed; that web view refuses every other address. The scene
+your name and settings stay on the TV. Day and night come from the TV's clock and time zone, not its location. It goes online for three things only: House Control TV on the TV itself (`127.0.0.1`), for the
+3D preview, and only when House Control is installed (that web view refuses every other address); the weather,
+from [Open-Meteo](https://open-meteo.com) (no account or key; the request carries only the rounded coordinates of
+your time zone's main city, not your location); and the poster pictures that your apps link in their Continue
+watching list. Up Next reads that list on the TV. Now Playing needs notification access only because Android hands
+media controls to notification listeners; Luma reads no notifications. The scene
 buttons talk to House Control over Android's Binder, and House Control only answers a Luma signed with the key it
 trusts. Luma never sees a password or token.
 

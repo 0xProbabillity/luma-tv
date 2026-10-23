@@ -45,7 +45,8 @@ final class HouseWidgets extends FrameLayout {
     String revision="",title="Your home",pictured="";JSONObject current;
     long warningUntil=0;
     final Callbacks callbacks;
-    interface Callbacks{void up();void down(float screenX);void open();void focusHome(String title,String detail);void activate();boolean sceneApplied(String id);boolean motion();String sceneDetail(String id,String name);boolean light();}
+    interface Callbacks{void up();void down(float screenX);void open();void focusHome(String title,String detail);void activate();boolean sceneApplied(String id);boolean motion();String sceneDetail(String id,String name);boolean light();
+        /** Left of the first scene or right of the model: the neighbouring Home page. */void edge(int direction);}
     final Runnable refresh=new Runnable(){public void run(){if(!attached||!active)return;fetch();handler.postDelayed(this,2000);}};
     final ServiceConnection connection=new ServiceConnection(){
         public void onServiceConnected(ComponentName name,IBinder service){binder=service;setRemoteActive(active);fetch();if(!loaded){loaded=true;model.loadUrl("http://127.0.0.1:8788/widget.html");}}
@@ -110,7 +111,7 @@ final class HouseWidgets extends FrameLayout {
                 statusRow.animate().alpha(focus?0:1).setDuration(focus?140:260).setStartDelay(focus?0:80).start();
             } else {card.setScaleX(s);card.setScaleY(s);openHint.setAlpha(focus?1:0);statusRow.setAlpha(focus?0:1);}
         });
-        cover.setOnKeyListener((v,key,event)->{if(event.getAction()!=KeyEvent.ACTION_DOWN)return false;if(key==KeyEvent.KEYCODE_DPAD_DOWN){callbacks.down(centerX(card));return true;}if(key==KeyEvent.KEYCODE_DPAD_UP){callbacks.up();return true;}if(key==KeyEvent.KEYCODE_DPAD_LEFT){focusLastScene();return true;}return key==KeyEvent.KEYCODE_DPAD_RIGHT;});
+        cover.setOnKeyListener((v,key,event)->{if(event.getAction()!=KeyEvent.ACTION_DOWN)return false;if(key==KeyEvent.KEYCODE_DPAD_DOWN){callbacks.down(centerX(card));return true;}if(key==KeyEvent.KEYCODE_DPAD_UP){callbacks.up();return true;}if(key==KeyEvent.KEYCODE_DPAD_LEFT){focusLastScene();return true;}if(key==KeyEvent.KEYCODE_DPAD_RIGHT){callbacks.edge(1);return true;}return false;});
         renderScenes(null);
     }
     int px(float x){return Math.round(x*scale);}
@@ -206,7 +207,7 @@ final class HouseWidgets extends FrameLayout {
         for(int i=0;i<scenes.size();i++){final int index=i;SceneTile t=scenes.get(i);t.setOnKeyListener((v,key,event)->{if(event.getAction()!=KeyEvent.ACTION_DOWN)return false;
             if(key==KeyEvent.KEYCODE_DPAD_UP){callbacks.up();return true;}
             if(key==KeyEvent.KEYCODE_DPAD_DOWN){callbacks.down(centerX(t));return true;}
-            if(key==KeyEvent.KEYCODE_DPAD_LEFT){if(index>0){scenes.get(index-1).requestFocus();return true;}return true;}
+            if(key==KeyEvent.KEYCODE_DPAD_LEFT){if(index>0)scenes.get(index-1).requestFocus();else callbacks.edge(-1);return true;}
             if(key==KeyEvent.KEYCODE_DPAD_RIGHT){if(index+1<scenes.size())scenes.get(index+1).requestFocus();else cover.requestFocus();return true;}
             return false;});}
         if(hadFocus&&!scenes.isEmpty())scenes.get(0).requestFocus();
@@ -261,6 +262,7 @@ final class HouseWidgets extends FrameLayout {
         if(cover.hasFocus()){card.setScaleX(1.06f);card.setScaleY(1.06f);card.setTranslationY(-px(4));openHint.setAlpha(1);statusRow.setAlpha(0);}
         model.evaluateJavascript("window.widgetResetCamera && window.widgetResetCamera()",null);
     }
+    void focusCover(){cover.requestFocus();}
     void focusFirstScene(){if(!scenes.isEmpty())scenes.get(0).requestFocus();else cover.requestFocus();}
     void focusLastScene(){if(!scenes.isEmpty())scenes.get(scenes.size()-1).requestFocus();}
     float centerX(View v){int[] l=new int[2];v.getLocationOnScreen(l);return l[0]+v.getWidth()/2f;}

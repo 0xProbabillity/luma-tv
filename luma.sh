@@ -1,6 +1,6 @@
 #!/bin/bash
 # Luma on your TV, from this computer: build, install, make it the home screen, and undo that.
-#   ./luma.sh [-s DEVICE] build | install | home | restore | status
+#   ./luma.sh [-s DEVICE] build | install | home | widgets | restore | status
 # DEVICE is the TV's adb address (192.168.1.50:5555) or serial. Default: $LUMA_DEVICE, else the only device adb sees.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -59,6 +59,14 @@ home)
     [ "$(home_now)" = "$LUMA" ] || die "the TV did not accept Luma as its home screen. ./luma.sh restore undoes the changes."
     show_home
     echo "Luma is the home screen. Undo at any time: ./luma.sh restore" ;;
+widgets)
+    # The Home widgets work without this; it switches on what a TV remote makes tedious to allow by hand.
+    pick_device
+    installed dev.luma.tv || die "Luma is not installed yet: ./luma.sh install"
+    tv pm grant dev.luma.tv android.permission.READ_TV_LISTINGS && echo "Up Next: Continue watching from your apps."
+    tv cmd notification allow_listener dev.luma.tv/dev.luma.tv.MediaListener && echo "Now Playing: music playing on the TV."
+    tv appops set dev.luma.tv GET_USAGE_STATS allow && echo "Up Next: recently used apps."
+    echo "Undo any of these in the TV's Settings → Apps → Special app access, or Settings → Apps → Luma TV → Permissions." ;;
 restore)
     pick_device
     state="$(state_file)"
@@ -81,5 +89,5 @@ status)
     echo "Luma: $(tv dumpsys package dev.luma.tv | sed -n 's/^ *versionName=//p' | head -n 1 | grep . || echo 'not installed')"
     echo "Home: $(home_now)" ;;
 *)
-    die "unknown command '$ACTION'. Use build, install, home, restore or status." ;;
+    die "unknown command '$ACTION'. Use build, install, home, widgets, restore or status." ;;
 esac
