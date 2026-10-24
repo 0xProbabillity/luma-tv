@@ -8,5 +8,7 @@
         <item name="android:colorAccent">#FFFFFF</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
+        <!-- Luma draws its own focus; the platform's grey highlight showed under cards on some devices. -->
+        <item name="android:defaultFocusHighlightEnabled">false</item>
     </style>
 </resources>

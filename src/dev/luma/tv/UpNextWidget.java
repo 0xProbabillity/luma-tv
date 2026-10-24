@@ -34,7 +34,7 @@ final class UpNextWidget extends Widget {
     final float cardW=(w-PAD*2-GAP_X*(SLOTS-1))/SLOTS,cardH=cardW*9/16;
     final FrameLayout cards;
     final TextView empty;
-    String shown="";
+    String shown=null;   // null: nothing shown yet, so an empty list still shows its message
 
     UpNextWidget(Context context,WidgetBoard.Host host){
         super(context,host,WidgetBoard.width("upnext"));
@@ -52,9 +52,10 @@ final class UpNextWidget extends Widget {
         ArrayList<Item> items=new ArrayList<>();HashSet<String> seen=new HashSet<>();
         if(Promo.on){for(Object[] v:Promo.VIDEOS){Item i=new Item();i.pkg="com.google.android.youtube.tv";i.key="promo:"+v[0];i.title=(String)v[0];i.line=(String)v[1];i.detail=(String)v[2];i.art="res:"+v[3];i.progress=(Float)v[4]>0?(Float)v[4]:-1;items.add(i);}return items;}
         boolean listings=context.checkSelfPermission(LISTINGS)==PackageManager.PERMISSION_GRANTED;
+        boolean exists=true;try{context.getPackageManager().getPermissionInfo(LISTINGS,0);}catch(PackageManager.NameNotFoundException e){exists=false;}   // no TV provider (not a TV): no Watch Next to ask for
         if(listings)for(Item i:watchNext(context))if(items.size()<SLOTS&&seen.add(i.key)){items.add(i);}
         HashSet<String> withPrograms=new HashSet<>();for(Item i:items)withPrograms.add(i.pkg);
-        int room=SLOTS-items.size()-(listings?0:1);
+        int room=SLOTS-items.size()-(listings||!exists?0:1);
         for(String pkg:recent(context)){
             if(room<=0)break;if(withPrograms.contains(pkg))continue;
             MainActivity.App a=host.app(pkg);if(a==null)continue;
@@ -62,7 +63,7 @@ final class UpNextWidget extends Widget {
             long at=lastUsed.containsKey(pkg)?lastUsed.get(pkg):0;i.line=at>0?ago(at):"Recently used";i.detail=at>0?"Opened "+(ago(at).equals("Just now")||ago(at).equals("Yesterday")?ago(at).toLowerCase(Locale.ENGLISH):ago(at)):"Recently used";
             items.add(i);room--;
         }
-        if(!listings){Item i=new Item();i.allow=true;i.key="allow";i.title="Continue watching";i.line="Allow access";i.detail="Allow Luma to read the Continue watching list that your apps share with Android TV.";items.add(i);}
+        if(!listings&&exists){Item i=new Item();i.allow=true;i.key="allow";i.title="Continue watching";i.line="Allow access";i.detail="Allow Luma to read the Continue watching list that your apps share with Android TV.";items.add(i);}
         return items;
     }
     /** Android TV's Watch Next programmes, most recently watched first. */
