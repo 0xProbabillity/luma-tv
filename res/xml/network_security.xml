@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No cleartext (http) traffic anywhere in the app, and no exceptions: nothing here talks to a local server.
+     Net.java also refuses non-https URLs on its own; this is the second lock, enforced by the platform. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

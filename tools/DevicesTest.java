@@ -1,7 +1,7 @@
-package dev.luma.tv;
+package com.madushas.shangos;
 
 /** Checks Devices.identify against the names real devices announce over HDMI-CEC. Run from the repository root:
- *    javac -d build/test src/dev/luma/tv/Devices.java tools/DevicesTest.java && java -cp build/test dev.luma.tv.DevicesTest */
+ *    javac -d build/test src/com.madushas.shangos/Devices.java tools/DevicesTest.java && java -cp build/test com.madushas.shangos.DevicesTest */
 public final class DevicesTest {
     static int failures;
     static void expect(String osd,int vendor,int type,String name,String glyph){

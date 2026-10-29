@@ -1,16 +1,17 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.luma.tv" android:versionCode="26" android:versionName="2.4">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.madushas.shangos" android:versionCode="2" android:versionName="0.2.0">
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Home widgets (2.3): Up Next reads Android TV's Continue watching list; Control shows the connection. -->
+    <!-- INTERNET is removed by build.sh in the offline variant. It serves two optional features only: Weather (off by default) and remote Up Next posters. -->
+    <!-- Up Next reads Android TV's Continue watching list. Read only. -->
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
     <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />
+    <!-- Control shows the connection; remote posters wait for an unmetered link. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- Optional, granted only by the user (Settings → Apps → Special app access → Usage access): recent apps. -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
-    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
+    <uses-sdk android:minSdkVersion="31" android:targetSdkVersion="34" />
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <queries><package android:name="dev.housecontrol.tv" /><package android:name="com.android.providers.tv" /><package android:name="com.google.android.tvlauncher" /><package android:name="com.google.android.apps.tv.launcherx" /><package android:name="com.google.android.leanbacklauncher" />
+    <queries><package android:name="com.android.providers.tv" /><package android:name="com.google.android.tvlauncher" /><package android:name="com.google.android.apps.tv.launcherx" /><package android:name="com.google.android.leanbacklauncher" />
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
         <!-- Inputs: the TV's own input services and the Live TV app that switches to them. -->
         <intent><action android:name="android.media.tv.TvInputService" /></intent>
@@ -18,13 +19,13 @@
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent>
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
     </queries>
-    <application android:label="Luma TV" android:icon="@drawable/app_icon" android:banner="@drawable/app_banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:usesCleartextTraffic="true">
+    <application android:enableOnBackInvokedCallback="true" android:label="@string/app_name" android:icon="@drawable/app_icon" android:banner="@drawable/app_banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:networkSecurityConfig="@xml/network_security">
         <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask" android:screenOrientation="landscape" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" android:excludeFromRecents="true">
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent-filter>
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
         </activity>
         <!-- Lets Now Playing see media sessions. Reads no notifications (MediaListener overrides nothing). -->
-        <service android:name=".MediaListener" android:label="Luma Now Playing" android:exported="true" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+        <service android:name=".MediaListener" android:label="shangOS Now Playing" android:exported="true" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter><action android:name="android.service.notification.NotificationListenerService" /></intent-filter>
         </service>
     </application>

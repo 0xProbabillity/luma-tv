@@ -1,5 +1,5 @@
 """Writes res/raw/zones.txt: one "Area/City|lat|lon" line per time zone, from the system zone.tab.
-Luma estimates sunrise and sunset at the time zone's main city, so it needs no location permission."""
+shangOS estimates sunrise and sunset at the time zone's main city, so it needs no location permission."""
 import pathlib, re, sys
 source = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else '/usr/share/zoneinfo/zone.tab')
 out = pathlib.Path(__file__).resolve().parent.parent / 'res' / 'raw' / 'zones.txt'

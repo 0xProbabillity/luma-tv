@@ -1,0 +1,98 @@
+#!/bin/bash
+# shangOS on your TV, from this computer: build, install, make it the home screen, and undo that.
+#   ./shangos.sh [-s DEVICE] build [VARIANT] | install [VARIANT] | home | widgets | restore | status
+# VARIANT: release (default), offline (no network permission at all) or debug.
+# DEVICE is the TV's adb address (192.168.1.50:5555) or serial. Default: $SHANGOS_DEVICE, else the only device adb sees.
+set -euo pipefail
+cd "$(dirname "$0")"
+DEVICE="${SHANGOS_DEVICE:-}"
+if [ "${1:-}" = "-s" ]; then DEVICE="$2"; shift 2; fi
+ACTION="${1:-status}"
+SHANGOS="com.madushas.shangos/.MainActivity"
+# The only packages this script ever switches off: stock TV launchers, and Google TV's setup "recovery" home,
+# which outranks any other home screen once the launcher is off.
+KNOWN="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher com.google.android.tungsten.setupwraith"
+
+die() { echo "shangos: $*" >&2; exit 1; }
+pick_device() {
+    if [ -n "$DEVICE" ]; then
+        case "$DEVICE" in *:*) adb connect "$DEVICE" >/dev/null 2>&1 || true ;; esac
+        return
+    fi
+    local list; list="$(adb devices | awk 'NR>1 && $2=="device" {print $1}')"
+    [ -n "$list" ] || die "no TV found. Turn on ADB debugging on the TV, then: adb connect <TV IP>:5555"
+    [ "$(echo "$list" | wc -l | tr -d ' ')" = "1" ] || die "several devices connected; choose one with -s DEVICE:
+$list"
+    DEVICE="$list"
+}
+tv() { adb -s "$DEVICE" shell "$@" | tr -d '\r'; }
+home_now() { tv cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tail -n 1; }
+state_file() { mkdir -p .local; echo ".local/home-$(tv getprop ro.serialno | tr -cd 'A-Za-z0-9').txt"; }
+installed() { tv pm list packages "$1" | grep -qx "package:$1"; }
+show_home() { tv dumpsys power | grep -q 'mWakefulness=Awake' && tv input keyevent KEYCODE_HOME || true; } # never wakes a sleeping TV
+
+case "$ACTION" in
+build)
+    bash build.sh "${2:-release}" ;;
+install)
+    pick_device
+    VARIANT="${2:-release}"; APK="dist/shangos-$VARIANT.apk"
+    [ -f "$APK" ] || bash build.sh "$VARIANT"
+    adb -s "$DEVICE" install --no-incremental -r "$APK" || die "install failed. If it says the signatures do not match, the TV has a build signed with another key: adb -s $DEVICE uninstall com.madushas.shangos (this clears shangOS's settings), then install again."
+    # Sideloaded apps start on the interpreter; compiling ahead of time makes the first launches smoother. Set SHANGOS_AOT=0 to skip.
+    if [ "${SHANGOS_AOT:-1}" = 1 ]; then echo "Compiling ahead of time (a few seconds)..."; tv cmd package compile -m speed -f com.madushas.shangos >/dev/null || echo "(AOT compile not available on this TV; harmless)"; fi
+    echo "Installed $VARIANT build." ;;
+home)
+    pick_device
+    installed com.madushas.shangos || die "shangOS is not installed yet: ./shangos.sh install"
+    state="$(state_file)"
+    if [ ! -s "$state" ]; then echo "original=$(home_now)" > "$state"; fi
+    tv cmd package set-home-activity --user 0 "$SHANGOS" >/dev/null
+    for _ in 1 2 3 4; do
+        current="$(home_now)"
+        [ "$current" = "$SHANGOS" ] && break
+        pkg="${current%%/*}"
+        case " $KNOWN " in
+        *" $pkg "*)
+            echo "Switching off $pkg, which the TV puts above any other home screen."
+            tv pm disable-user --user 0 "$pkg" >/dev/null
+            echo "disabled=$pkg" >> "$state"
+            tv cmd package set-home-activity --user 0 "$SHANGOS" >/dev/null ;;
+        *) die "the TV still opens $current at Home, and shangos.sh does not switch off unknown apps. Nothing else was changed; ./shangos.sh restore undoes this." ;;
+        esac
+    done
+    [ "$(home_now)" = "$SHANGOS" ] || die "the TV did not accept shangOS as its home screen. ./shangos.sh restore undoes the changes."
+    show_home
+    echo "shangOS is the home screen. Undo at any time: ./shangos.sh restore" ;;
+widgets)
+    # The Home widgets work without this; it switches on what a TV remote makes tedious to allow by hand.
+    pick_device
+    installed com.madushas.shangos || die "shangOS is not installed yet: ./shangos.sh install"
+    tv pm grant com.madushas.shangos android.permission.READ_TV_LISTINGS && echo "Up Next: Continue watching from your apps."
+    tv cmd notification allow_listener com.madushas.shangos/com.madushas.shangos.MediaListener && echo "Now Playing: music playing on the TV."
+    tv appops set com.madushas.shangos GET_USAGE_STATS allow && echo "Up Next: recently used apps."
+    echo "Undo any of these in the TV's Settings → Apps → Special app access, or Settings → Apps → shangOS → Permissions." ;;
+restore)
+    pick_device
+    state="$(state_file)"
+    if [ -s "$state" ]; then
+        disabled="$(sed -n 's/^disabled=//p' "$state")"; original="$(sed -n 's/^original=//p' "$state" | head -n 1)"
+    else # set up by hand or on another computer: switch every known launcher back on
+        disabled=""; original=""
+        for pkg in $KNOWN; do installed "$pkg" && tv pm list packages -d "$pkg" | grep -qx "package:$pkg" && disabled="$disabled $pkg"; done
+    fi
+    for pkg in $disabled; do echo "Switching $pkg back on."; tv pm enable --user 0 "$pkg" >/dev/null || true; done
+    if [ -n "$original" ] && [ "$original" != "$SHANGOS" ] && [[ "$original" =~ ^[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+$ ]]; then
+        tv cmd package set-home-activity --user 0 "$original" >/dev/null || true
+    fi
+    rm -f "$state"
+    show_home
+    echo "Home now opens $(home_now). shangOS stays installed (adb uninstall com.madushas.shangos removes it)." ;;
+status)
+    pick_device
+    echo "TV:   $(tv getprop ro.product.manufacturer) $(tv getprop ro.product.model), Android $(tv getprop ro.build.version.release)"
+    echo "shangOS: $(tv dumpsys package com.madushas.shangos | sed -n 's/^ *versionName=//p' | head -n 1 | grep . || echo 'not installed')"
+    echo "Home: $(home_now)" ;;
+*)
+    die "unknown command '$ACTION'. Use build, install, home, widgets, restore or status." ;;
+esac
