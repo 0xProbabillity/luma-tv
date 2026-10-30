@@ -29,7 +29,7 @@ works on any Android TV.
   hide it.
 - **Home widgets, page by page.** Above your apps, Home can show *Up Next* (the shows and videos you were
   watching, from the Continue watching list that YouTube, Netflix and other apps share with Android TV: OK
-  resumes where you stopped), *Weather* (now, the next hours or the coming days), *Now Playing* (music playing on
+  resumes where you stopped), *Weather* (now, the next hours or the coming days, for the city your TV is in or any city you pick), *Now Playing* (music playing on
   the TV, with play, pause and skip), *Inputs* (on a TV: its HDMI ports and live TV; a PlayStation, Xbox, Nintendo
   Switch, Apple TV, Chromecast, Fire TV, soundbar and more are recognised over HDMI-CEC and shown under their own
   name and colour; OK switches to it and Home comes back) and *Control* (Wi-Fi, picture and sound,
@@ -146,10 +146,14 @@ the couch.
 ## Privacy
 
 Luma has no analytics, advertising ID, accessibility service or account. The list of apps, your favourites,
-your name and settings stay on the TV. Day and night come from the TV's clock and time zone, not its location. It goes online for three things only: House Control TV on the TV itself (`127.0.0.1`), for the
+your name and settings stay on the TV. Day and night come from the TV's clock and time zone, not its location. It goes online for these things only: House Control TV on the TV itself (`127.0.0.1`), for the
 3D preview, and only when House Control is installed (that web view refuses every other address); the weather,
 from [Open-Meteo](https://open-meteo.com) (no account or key; the request carries only the rounded coordinates of
-your time zone's main city, not your location); and the poster pictures that your apps link in their Continue
+the city); the city itself, which Luma asks [GeoJS](https://www.geojs.io) (or [ipwho.is](https://ipwho.is) if it
+does not answer) for at most twice a day, like any weather website, from the TV's internet address and with no
+location permission. A guess whose time zone does not keep the TV's time, as behind a VPN, is ignored for your
+time zone's main city. Settings → *Weather location* pins a city instead, and then no lookup is made; its search
+sends what you type to Open-Meteo. And the poster pictures that your apps link in their Continue
 watching list. Up Next reads that list on the TV. Now Playing needs notification access only because Android hands
 media controls to notification listeners; Luma reads no notifications. The scene
 buttons talk to House Control over Android's Binder, and House Control only answers a Luma signed with the key it

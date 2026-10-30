@@ -816,8 +816,11 @@ public final class MainActivity extends Activity {
         widgetsRow=controls.size();
         controls.add(option(list,"Home widgets",this::widgetSummary,null,this::widgetEditor,
             ()->preview(0,"Home widgets","Choose what Home shows above your apps — "+(house?"Smart Home, ":"")+"Up Next, Weather, "+(InputsWidget.count>0?"Inputs, ":"")+"Now Playing and Control — and their order. Left and Right turn the pages.")));
+        locationRow=controls.size();
+        controls.add(option(list,"Weather location",()->{Places.Place p=Places.pinned(prefs);return p==null?"Automatic":p.name;},null,this::locationPicker,
+            ()->preview(0,"Weather location",locationAbout())));
         controls.add(option(list,"Temperature",()->new String[]{"Automatic","Celsius","Fahrenheit"}[unitIndex()],null,this::temperatureMenu,
-            ()->preview(0,"Temperature","Weather in Celsius or Fahrenheit. Automatic follows the TV's region. The forecast is for "+Daylight.city()+", the main city of the TV's time zone.")));
+            ()->preview(0,"Temperature","Weather in Celsius or Fahrenheit. Automatic follows the country of the weather's city.")));
         if(house)controls.add(option(list,"Scene apps",()->"Choose",null,this::sceneApps,()->preview(0,"Scene apps","Open an app after a scene — Movie can start Netflix as the lights go down.")));
         controls.add(option(list,"Home screen",()->lumaIsHome()?"Luma":"TV default",null,this::homeScreen,
             ()->preview(0,"Home screen",lumaIsHome()?"Luma opens when you press Home. Choose to return to your TV's own home screen.":"Your TV's own home screen opens when you press Home.")));
@@ -833,7 +836,7 @@ public final class MainActivity extends Activity {
         TextView c=text(label,13,ink(0x99),"sans-serif-medium");c.setPadding(px(10),0,0,0);
         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,px(20));lp.topMargin=px(first?0:12);lp.bottomMargin=px(6);list.addView(c,lp);
     }
-    private ScrollView settingsScroll;private ValueAnimator settingsGlide;private int widgetsRow;
+    private ScrollView settingsScroll;private ValueAnimator settingsGlide;private int widgetsRow,locationRow;
     /** Scrolls the settings list so the focused row, with room for its lift and shadow (and its group's caption
      *  above the first row of a group), clears the faded edges. */
     private void reveal(View row){
@@ -854,7 +857,93 @@ public final class MainActivity extends Activity {
     private int unitIndex(){String u=prefs.getString("temp_unit","auto");return u.equals("c")?1:u.equals("f")?2:0;}
     private void temperatureMenu(){
         menu("Temperature",new String[]{"Automatic","Celsius","Fahrenheit"},unitIndex(),choice->{
-            prefs.edit().putString("temp_unit",new String[]{"auto","c","f"}[choice]).apply();showPage("settings",false);controlsFocus(widgetsRow+1);});
+            prefs.edit().putString("temp_unit",new String[]{"auto","c","f"}[choice]).apply();showPage("settings",false);controlsFocus(locationRow+1);});
+    }
+    private String locationAbout(){
+        Places.Place pinned=Places.pinned(prefs),now=Places.current(this,prefs);
+        if(pinned!=null)return "The forecast is for "+pinned.full()+". Choose Automatic to follow the TV's internet connection.";
+        return "Automatic finds your city from the TV's internet connection, with no location permission"+(now==null?"":": now "+now.full())+". Or search for any city.";
+    }
+    private void locationPicker(){new LocationPicker();}
+    /** Settings → Weather location: Automatic, or any city found by name (Places). Results come as you type;
+     *  Search on the keyboard puts it away and moves to the first city. */
+    private final class LocationPicker {
+        static final int SHOWN=5;
+        final FrameLayout o=openOverlay(0xA6000000);
+        final EditText field=new EditText(MainActivity.this);
+        final LinearLayout list=new LinearLayout(MainActivity.this);
+        final Runnable search=this::search;
+        ArrayList<Places.Place> found;String status;int generation;boolean jump;
+        LocationPicker(){
+            FrameLayout panel=new FrameLayout(MainActivity.this);panel.setBackground(shape(0xF51C1C1E,24));panel.setElevation(px(24));panel.setClipChildren(false);
+            // Near the top, not centred: the TV's keyboard covers the lower part of the screen, and the window does not pan.
+            FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(px(520),px(152+(SHOWN+1)*46+14));lp.gravity=Gravity.TOP|Gravity.CENTER_HORIZONTAL;lp.topMargin=px(28);o.addView(panel,lp);
+            panel.addView(text("Weather location",22,Color.WHITE,"sans-serif-medium"),pos(472,30,24,24));
+            panel.addView(text("Type a city to search, or let Luma find it from the TV's connection.",13,0xB3FFFFFF,"sans-serif"),pos(472,20,24,60));
+            field.setSingleLine(true);field.setHint("Search for a city");field.setHintTextColor(0x66FFFFFF);field.setTextColor(Color.WHITE);field.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(17));
+            field.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(48)});field.setPadding(px(16),0,px(16),0);
+            field.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH|android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            field.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_CAP_WORDS|android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+            Runnable ring=()->{GradientDrawable bg=shape(0x1FFFFFFF,12);if(field.hasFocus())bg.setStroke(px(1.5f),Color.WHITE);field.setBackground(bg);};ring.run();
+            field.setOnFocusChangeListener((v,f)->{ring.run();if(f)navigationSound(0);});
+            panel.addView(field,pos(472,46,24,94));
+            field.addTextChangedListener(new android.text.TextWatcher(){
+                public void beforeTextChanged(CharSequence c,int a,int b,int d){}
+                public void onTextChanged(CharSequence c,int a,int b,int d){}
+                public void afterTextChanged(android.text.Editable e){
+                    root.removeCallbacks(search);generation++;
+                    if(query().length()<2){found=null;status=null;rows();}else{status="Searching…";if(found==null)rows();root.postDelayed(search,350);}
+                }});
+            field.setOnEditorActionListener((v,action,e)->{
+                if(action!=android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH&&action!=android.view.inputmethod.EditorInfo.IME_ACTION_DONE)return false;
+                keyboard(false);
+                if(query().length()<2)return true;
+                if(found!=null&&!found.isEmpty()&&status==null)list.getChildAt(1).requestFocus();else{jump=true;root.removeCallbacks(search);search();}
+                return true;});
+            list.setOrientation(LinearLayout.VERTICAL);list.setClipChildren(false);list.setClipToPadding(false);panel.addView(list,pos(488,(SHOWN+1)*46,16,152));
+            rows();
+            // The automatic city may be out of date: look it up again while the picker is open.
+            WidgetBoard.IO.execute(()->{Places.locate(prefs);root.post(()->{if(overlay==o)rows();});});
+            if(motion()){panel.setScaleX(.96f);panel.setScaleY(.96f);panel.animate().scaleX(1).scaleY(1).setDuration(360).setInterpolator(spring).start();}
+            root.post(()->{field.requestFocus();keyboard(true);});
+        }
+        String query(){return field.getText().toString().trim();}
+        void keyboard(boolean show){
+            android.view.inputmethod.InputMethodManager im=(android.view.inputmethod.InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+            if(show)im.showSoftInput(field,0);else im.hideSoftInputFromWindow(field.getWindowToken(),0);
+        }
+        void search(){
+            final int ticket=generation;final String q=query();if(q.length()<2)return;
+            WidgetBoard.IO.execute(()->{
+                ArrayList<Places.Place> result=null;try{result=Places.search(q);}catch(Exception ignored){}
+                final ArrayList<Places.Place> done=result;
+                root.post(()->{
+                    if(overlay!=o||ticket!=generation)return; // closed, or the text changed meanwhile
+                    found=done==null?new ArrayList<>():done;
+                    status=done==null?"Can't search right now. Check the connection.":done.isEmpty()?"No cities called “"+q+"”":null;
+                    rows();
+                    if(jump){jump=false;(found.isEmpty()?list.getChildAt(0):list.getChildAt(1)).requestFocus();}
+                });
+            });
+        }
+        /** Automatic first, then the search results (or, before a search, the pinned city). Focus stays on the
+         *  same row when the list is rebuilt under it. */
+        void rows(){
+            View had=getCurrentFocus();int at=had!=null&&had.getParent()==list?list.indexOfChild(had):-1;
+            list.removeAllViews();
+            Places.Place pinned=Places.pinned(prefs),auto=Places.Place.parse(prefs.getString("place_auto",""));if(auto==null)auto=Places.zone(MainActivity.this);
+            menuRow(list,auto==null?"Automatic":"Automatic  ·  "+auto.name,pinned==null,()->pick(null));
+            List<Places.Place> shown=found!=null?found.subList(0,Math.min(SHOWN,found.size())):pinned!=null?Collections.singletonList(pinned):Collections.emptyList();
+            for(Places.Place p:shown)menuRow(list,p.full(),p.same(pinned),()->pick(p));
+            if(status!=null&&(found==null||found.isEmpty()||!status.startsWith("Searching"))){
+                TextView t=text(status,14,0x99FFFFFF,"sans-serif");t.setGravity(Gravity.CENTER_VERTICAL);t.setPadding(px(18),0,px(18),0);t.setSingleLine(true);t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                list.addView(t,new LinearLayout.LayoutParams(-1,px(42)));
+            }
+            if(at>=0){int n=list.getChildCount();View v=null;for(int i=Math.min(at,n-1);i>=0&&v==null;i--)if(list.getChildAt(i).isFocusable())v=list.getChildAt(i);if(v!=null)v.requestFocus();}
+        }
+        void pick(Places.Place p){
+            Places.pin(prefs,p);keyboard(false);closeOverlay(false);showPage("settings",false);controlsFocus(locationRow);
+        }
     }
     private void widgetEditor(){new WidgetEditor();}
     /** Settings → Home widgets. OK turns a widget on or off; Hold OK picks it up, Up and Down move it, OK or Back

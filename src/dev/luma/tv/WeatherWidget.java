@@ -8,18 +8,14 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.*;
 import android.widget.*;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.json.*;
 
-/** Weather for the main city of the TV's time zone (the place Daylight uses for sunrise): no location permission.
- *  Forecasts come from Open-Meteo (open-meteo.com, free, no account or key); the request carries only the city's
- *  rounded coordinates. The last forecast is kept, so Home shows it at once and offline. OK switches between
- *  the next hours and the coming days. */
+/** Weather where the TV is (Places: the city of its internet connection, the time zone's main city, or one picked
+ *  in Settings): no location permission. Forecasts come from Open-Meteo (open-meteo.com, free, no account or key);
+ *  the request carries only the city's rounded coordinates. The last forecast is kept, so Home shows it at once
+ *  and offline. OK switches between the next hours and the coming days. */
 final class WeatherWidget extends Widget {
     static final long FRESH=30*60000L;
     static final float PAD=18,SLOTS_Y=114;
@@ -45,7 +41,7 @@ final class WeatherWidget extends Widget {
         setFocusable(true);setFocusableInTouchMode(true);setSoundEffectsEnabled(false);setPivotX(px(w/2));setPivotY(px(WidgetBoard.ROW_H/2));
         setOnFocusChangeListener((v,f)->{focused=f;paintFocus();if(f){heroNow();host.step(0);}});
         setOnClickListener(v->{host.open();press(this,1.04f);if(data==null){load(true);return;}daily=!daily;fillSlots(true);heroNow();});
-        try{String raw=host.prefs().getString("weather_json","");if(!raw.isEmpty()&&key().equals(host.prefs().getString("weather_key",""))){data=new JSONObject(raw);fill();}}catch(JSONException ignored){}
+        try{String raw=host.prefs().getString("weather_json","");if(!raw.isEmpty()&&key(place()).equals(host.prefs().getString("weather_key",""))){data=new JSONObject(raw);fill();}}catch(JSONException ignored){}
         if(data==null)placeholder();
     }
     @Override void setActive(boolean value){
@@ -60,36 +56,38 @@ final class WeatherWidget extends Widget {
         if(motion())animate().scaleX(s).scaleY(s).translationY(focused?-px(3):0).setDuration(focused?460:300).setInterpolator(focused?spring:ease).start();else{setScaleX(s);setScaleY(s);}
         setElevation(px(focused?10:0));
     }
-    /** The time zone's main city, or Miami in the promo demo (Promo). */
-    String city(){return Promo.on?Promo.CITY:Daylight.city();}
-    double[] place(){return Promo.on?Promo.MIAMI:Daylight.place(getContext());}
-    static boolean fahrenheit(android.content.SharedPreferences prefs){
+    /** Where the forecast is for (Places), or Miami in the promo demo (Promo). */
+    Places.Place place(){return Promo.on?new Places.Place(Promo.CITY,"","US",Promo.MIAMI[0],Promo.MIAMI[1]):Places.current(getContext(),host.prefs());}
+    String city(){Places.Place p=place();return p==null?Daylight.city():p.name;}
+    static boolean fahrenheit(android.content.SharedPreferences prefs,Places.Place place){
         String unit=prefs.getString("temp_unit","auto");if(!unit.equals("auto"))return unit.equals("f");
         if(Promo.on)return true;
+        if(place!=null&&!place.country.isEmpty())return Arrays.asList("US","PR","GU","VI","AS","MP","LR","FM","MH","PW","BS","BZ","KY").contains(place.country);
         // By the TV's time zone, not its language: many TVs outside the US run in US English.
         String zone=TimeZone.getDefault().getID();
         if(zone.startsWith("US/")||zone.equals("Pacific/Honolulu")||zone.startsWith("America/Indiana/")||zone.startsWith("America/Kentucky/")||zone.startsWith("America/North_Dakota/"))return true;
         return zone.startsWith("America/")&&Arrays.asList("New_York","Chicago","Denver","Los_Angeles","Phoenix","Anchorage","Adak","Boise","Detroit","Juneau","Menominee","Metlakatla","Nome","Sitka","Yakutat").contains(zone.substring(8));
     }
-    private String key(){double[] p=place();return (p==null?"?":String.format(Locale.US,"%.2f,%.2f",p[0],p[1]))+(fahrenheit(host.prefs())?"F":"C");}
+    private String key(Places.Place p){return (p==null?"?":String.format(Locale.US,"%.2f,%.2f",p.lat,p.lon))+(fahrenheit(host.prefs(),p)?"F":"C");}
     void load(boolean force){
         long at=host.prefs().getLong("weather_at",0);
-        if(loading||!force&&data!=null&&System.currentTimeMillis()-at<FRESH)return;
-        final double[] place=place();if(place==null){showError("Set the TV's time zone to see the weather");return;}
-        loading=true;final boolean f=fahrenheit(host.prefs());final String key=key();
+        if(loading||!force&&data!=null&&System.currentTimeMillis()-at<FRESH&&(Promo.on||!Places.due(host.prefs())))return;
+        loading=true;
         WidgetBoard.IO.execute(()->{
+            if(!Promo.on)Places.locate(host.prefs()); // the automatic city first, at most twice a day
+            final Places.Place place=place();final String key=key(place);
             JSONObject result=null;
-            try{
+            if(place!=null)try{
                 String url=String.format(Locale.US,"https://api.open-meteo.com/v1/forecast?latitude=%.2f&longitude=%.2f&current=temperature_2m,weather_code,is_day"
                     +"&hourly=temperature_2m,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=6&forecast_hours=6%s",
-                    place[0],place[1],f?"&temperature_unit=fahrenheit":"");
-                HttpURLConnection c=(HttpURLConnection)new URL(url).openConnection();c.setConnectTimeout(8000);c.setReadTimeout(10000);c.setRequestProperty("User-Agent","LumaTV");
-                try(InputStream in=c.getInputStream();BufferedReader r=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8))){StringBuilder sb=new StringBuilder();String line;while((line=r.readLine())!=null)sb.append(line);result=new JSONObject(sb.toString());}
+                    place.lat,place.lon,key.endsWith("F")?"&temperature_unit=fahrenheit":"");
+                result=new JSONObject(Places.get(url));
                 if(!result.has("current"))result=null;
             }catch(Exception ignored){}
             final JSONObject done=result;
             post(()->{loading=false;
-                if(done!=null){host.prefs().edit().putString("weather_json",done.toString()).putLong("weather_at",System.currentTimeMillis()).putString("weather_key",key).apply();data=done;fill();if(focused)heroNow();}
+                if(place==null){showError("Set the TV's time zone to see the weather");return;}
+                if(done!=null){host.prefs().edit().putString("weather_json",done.toString()).putLong("weather_at",System.currentTimeMillis()).putString("weather_key",key).apply();data=done;city.setText(place.name);fill();if(focused)heroNow();}
                 else if(data==null)showError("Weather is unavailable right now");});
         });
     }
