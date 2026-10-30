@@ -151,7 +151,7 @@ final class NowPlayingWidget extends Widget {
         source.setText(Promo.SOURCE.toUpperCase(Locale.ENGLISH));title.setText(Promo.SONG);artist.setText(Promo.ARTIST);
         playGlyph.kind(Promo.playing?"pause":"play");
         openPill.setText("Open "+Promo.SOURCE);
-        if(!artKey.equals("promo")){artKey="promo";fade(Promo.artwork(px(ART)*2));}
+        if(!artKey.equals("promo:"+Promo.SONG)){artKey="promo:"+Promo.SONG;fade(Promo.artwork(px(ART)*2));}
         progress();
         handler.removeCallbacks(tick);if(active&&Promo.playing)handler.postDelayed(tick,1000);
     }

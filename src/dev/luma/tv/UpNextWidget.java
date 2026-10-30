@@ -50,7 +50,7 @@ final class UpNextWidget extends Widget {
 
     private ArrayList<Item> load(Context context){
         ArrayList<Item> items=new ArrayList<>();HashSet<String> seen=new HashSet<>();
-        if(Promo.on){for(Object[] v:Promo.VIDEOS){Item i=new Item();i.pkg="com.google.android.youtube.tv";i.key="promo:"+v[0];i.title=(String)v[0];i.line=(String)v[1];i.detail=(String)v[2];i.art="res:"+v[3];i.progress=(Float)v[4]>0?(Float)v[4]:-1;items.add(i);}return items;}
+        if(Promo.on){for(Object[] v:Promo.VIDEOS){Item i=new Item();i.pkg="com.google.android.youtube.tv";i.key="promo:"+v[0];i.title=(String)v[0];i.line=(String)v[1];i.detail=(String)v[2];i.art=v[3] instanceof String?(String)v[3]:"res:"+v[3];i.progress=(Float)v[4]>0?(Float)v[4]:-1;items.add(i);}return items;}
         boolean listings=context.checkSelfPermission(LISTINGS)==PackageManager.PERMISSION_GRANTED;
         boolean exists=true;try{context.getPackageManager().getPermissionInfo(LISTINGS,0);}catch(PackageManager.NameNotFoundException e){exists=false;}   // no TV provider (not a TV): no Watch Next to ask for
         if(listings)for(Item i:watchNext(context))if(items.size()<SLOTS&&seen.add(i.key)){items.add(i);}
