@@ -12,12 +12,18 @@ The upstream author's donation addresses, QR codes, contact links and "Support t
 removed. They belong to the upstream author and must not appear in this fork.
 
 ## Artwork
-- Three wallpapers are CC0 panoramas from Poly Haven (https://polyhaven.com).
-- The Fjord, Silver and Silk wallpapers were made by the upstream author (AI-generated and Blender renders)
-  and are shipped under the upstream repository's MIT licence. Confirm you are comfortable shipping them, or
-  replace them (planned for Phase 4).
-- The launcher icon and banner are upstream artwork carried over for now; replace before any public release.
+- The Milky Way and Calm Sea wallpapers are CC0 panoramas from Poly Haven (https://polyhaven.com).
+- The Daybreak, Aurora, Ember, Tide, Orchid and Glacier wallpapers, the launcher icon and the TV banner were made for this
+  project and are under the project's MIT licence. The wordmark in the banner is converted from Roboto Medium (Apache-2.0,
+  Google; https://github.com/googlefonts/roboto).
+- No artwork from the upstream project remains.
+
+## Data and services
+- Time zone to city data: IANA time zone database `zone.tab` (public domain).
+- Weather (only if the user turns it on): Open-Meteo.com, data under CC BY 4.0. "Weather data by Open-Meteo.com".
+
+The in-app list (Settings, About, Licences) shows the same credits with full licence texts.
 
 ## Name
-"shangOS" is the product name. The Android package id is `com.madushas.shangos`. `tools/rename.sh` changes both everywhere.
+"shangOS" is the product name. The Android package id is `dev.madusha.shangos`.
 Source: https://github.com/madushas/shangos-launcher

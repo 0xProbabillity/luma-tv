@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set shangOS as your home screen</title>
+<meta name="description" content="Install shangOS and make it the default launcher on Android TV or Google TV, with adb or the setup wizard.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="color-scheme" content="light dark">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+<header class="site">
+  <a class="brand" href="../"><img src="../assets/logo.svg" alt="" width="36" height="36">shangOS</a>
+  <nav aria-label="Main"><a href="../setup/">Set up</a><a href="../privacy/">Privacy</a><a href="../licenses/">Licences</a><a href="https://github.com/madushas/shangos-launcher">Source</a></nav>
+</header>
+<main id="main">
+<h1>Set shangOS as your home screen</h1>
+<p>Most TVs do not offer a "choose your launcher" setting, so this is done once from a computer with <code>adb</code> (Android's standard debugging tool). It takes about five minutes and is fully reversible.</p>
+<div class="note"><strong>You will need:</strong> an Android TV or Google TV on Android 12 or newer, a computer on the same network, and the TV's remote.</div>
+
+<h2>1. Allow debugging on the TV</h2>
+<ol class="steps">
+  <li><strong>Open Settings → System → About.</strong> Press OK on <em>Android TV OS build</em> (or <em>Build</em>) seven times until it says you are a developer.</li>
+  <li><strong>Settings → System → Developer options.</strong> Turn on <em>USB debugging</em> (some TVs call the network option <em>Network debugging</em> or <em>Wireless debugging</em>).</li>
+  <li><strong>Find the TV's address:</strong> Settings → Network → your network shows an IP address such as <code>192.168.1.50</code>.</li>
+</ol>
+
+<h2>2. The easy way: the setup wizard</h2>
+<ol class="steps">
+  <li>Install <a href="https://developer.android.com/tools/releases/platform-tools">Android platform-tools</a> on your computer (it contains <code>adb</code>).</li>
+  <li>Download the source from <a href="https://github.com/madushas/shangos-launcher">GitHub</a> (or the latest release) and open a terminal in that folder. The script is for Linux, macOS, and Windows with WSL.</li>
+  <li>Run <code>./shangos.sh wizard</code>. It lists the TVs it can see, lets you type an address (for example <code>192.168.1.50:5555</code>), asks which edition you want, downloads the signed release and checks its checksum, installs it, and makes it the home screen. Accept the prompt that appears on the TV the first time.</li>
+</ol>
+<p>Every command that changes the TV is printed before it runs, and the wizard has a clean-up menu.</p>
+
+<h2>3. The manual way</h2>
+<pre><code>adb connect 192.168.1.50:5555
+adb install -r shangos-v0.3.0-release.apk
+adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity</code></pre>
+<p>Press the Home button. If your TV still opens its own launcher (Google TV often does), that launcher has to be switched off; this is reversible:</p>
+<pre><code>adb shell pm disable-user --user 0 com.google.android.tvlauncher
+adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity</code></pre>
+<p>Optional: let shangOS read what you were watching and what is playing:</p>
+<pre><code>adb shell pm grant dev.madusha.shangos android.permission.READ_TV_LISTINGS
+adb shell cmd notification allow_listener dev.madusha.shangos/dev.madusha.shangos.MediaListener</code></pre>
+
+<h2 id="undo">Undo it</h2>
+<p>With the wizard: choose <em>Give Home back to the TV's own launcher</em>. By hand:</p>
+<pre><code>adb shell pm enable com.google.android.tvlauncher</code></pre>
+<p>Press Home. If it still opens shangOS, the wizard's <em>Give Home back</em> restores exactly the launcher your TV used before (it remembers which); by hand, uninstall shangOS with <code>adb uninstall dev.madusha.shangos</code> and the TV falls back to its own. The launcher's package name differs between TVs: <code>com.google.android.tvlauncher</code> is the common one, <code>com.google.android.apps.tv.launcherx</code> is Google TV's newer one.</p>
+<div class="note warn"><strong>Before uninstalling shangOS</strong> give Home back first, so the TV is never left without a home screen. The wizard does this for you.</div>
+
+<h2 id="verify">Check what you downloaded</h2>
+<pre><code>sha256sum -c SHA256SUMS
+apksigner verify --print-certs shangos-v0.3.0-release.apk</code></pre>
+<p>The certificate fingerprint printed must match the one on the release page and in the app (Settings → Privacy → This build). Releases also carry a GitHub build-provenance attestation (<code>gh attestation verify</code>).</p>
+
+<h2>Troubleshooting</h2>
+<table>
+  <tr><th>What you see</th><th>What to try</th></tr>
+  <tr><td><code>failed to connect</code></td><td>The TV and computer must be on the same network, and debugging must be on. Some TVs show the address only after you turn debugging on.</td></tr>
+  <tr><td><code>unauthorized</code></td><td>Look at the TV: accept the "Allow USB debugging?" prompt (tick "always allow").</td></tr>
+  <tr><td>Home still opens the old launcher</td><td>Use the second command block in step 3, or let the wizard do it.</td></tr>
+  <tr><td><code>INSTALL_FAILED_UPDATE_INCOMPATIBLE</code></td><td>A build signed with another key is installed: uninstall it first (<code>adb uninstall dev.madusha.shangos</code>; its settings are cleared).</td></tr>
+</table>
+</main>
+<footer class="site">shangOS is open source (MIT) and based on <a href="https://github.com/0xProbabillity/luma-tv">Luma TV</a>. This site has no scripts, cookies or trackers. Android and Google TV are trademarks of Google LLC; shangOS is not affiliated with Google.</footer>
+</div>
+</body>
+</html>

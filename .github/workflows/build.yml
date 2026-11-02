@@ -1,24 +1,27 @@
 name: build
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      # Actions are pinned to commit SHAs (the comment names the release): a moved tag cannot change what runs here.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
         with: { distribution: temurin, java-version: 17 }
-      - name: Android SDK
+      - name: Android SDK (already on the runner image)
         run: |
-          export ANDROID_SDK_ROOT="$HOME/android-sdk"; echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
-          # Pin by checksum when you adopt this workflow; the version number below changes over time.
-          curl -fsSL -o /tmp/clt.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          unzip -q /tmp/clt.zip -d "$ANDROID_SDK_ROOT/cmdline-tools" && mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.0.0" "platforms;android-34"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          if [ ! -f "$ANDROID_HOME/platforms/android-34/android.jar" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34"
+          fi
       - run: sudo apt-get install -y junit4 shellcheck shfmt libxml2-utils
       - run: ./tools/lint.sh
       - run: ./build.sh debug && ./build.sh release && ./build.sh offline
       - run: ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar" ./test/run.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with: { name: apks, path: dist/*.apk }

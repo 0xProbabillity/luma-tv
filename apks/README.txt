@@ -1,7 +1,4 @@
-Prebuilt from this exact source (Phase 2) in the build sandbox, signed with a throwaway DEV key.
-- shangos-release.apk : normal build (INTERNET permission, weather off by default)
-- shangos-offline.apk : no INTERNET permission at all
-- shangos-debug.apk   : debuggable, QA hooks on
-Different key from the one ./build.sh creates on your machine: switching between a prebuilt APK and your own build
-needs `adb uninstall com.madushas.shangos` first (this clears settings).
-Built with the Debian dx tool instead of d8 (same Java 8 bytecode); your ./build.sh uses d8 when the SDK has it.
+Prebuilt from this exact source (0.3.0) in the build sandbox, signed with a throwaway DEV key (not the key ./build.sh creates on your machine;
+switching between these and your own build needs `adb uninstall dev.madusha.shangos`, which clears settings).
+shangos-release.apk: normal. shangos-offline.apk: no INTERNET permission. shangos-debug.apk: debuggable and slower; never benchmark with it.
+Package id changed in 0.3.0: remove the old one first (adb uninstall com.madushas.shangos), or use ./shangos.sh wizard, Clean up.

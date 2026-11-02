@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.3.0
+- **New package id `dev.madusha.shangos`** (matches shangos.madusha.dev). An install of an earlier id is a different app: remove it and install this one;
+  settings do not carry over.
+- **Wallpaper engine replaced.** One picture in a plain hardware view instead of continuously redrawn surface layers; movement is render-thread
+  animation that stops the moment a key is pressed. The picture's memory is graphics-only. Fjord, Dusk and Graphite scenes and the water mesh are gone.
+- **New wallpapers**: Daybreak (light by day, dark after sunset), Aurora, Ember, Tide, Orchid, Glacier, made for this project, plus two CC0 photos.
+  Stored as 4:4:4 JPEG (WebP was measured to band visibly on dark gradients). All upstream artwork is gone.
+- **Hardware check**: Settings, Performance Auto picks Light, Balanced or Quality from memory, bitness and cores; the choice and the reasons are shown.
+- **Faster to appear**: the last list of apps is kept on disk, so tiles show at once on launch and refresh behind.
+- **New icon and TV banner** (adaptive icon with a monochrome layer for themed icons).
+- **Open-source licences** screen (Settings, About, Licences) with full texts and SPDX identifiers; About moved to its own class.
+- **Setup guide**: new Performance step and a QR code to the website's default-launcher guide on the last step.
+- **`shangos.sh wizard`**: lists TVs, accepts any `host:port` (remembered if you choose), picks edition, installs a local or checksum-verified release APK,
+  sets the home screen, grants permissions, and a clean-up menu. Removing shangOS first gives Home back to the TV's own launcher.
+- **Releases**: a `v*` tag builds, checks, signs (key only in a protected environment), verifies the certificate and reproducibility, and publishes with
+  checksums and a provenance attestation. Actions are pinned to commit SHAs; CI uses the SDK already on the runner.
+- **Website** draft in `docs/` (static, no third-party requests) with a brief for its builder; developer docs moved to `docs/dev/`.
+- APK 4.3 MB to 2.4 MB. Tests: 35.
+
+## 0.2.2: setup guide fixes, editor extraction, formatting
+- **Setup guide**: Back now goes to the previous step instead of ending the whole guide (Back on the first step leaves it).
+  Progress is saved, so leaving for a system settings page, or by mistake, resumes where it stopped; Settings shows "Step N of 4".
+  A Back press that arrives just after returning from a system page is ignored, focus returns to the row you left, and when the
+  system will no longer show the permission dialog the app's permission page opens instead of a dead button.
+- **Overlays**: a cancel action that opens the next overlay no longer has its focus trap undone right afterwards.
+- **Code**: `WidgetEditor`, `AppArt` and `Shine` moved out of `MainActivity` (2,752 to 2,238 lines after formatting); one `ScreenHost`
+  interface shared by the Privacy screen and the editor instead of two copies.
+- **Formatting**: all Java formatted with google-java-format (`--aosp`) and shell with shfmt, in a separate commit with no behaviour
+  change (the compiled output is byte-identical). `tools/format.sh` now passes `--aosp` to match `.editorconfig`. Shellcheck findings in
+  `build.sh`, `shangos.sh` and `test/run.sh` fixed, so `tools/lint.sh` passes.
+- Tests: 23.
+
+## 0.2.1: setup guide
+- **Setup guide** (first run, and Settings -> Setup guide): welcome, privacy choices, optional permissions one at a time with live state,
+  home-screen check. Skippable; Back counts as skip. `Overlays.valueRow` is now shared by it and the Privacy screen.
+- `reportFullyDrawn()` once the first list of apps is on screen.
+
 ## 0.2.0 — Phase 2: speed, memory and structure (not yet tested on a device)
 Renamed to shangOS (`com.madushas.shangos`).
 **Performance** (each item names the cost it removes; validate on a real device)
@@ -25,7 +62,7 @@ Renamed to shangOS (`com.madushas.shangos`).
 
 ## 0.1.0 — Phase 1: security and privacy core (not yet tested on a device)
 Forked from Luma TV 2.4.
-- Renamed to shangOS (`com.madushas.shangos`); `minSdk` 31 (Android 12), `targetSdk` 34.
+- Renamed to shangOS (`dev.madusha.shangos`); `minSdk` 31 (Android 12), `targetSdk` 34.
 - **New `Net`**: the only class that opens connections. https only, port 443, no credentials in URLs, every
   resolved address must be public (checked again on each redirect, max 2), content-type and size caps, one
   generic User-Agent. Weather JSON is locked to `api.open-meteo.com`. 11 unit tests plus a live check.

@@ -3,9 +3,12 @@
 A fast, private, modern home screen for Android TV. Plain Java, **no third-party libraries**, no telemetry, no
 accounts, no ads. Source: https://github.com/madushas/shangos-launcher. Forked from [Luma TV](https://github.com/0xProbabillity/luma-tv) (MIT); see `NOTICE.md`.
 
-**Status: Phase 2 of 5 (speed and memory, code structure). Built and unit-tested.**
+**Status: 0.3.0 in preparation. Built, unit-tested and linted; field-tested on one TV stick.**
 
-Target: Android 12+ (API 31), landscape, leanback. Developed against a 2 GB Android 12 stick.
+Website and setup guide: https://shangos.madusha.dev (source in `docs/`). Releases are signed; the fingerprint is on each release and in the app.
+
+Target: Android 12+ (API 31), landscape, leanback. Developed on a 1.4 GB, 32-bit, 720p Android 14 stick: if it is smooth there, it is smooth anywhere.
+A hardware check picks how much the wallpaper animates (Light, Balanced or Quality); Settings, Performance overrides it.
 
 ## Privacy, in one table
 | | Full build (`release`) | `offline` build |
@@ -52,4 +55,4 @@ adb connect <TV_IP>:5555
 ```
 
 ## Layout
-`src/com.madushas.shangos` code · `res` assets · `test` JUnit · `tools` rename, audit, measure · `build.sh` / `shangos.sh` scripts.
+`src/dev/madusha/shangos` code · `res` assets · `test` JUnit · `build.sh` / `shangos.sh` scripts · `docs/` the website (static) and `docs/dev/` developer docs.

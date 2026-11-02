@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-label="shangOS"><defs><linearGradient id="bg" x1="0" y1="108" x2="108" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#141A45"/><stop offset=".55" stop-color="#2D2796"/><stop offset="1" stop-color="#5B35D5"/></linearGradient>
+<linearGradient id="rb" x1="40" y1="30" x2="70" y2="80" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#7DF3E1"/></linearGradient></defs>
+<rect width="108" height="108" rx="26" fill="url(#bg)"/>
+<path d="M63.97,35.85 A11,11 0 1 0 54,51.5 A11,11 0 1 1 44.03,67.15" fill="none" stroke="url(#rb)" stroke-width="9" stroke-linecap="round"/>
+<circle cx="70.5" cy="33.5" r="3.2" fill="#BFFFF4"/></svg>

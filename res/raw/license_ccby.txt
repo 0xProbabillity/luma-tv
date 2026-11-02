@@ -1,0 +1,10 @@
+Weather data by Open-Meteo.com (https://open-meteo.com).
+
+Licence: Creative Commons Attribution 4.0 International (CC BY 4.0).
+Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+In short (this is a summary, not the licence): you may share and adapt the data for any purpose, even commercially, as long as you give
+appropriate credit, link to the licence and say if you made changes. Open-Meteo's own terms (https://open-meteo.com/en/terms) also apply:
+the free service is for non-commercial use.
+
+shangOS asks Open-Meteo for a forecast only if you turn Weather on in Settings, Privacy. See that screen for exactly what is sent.

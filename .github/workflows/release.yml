@@ -1,0 +1,128 @@
+name: release
+# Publishes a signed release when a version tag is pushed:   git tag v0.3.0 && git push origin v0.3.0
+# The signing key exists only as secrets of the protected "release" environment (see docs/dev/RELEASING.md).
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    environment: release # add required reviewers to this environment: nothing is signed until you approve
+    permissions:
+      contents: write # create the GitHub release
+      id-token: write # build provenance attestation
+      attestations: write
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
+        with: { distribution: temurin, java-version: 17 }
+
+      - name: The tag must match VERSION and be on main
+        run: |
+          . ./VERSION
+          [ "$TAG" = "v$versionName" ] || { echo "Tag $TAG does not match VERSION ($versionName)"; exit 1; }
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "$TAG is not on main: refusing to release unreviewed code"; exit 1; }
+
+      - name: Android SDK (already on the runner image)
+        run: |
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          if [ ! -f "$ANDROID_HOME/platforms/android-34/android.jar" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34"
+          fi
+      - run: sudo apt-get install -y junit4 shellcheck shfmt libxml2-utils
+      - name: Checks (the same as every push)
+        run: |
+          ./tools/lint.sh
+          ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar" ./test/run.sh
+
+      - name: Build and sign
+        env:
+          KEYSTORE_B64: ${{ secrets.SHANGOS_KEYSTORE_B64 }}
+          SHANGOS_KS_PASS: ${{ secrets.SHANGOS_KS_PASS }}
+          SHANGOS_KEY_ALIAS: ${{ secrets.SHANGOS_KEY_ALIAS }}
+        run: |
+          [ -n "$KEYSTORE_B64" ] || { echo "SHANGOS_KEYSTORE_B64 is not set in the release environment"; exit 1; }
+          umask 077
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          export SHANGOS_KEYSTORE="$RUNNER_TEMP/release.jks"
+          ./build.sh release
+          cp build/release/unsigned.apk "$RUNNER_TEMP/first-release-unsigned.apk"
+          ./build.sh offline
+          mkdir -p release
+          cp dist/shangos-release.apk "release/shangos-$TAG-release.apk"
+          cp dist/shangos-offline.apk "release/shangos-$TAG-offline.apk"
+
+      - name: The build must be reproducible
+        run: |
+          # Same source, same tools: the unsigned APK of a second build must hold identical entries (the signature is the only difference).
+          ./build.sh release
+          python3 - "$RUNNER_TEMP/first-release-unsigned.apk" build/release/unsigned.apk <<'PY'
+          import sys, zipfile
+          a, b = (zipfile.ZipFile(p) for p in sys.argv[1:3])
+          ia = {i.filename: i.CRC for i in a.infolist()}
+          ib = {i.filename: i.CRC for i in b.infolist()}
+          diff = sorted(k for k in set(ia) | set(ib) if ia.get(k) != ib.get(k))
+          if diff:
+              sys.exit("not reproducible: " + ", ".join(diff))
+          print("reproducible:", len(ia), "entries identical")
+          PY
+
+      - name: The signing certificate must be the expected one
+        env:
+          EXPECTED: ${{ vars.SHANGOS_CERT_SHA256 }}
+        run: |
+          BT="$(find "$ANDROID_SDK_ROOT/build-tools" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -V | tail -1)"
+          [ -n "$EXPECTED" ] || { echo "Repository variable SHANGOS_CERT_SHA256 is not set"; exit 1; }
+          expected="$(tr -d ': ' <<<"${EXPECTED,,}")" # accepts "AB:CD:..." as printed by keytool, or plain hex
+          for apk in release/*.apk; do
+            "$ANDROID_SDK_ROOT/build-tools/$BT/apksigner" verify --print-certs "$apk" | tee "$RUNNER_TEMP/certs.txt"
+            actual="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/certs.txt")"
+            [ "$actual" = "$expected" ] || { echo "$apk is signed with $actual, expected $expected"; exit 1; }
+          done
+          echo "CERT=$expected" >> "$GITHUB_ENV"
+
+      - name: Checksums and release notes
+        run: |
+          (cd release && sha256sum shangos-*.apk > SHA256SUMS && cat SHA256SUMS)
+          VERSION_NUMBER="${TAG#v}"
+          {
+            ./tools/release-notes.sh "$VERSION_NUMBER"
+            echo
+            echo "---"
+            echo "**Verify before installing.** Signing certificate SHA-256 (also shown in the app, Settings, Privacy, This build):"
+            echo
+            echo "\`$CERT\`"
+            echo
+            echo "\`sha256sum -c SHA256SUMS\` checks the downloads. Which APK: \`release\` is the normal build; \`offline\` has no internet permission at all."
+          } > "$RUNNER_TEMP/notes.md"
+
+      - uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        with:
+          subject-path: release/*.apk
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with: { name: release-files, path: release/* }
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=()
+          case "$TAG" in *-*) flags+=(--prerelease) ;; esac
+          gh release create "$TAG" --verify-tag --title "shangOS $TAG" --notes-file "$RUNNER_TEMP/notes.md" "${flags[@]}" release/*.apk release/SHA256SUMS
+
+      - name: Remove the key from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks" "$RUNNER_TEMP/certs.txt"

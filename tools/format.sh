@@ -16,7 +16,7 @@ command -v google-java-format >/dev/null || {
 }
 
 SHFMT=(shfmt -i 4 -ci)
-JAVA=(google-java-format)
+JAVA=(google-java-format --aosp)
 if [ "$MODE" = "--check" ]; then
     SHFMT+=(--diff)
     JAVA+=(--dry-run --set-exit-if-changed)

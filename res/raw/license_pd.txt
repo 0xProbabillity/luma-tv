@@ -1,0 +1,5 @@
+IANA Time Zone Database (https://www.iana.org/time-zones).
+
+The tz database, including its zone.tab file of time zones with the coordinates of a representative place, is in the public domain.
+No permission or credit is required; it is listed here because the app uses it: it turns the time zone set on your TV into the
+nearest city, which places sunrise and sunset (for the Daybreak wallpaper) and the weather forecast if you enable it.
