@@ -1,128 +1,65 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>404 — Page not found · shangOS</title>
-  <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpolygon points='13,10 23,16 13,22' fill='%23fff'/%3E%3C/svg%3E">
-
-  <script>
-    (() => {
-      try {
-        const t = localStorage.getItem('shangos-theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="stylesheet" href="assets/site.css">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Page not found | shangOS</title>
+<meta name="description" content="That page is not here. Try the setup guide or the home page.">
+<link rel="canonical" href="https://shangos.madusha.dev/404.html">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9faef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="shangOS">
+<meta property="og:title" content="Page not found | shangOS">
+<meta property="og:description" content="That page is not here. Try the setup guide or the home page.">
+<meta property="og:url" content="https://shangos.madusha.dev/404.html">
+<meta property="og:image" content="https://shangos.madusha.dev/assets/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("shangos-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
-  <a href="#main" class="skip">Skip to content</a>
-
-  <header class="site">
-    <div class="wrap site-nav-wrap">
-      <div class="brand-group">
-        <a href="./" class="brand" aria-label="shangOS home">
-          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-          </svg>
-          <span class="brand-name">shangOS</span>
-        </a>
-        <a href="https://github.com/madushas/shangos-launcher/releases/latest"
-           class="badge-version"
-           target="_blank"
-           rel="noopener"
-           title="View latest release notes on GitHub">
-          <span class="dot"></span>
-          <!-- APP_VERSION_START -->v0.3.0<!-- APP_VERSION_END -->
-        </a>
-      </div>
-
-      <div class="header-actions">
-        <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-          <a href="./">Overview</a>
-          <a href="setup/">Setup</a>
-          <a href="guide/">Guide</a>
-          <a href="privacy/">Privacy</a>
-          <a href="licenses/">Licenses</a>
-        </nav>
-
-        <div class="header-controls">
-          <a href="https://github.com/madushas/shangos-launcher"
-             class="btn-icon gh-link" target="_blank" rel="noopener"
-             aria-label="View source repository on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.03 11.03 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.26 5.66.41.35.78 1.05.78 2.11 0 1.53-.01 2.76-.01 3.14 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
-            </svg>
-          </a>
-
-          <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </button>
-
-          <button class="btn-icon nav-toggle" id="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
-            <svg class="nav-toggle-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-            <svg class="nav-toggle-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Main"><a href="/">Home</a><a href="/setup/">Set up</a><a href="/guide/">Guide</a><a href="/privacy/">Privacy</a><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub<span class="vh"> (opens in a new tab)</span></a></nav>
+    <div class="header-tools">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-sun"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
-  </header>
+  </div>
+</header>
+<main id="main">
 
-  <main id="main">
-    <div class="wrap">
-      <section class="error-page">
-        <div class="error-badge">Error 404</div>
-        <h1 class="error-title">That channel is static</h1>
-        <p class="error-lead">The requested address does not exist or has been moved. Here are the core destinations you might be looking for:</p>
-
-        <div class="error-grid">
-          <a href="setup/" class="error-card">
-            <div class="error-card-meta">
-              <strong>Set up shangOS on your TV <span class="arrow">→</span></strong>
-              <span>One-line ADB setup script and walkthrough.</span>
-            </div>
-          </a>
-          <a href="guide/" class="error-card">
-            <div class="error-card-meta">
-              <strong>User Guide <span class="arrow">→</span></strong>
-              <span>Controls, dynamic wallpapers, and widget options.</span>
-            </div>
-          </a>
-          <a href="privacy/" class="error-card">
-            <div class="error-card-meta">
-              <strong>Privacy Architecture <span class="arrow">→</span></strong>
-              <span>Why there are zero telemetry pings or accounts.</span>
-            </div>
-          </a>
-          <a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener" class="error-card">
-            <div class="error-card-meta">
-              <strong>Source on GitHub ↗</strong>
-              <span>MIT-licensed, auditable native Java code.</span>
-            </div>
-          </a>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <footer class="site">
-    <div class="wrap">
-      <div class="footer-bottom">
-        <p>© 2026 shangOS · Released under the <a href="licenses/">MIT License</a> · Forked from <a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a>.</p>
+<div class="wrap lost"><div>
+  <img class="lost__logo" src="/assets/logo.svg" alt="" width="72" height="72">
+  <p class="code" aria-hidden="true">404</p>
+  <h1 style="font-size:clamp(1.75rem,3vw + 0.5rem,2.5rem)">That page is not here</h1>
+  <p class="lead">The link may be old or mistyped. These are the places most people are looking for.</p>
+  <div class="btn-row" style="justify-content:center"><a class="btn btn--primary" href="/setup/">Set up your TV</a><a class="btn btn--ghost" href="/">Home</a><a class="btn btn--ghost" href="/guide/">User guide</a></div>
+</div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+        <p class="footer-note">A home screen for Android TV and Google TV. A hobby project, open source under the MIT licence. No accounts, no ads, no trackers, and this website sets no cookies and loads nothing from other sites.</p>
       </div>
+      <div><h2>Use it</h2><ul><li><a href="/setup/">Set up on your TV</a></li><li><a href="/guide/">User guide</a></li><li><a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release</a></li></ul></div>
+      <div><h2>Trust it</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/licenses/">Licences and credits</a></li><li><a href="/setup/#verify">Verify a download</a></li></ul></div>
+      <div><h2>Source</h2><ul><li><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub</a></li><li><a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">Report a problem</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li></ul></div>
     </div>
-  </footer>
-
-  <script src="assets/site.js" defer></script>
+    <div class="footer-bottom"><span>&copy; shangOS contributors. MIT licence.</span><span>Not affiliated with Google, Sony or any TV maker.</span></div>
+  </div>
+</footer>
 </body>
 </html>

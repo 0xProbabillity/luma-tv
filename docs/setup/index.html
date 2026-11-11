@@ -1,452 +1,161 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Setup Guide — Put shangOS on your TV</title>
-  <meta name="description" content="Install shangOS on your Android TV or Google TV in about five minutes over local Wi-Fi ADB. Zero root required and 100% reversible.">
-  <meta property="og:title" content="Setup Guide — Put shangOS on your TV">
-  <meta property="og:description" content="Install shangOS on your Android TV or Google TV in about five minutes over local Wi-Fi ADB. Zero root required and 100% reversible.">
-  <meta property="og:image" content="../assets/home.webp">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#fdfbf7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpolygon points='13,10 23,16 13,22' fill='%23fff'/%3E%3C/svg%3E">
-
-  <script>
-    (() => {
-      try {
-        const t = localStorage.getItem('shangos-theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="stylesheet" href="../assets/site.css">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Set up shangOS on your TV | shangOS</title>
+<meta name="description" content="Put shangOS on Google TV or Android TV from a Mac, Linux or Windows computer: turn on debugging, run one command, follow the wizard. Reversible.">
+<link rel="canonical" href="https://shangos.madusha.dev/setup/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9faef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="shangOS">
+<meta property="og:title" content="Set up shangOS on your TV | shangOS">
+<meta property="og:description" content="Put shangOS on Google TV or Android TV from a Mac, Linux or Windows computer: turn on debugging, run one command, follow the wizard. Reversible.">
+<meta property="og:url" content="https://shangos.madusha.dev/setup/">
+<meta property="og:image" content="https://shangos.madusha.dev/assets/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("shangos-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
-  <a href="#main" class="skip">Skip to content</a>
-
-  <header class="site">
-    <div class="wrap site-nav-wrap">
-      <div class="brand-group">
-        <a href="../" class="brand" aria-label="shangOS home">
-          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-          </svg>
-          <span class="brand-name">shangOS</span>
-        </a>
-        <a href="https://github.com/madushas/shangos-launcher/releases/latest"
-           class="badge-version"
-           target="_blank"
-           rel="noopener"
-           title="View latest release notes on GitHub">
-          <span class="dot"></span>
-          <!-- APP_VERSION_START -->v0.3.0<!-- APP_VERSION_END -->
-        </a>
-      </div>
-
-      <div class="header-actions">
-        <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-          <a href="../">Overview</a>
-          <a href="./" aria-current="page">Setup</a>
-          <a href="../guide/">Guide</a>
-          <a href="../privacy/">Privacy</a>
-          <a href="../licenses/">Licenses</a>
-        </nav>
-
-        <div class="header-controls">
-          <a href="https://github.com/madushas/shangos-launcher"
-             class="btn-icon gh-link" target="_blank" rel="noopener"
-             aria-label="View source repository on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.03 11.03 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.26 5.66.41.35.78 1.05.78 2.11 0 1.53-.01 2.76-.01 3.14 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
-            </svg>
-          </a>
-
-          <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </button>
-
-          <button class="btn-icon nav-toggle" id="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
-            <svg class="nav-toggle-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-            <svg class="nav-toggle-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Main"><a href="/">Home</a><a href="/setup/" aria-current="page">Set up</a><a href="/guide/">Guide</a><a href="/privacy/">Privacy</a><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub<span class="vh"> (opens in a new tab)</span></a></nav>
+    <div class="header-tools">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-sun"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
+  </div>
+</header>
+<main id="main">
+<div class="wrap">
+  <header class="page-head">
+    <span class="kicker">Set up</span>
+    <h1 style="font-size:clamp(2rem,4vw + 0.5rem,3.25rem)">Put shangOS on your TV</h1>
+    <p class="lead">Turn on debugging, run one command on your computer, follow the wizard. About five minutes, and you can undo all of it.</p>
+    <nav class="subnav" aria-label="Documentation">
+      <a href="/setup/" aria-current="page">Set up</a>
+      <a href="/guide/">Guide</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/licenses/">Licences</a>
+    </nav>
   </header>
-
-  <main id="main">
-    <div class="wrap doc-page">
-      <div class="doc-layout">
-
-        <aside class="doc-sidebar">
-          <div class="sidebar-group">
-            <span class="sidebar-title">Documentation</span>
-            <ul class="sidebar-nav">
-              <li><a href="./" aria-current="page">Setup Guide</a></li>
-              <li><a href="../guide/">User Guide</a></li>
-              <li><a href="../privacy/">Privacy Architecture</a></li>
-              <li><a href="../licenses/">Licenses &amp; Credits</a></li>
-            </ul>
-          </div>
-          <div class="sidebar-group">
-            <span class="sidebar-title">Project Source</span>
-            <ul class="sidebar-nav">
-              <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/releases/latest" target="_blank" rel="noopener">Latest Releases ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-            </ul>
-          </div>
-        </aside>
-
-        <article class="doc-content">
-          <span class="kicker">Installation &amp; Deployment</span>
-          <h1>Put shangOS on your TV</h1>
-          <p class="intro">Android TV and Google TV do not expose a standard launcher picker in their consumer menus. Setting shangOS as your default home screen is done once from your computer via <code>adb</code> (Android's standard developer tool) over local Wi-Fi. It takes about five minutes, requires no rooting, and is 100% reversible.</p>
-
-          <!-- Collapsible in-page jump menu on mobile screens -->
-          <details class="mobile-toc">
-            <summary>
-              <span>On this page</span>
-              <svg class="mobile-toc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </summary>
-            <ul class="mobile-toc-list">
-              <li><a href="#debugging">1. Enable Debugging</a></li>
-              <li><a href="#quick">2. Automated Script</a></li>
-              <li><a href="#wizard">Interactive Wizard</a></li>
-              <li><a href="#manual">Manual ADB Walkthrough</a></li>
-              <li><a href="#undo">Restoring Factory Default</a></li>
-              <li><a href="#verify">Checksum Verification</a></li>
-              <li><a href="#trouble">Troubleshooting Reference</a></li>
-            </ul>
-          </details>
-
-          <div class="intro-grid">
-            <div class="callout">
-              <div class="callout-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              </div>
-              <div class="callout-body">
-                <div class="callout-title">Prerequisites</div>
-                <p>An Android TV or Google TV running <strong>Android 12 or newer</strong>, a computer connected to the same home Wi-Fi network (macOS, Linux, or Windows via WSL/PowerShell), and your TV remote.</p>
-              </div>
-            </div>
-            <div class="callout">
-              <div class="callout-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div class="callout-body">
-                <div class="callout-title">System Impact</div>
-                <p>Zero core TV firmware is overwritten. HDMI switching, Chromecast, picture calibration, and Bluetooth remotes operate uninterrupted. The factory launcher is simply silenced and can be re-enabled at any time.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- ============ 1. DEBUGGING ============ -->
-          <h2 id="debugging">1. Enable Wireless Debugging on the TV</h2>
-          <ol class="steps">
-            <li>
-              <strong>Unlock Developer Options</strong>
-              <p>Navigate to <em>Settings → System → About</em> on your TV. Scroll down to <em>Android TV OS build</em> (or <em>Build</em>) and press <kbd>OK</kbd> <strong>7 times</strong> until you see the prompt: <em>“You are now a developer!”</em></p>
-            </li>
-            <li>
-              <strong>Enable Network Debugging</strong>
-              <p>Go back to the <em>System</em> menu and open <em>Developer options</em>. Toggle <strong>USB debugging</strong> to On (some TVs label this <em>Network debugging</em> or <em>Wireless debugging</em>).</p>
-            </li>
-            <li>
-              <strong>Note the TV’s Local IP Address</strong>
-              <p>Open <em>Settings → Network &amp; Internet</em> and select your active Wi-Fi or Ethernet connection. Note the local IP address assigned to your TV (for example: <code>192.168.1.50</code>).</p>
-            </li>
-          </ol>
-
-          <h3>Menu locations on common devices</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Hardware Platform</th><th>Menu Navigation Path</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Chromecast with Google TV, onn., TCL, Hisense</strong></td>
-                  <td>Settings → System → About → Build (7x), then System → Developer options</td>
-                </tr>
-                <tr>
-                  <td><strong>Sony BRAVIA (Google TV)</strong></td>
-                  <td>Settings → System → About → Build (7x), then System → Developer options</td>
-                </tr>
-                <tr>
-                  <td><strong>Android TV Boxes (Nvidia Shield, Mi Box)</strong></td>
-                  <td>Settings → Device Preferences → About → Build (7x), then Device Preferences → Developer options</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p><em>Note for newer Google TV builds:</em> If your device enforces pairing authentication, select <em>Wireless debugging → Pair with pairing code</em> under Developer options, execute <code>adb pair &lt;TV-IP&gt;:&lt;port&gt;</code> in your terminal with the 6-digit code shown, then connect to the standard network port.</p>
-
-          <!-- ============ 2. QUICK ONE-LINER ============ -->
-          <h2 id="quick">2. The Quick Way: Automated Script</h2>
-          <p>Ensure you have <a href="https://developer.android.com/tools/releases/platform-tools" target="_blank" rel="noopener">Android platform-tools (ADB)</a> installed on your machine, then run:</p>
-
-          <div class="code-wrap">
-            <pre class="term"><span class="ps">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh <strong>| bash</strong></pre>
-            <button class="copy-btn" type="button" aria-label="Copy install command" data-copy="curl -fsSL https://shangos.madusha.dev/setup.sh | bash">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <span>Copy</span>
-            </button>
-          </div>
-
-          <p>The automated script scans your local network for ADB-enabled televisions, prompts for an IP address if automatic discovery fails, downloads the latest cryptographically signed release from GitHub, checks its SHA-256 hash, and sets shangOS as the primary launcher.</p>
-
-          <div class="callout">
-            <div class="callout-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            </div>
-            <div class="callout-body">
-              <div class="callout-title">Watch Your TV Screen</div>
-              <p>During the first connection attempt, your television will display an <strong>“Allow USB debugging?”</strong> modal. Select <em>“Always allow from this computer”</em> and press <kbd>OK</kbd> with your remote.</p>
-            </div>
-          </div>
-
-          <p>To inspect the script prior to execution:</p>
-          <div class="code-wrap">
-            <pre class="term"><span class="ps">$ </span>curl -fsSL -o setup.sh https://shangos.madusha.dev/setup.sh &amp;&amp; less setup.sh
-<span class="ps">$ </span>bash setup.sh <span class="cmt"># Add --yes --tv 192.168.1.50:5555 for unattended setup</span></pre>
-            <button class="copy-btn" type="button" aria-label="Copy inspection command" data-copy="curl -fsSL -o setup.sh https://shangos.madusha.dev/setup.sh &amp;&amp; less setup.sh&#10;bash setup.sh">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <span>Copy</span>
-            </button>
-          </div>
-
-          <!-- ============ 3. WIZARD ============ -->
-          <h2 id="wizard">Interactive Repository Wizard</h2>
-          <p>For advanced workflows — building from source, managing multiple TV environments, selective permission tuning, or clean uninstallation — use the interactive repository wizard:</p>
-
-          <ol class="steps">
-            <li>
-              <strong>Clone the Project Repository</strong>
-              <div class="code-wrap">
-                <pre class="term"><span class="ps">$ </span>git clone https://github.com/madushas/shangos-launcher.git &amp;&amp; cd shangos-launcher</pre>
-                <button class="copy-btn" type="button" aria-label="Copy clone command" data-copy="git clone https://github.com/madushas/shangos-launcher/git &amp;&amp; cd shangos-launcher">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  <span>Copy</span>
-                </button>
-              </div>
-            </li>
-            <li>
-              <strong>Launch the Terminal Interface</strong>
-              <div class="code-wrap">
-                <pre class="term"><span class="ps">$ </span>./shangos.sh wizard</pre>
-                <button class="copy-btn" type="button" aria-label="Copy wizard command" data-copy="./shangos.sh wizard">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  <span>Copy</span>
-                </button>
-              </div>
-              <p>Navigate with arrow keys (or <kbd>j</kbd>/<kbd>k</kbd>), select with <kbd>Enter</kbd>, and choose edition variants (Standard vs Offline) dynamically.</p>
-            </li>
-          </ol>
-
-          <!-- ============ 4. MANUAL ADB ============ -->
-                    <h2 id="manual">Manual ADB Walkthrough</h2>
-                    <p>If you prefer running manual commands step-by-step:</p>
-
-                    <div class="code-wrap">
-                      <pre class="term"><span class="cmt"># 1. Connect to your television</span>
-          <span class="ps">$ </span>adb connect 192.168.1.50:5555
-
-          <span class="cmt"># 2. Install the official signed release</span>
-          <span class="ps">$ </span>adb install -r shangos-*.apk
-
-          <span class="cmt"># 3. Designate shangOS as default home handler</span>
-          <span class="ps">$ </span>adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity</pre>
-                      <button class="copy-btn" type="button" aria-label="Copy manual commands" data-copy="adb connect 192.168.1.50:5555&#10;adb install -r shangos-v0.3.0-release.apk&#10;adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-
-                    <p>Press the <kbd>Home</kbd> button on your remote. If the factory Google TV launcher intercepts the Home button, disable it temporarily:</p>
-                    <div class="code-wrap">
-                      <pre class="term"><span class="cmt"># Silence aggressive factory home package</span>
-          <span class="ps">$ </span>adb shell pm disable-user --user 0 com.google.android.tvlauncher
-          <span class="ps">$ </span>adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity</pre>
-                      <button class="copy-btn" type="button" aria-label="Copy disable commands" data-copy="adb shell pm disable-user --user 0 com.google.android.tvlauncher&#10;adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-
-                    <p><em>Optional:</em> Grant Leanback recommendations and media control permissions:</p>
-                    <div class="code-wrap">
-                      <pre class="term"><span class="cmt"># Up Next continue watching listings</span>
-          <span class="ps">$ </span>adb shell pm grant dev.madusha.shangos android.permission.READ_TV_LISTINGS
-
-          <span class="cmt"># Now Playing active playback controls</span>
-          <span class="ps">$ </span>adb shell cmd notification allow_listener dev.madusha.shangos/dev.madusha.shangos.MediaListener</pre>
-                      <button class="copy-btn" type="button" aria-label="Copy permissions commands" data-copy="adb shell pm grant dev.madusha.shangos android.permission.READ_TV_LISTINGS&#10;adb shell cmd notification allow_listener dev.madusha.shangos/dev.madusha.shangos.MediaListener">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-
-                    <!-- ============ 5. UNDO ============ -->
-                    <h2 id="undo">Restoring Factory Default (Undo)</h2>
-                    <p>shangOS leaves zero permanent modifications. You can revert completely at any time:</p>
-
-                    <p><strong>Via Setup Script:</strong></p>
-                    <div class="code-wrap">
-                      <pre class="term"><span class="ps">$ </span>bash setup.sh --uninstall</pre>
-                      <button class="copy-btn" type="button" aria-label="Copy uninstall command" data-copy="bash setup.sh --uninstall">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-
-                    <p><strong>Manually via Terminal:</strong> Re-enable your original stock launcher package:</p>
-                    <div class="code-wrap">
-                      <pre class="term"><span class="cmt"># Re-enable standard factory launcher</span>
-          <span class="ps">$ </span>adb shell pm enable com.google.android.tvlauncher
-          <span class="cmt"># (Or on newer Google TV firmware: com.google.android.apps.tv.launcherx)</span>
-
-          <span class="cmt"># Remove shangOS cleanly</span>
-          <span class="ps">$ </span>adb uninstall dev.madusha.shangos</pre>
-                      <button class="copy-btn" type="button" aria-label="Copy revert command" data-copy="adb shell pm enable com.google.android.tvlauncher&#10;adb uninstall dev.madusha.shangos">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-
-                    <div class="callout warn">
-                      <div class="callout-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                      </div>
-                      <div class="callout-body">
-                        <div class="callout-title">Order of Operations</div>
-                        <p>Always re-enable your stock launcher <strong>before</strong> uninstalling shangOS, ensuring your television always has a valid home activity registered.</p>
-                      </div>
-                    </div>
-
-                    <!-- ============ 6. VERIFY ============ -->
-                    <h2 id="verify">Cryptographic Checksum Verification</h2>
-                    <p>Validate release integrity and security attestations using standard toolchains:</p>
-
-                    <div class="code-wrap">
-                      <pre class="term"><span class="ps">$ </span>sha256sum -c SHA256SUMS
-          <span class="ps">$ </span>apksigner verify --print-certs shangos-v0.3.0-release.apk</pre>
-                      <button class="copy-btn" type="button" aria-label="Copy verify command" data-copy="sha256sum -c SHA256SUMS&#10;apksigner verify --print-certs shangos-v0.3.0-release.apk">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-                    <p>The resulting certificate SHA-256 fingerprint matches the release notes on GitHub and the in-app signature in <strong>Settings → Privacy → This build</strong>.</p>
-
-                    <!-- ============ 7. TROUBLESHOOTING ============ -->
-                    <h2 id="trouble">Troubleshooting Reference Matrix</h2>
-                    <div class="table-wrap">
-                      <table>
-                        <thead>
-                          <tr><th>Reported Issue</th><th>Remediation Procedure</th></tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><span class="spec-chip">failed to connect</span></td>
-                            <td>Ensure both TV and host computer share the identical subnet/Wi-Fi band. Confirm <em>Wireless debugging</em> is active in Developer options. On newer firmware, complete <code>adb pair</code> with the pairing code modal.</td>
-                          </tr>
-                          <tr>
-                            <td><span class="spec-chip">unauthorized</span></td>
-                            <td>Inspect your television display. An Android authorization prompt has appeared: select <em>“Always allow from this computer”</em> and confirm with <kbd>OK</kbd>.</td>
-                          </tr>
-                          <tr>
-                            <td><span class="spec-chip">Home opens old launcher</span></td>
-                            <td>Some Google TV builds aggressively reclaim Home button intents. Execute the <code>adb shell pm disable-user</code> command in the manual section above to silence the factory package.</td>
-                          </tr>
-                          <tr>
-                            <td><span class="spec-chip">INSTALL_FAILED_UPDATE_INCOMPATIBLE</span></td>
-                            <td>Occurs when migrating between Release and Offline editions (or custom builds) signed with different certificates. Execute <code>adb uninstall dev.madusha.shangos</code> first, then install the new APK.</td>
-                          </tr>
-                          <tr>
-                            <td><span class="spec-chip">Discovery timeout</span></td>
-                            <td>mDNS broadcast packets may be filtered by your home router. Pass your TV's explicit local IP address to the script: <code>bash setup.sh --tv 192.168.1.50:5555</code>.</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </article>
-
-                  <aside class="doc-toc">
-                    <span class="toc-heading">On this page</span>
-                    <ul class="toc-list">
-                      <li><a href="#debugging">1. Enable Debugging</a></li>
-                      <li><a href="#quick">2. Automated Script</a></li>
-                      <li><a href="#wizard">Interactive Wizard</a></li>
-                      <li><a href="#manual">Manual ADB Walkthrough</a></li>
-                      <li><a href="#undo">Restoring Factory Default</a></li>
-                      <li><a href="#verify">Checksum Verification</a></li>
-                      <li><a href="#trouble">Troubleshooting Reference</a></li>
-                    </ul>
-                  </aside>
-
-                </div>
-              </div>
-            </main>
-
-            <footer class="site">
-              <div class="wrap">
-                <div class="footer-grid">
-                  <div class="footer-brand-col">
-                    <a href="../" class="brand" aria-label="shangOS home">
-                      <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                        <rect width="32" height="32" rx="8" fill="currentColor"/>
-                        <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-                      </svg>
-                      <span class="brand-name">shangOS</span>
-                    </a>
-                    <p class="footer-mission">
-                      A fast, calm, ad-free home screen for Android TV and Google TV. Free software, no accounts, and no surveillance.
-                    </p>
-                  </div>
-
-                  <div class="footer-links-col">
-                    <strong class="footer-heading">Documentation</strong>
-                    <ul>
-                      <li><a href="./">Setup Guide</a></li>
-                      <li><a href="../guide/">User Guide</a></li>
-                      <li><a href="../#downloads">Downloads</a></li>
-                    </ul>
-                  </div>
-
-                  <div class="footer-links-col">
-                    <strong class="footer-heading">Security &amp; Legal</strong>
-                    <ul>
-                      <li><a href="../privacy/">Privacy Statement</a></li>
-                      <li><a href="../licenses/">Open Source Licenses</a></li>
-                      <li><a href="../#verify">Verification Keys</a></li>
-                    </ul>
-                  </div>
-
-                  <div class="footer-links-col">
-                    <strong class="footer-heading">Project</strong>
-                    <ul>
-                      <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-                      <li><a href="https://github.com/madushas/shangos-launcher/releases" target="_blank" rel="noopener">Release Archive ↗</a></li>
-                      <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="footer-bottom">
-                  <p>© 2026 shangOS · Released under the <a href="../licenses/">MIT License</a> · Forked from <a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a>.</p>
-                </div>
-              </div>
-            </footer>
-
-            <script src="../assets/site.js" defer></script>
-          </body>
-          </html>
+  <div class="doc">
+    <div class="doc__body"><section id="before" aria-labelledby="before-h"><h2 id="before-h">Before you start</h2>
+<p>You need an Android TV or Google TV on <strong>Android 12 or newer</strong>, a computer on the same Wi-Fi or network cable, and the TV remote. It takes about five minutes. It needs no root and replaces no firmware.</p>
+<div class="callout" id="what-changes"><h3>What changes on your TV</h3><p>One app is installed, and it is set as the home screen. The TV&rsquo;s own home and setup apps are left switched on (on some Google TVs the TV cannot start without them). If you choose them, three optional permissions are granted (Up Next, Now Playing, recent apps) and the shangOS screen saver is selected. Nothing else is touched. HDMI, Chromecast, picture settings and Bluetooth remotes keep working.</p></div>
+<p class="muted">Not for phones and tablets. Not tested on Fire TV.</p></section><section id="debugging" aria-labelledby="debugging-h"><h2 id="debugging-h">1. Turn on debugging on the TV</h2>
+<ol class="steps">
+<li><div><h3>Become a developer</h3><p>Find the build entry for your TV in the table below, and press OK on it seven times until a message says <em>You are now a developer</em>.</p><div class="table-wrap table-wrap--stack"><table><caption>Menu names change between firmware versions. If yours differ, search Settings for &ldquo;Build&rdquo; and &ldquo;Developer options&rdquo;.</caption><thead><tr><th scope="col">Your device</th><th scope="col">Turn on Developer options</th><th scope="col">Then open</th></tr></thead><tbody><tr><td data-label="Your device">Google TV Streamer, Chromecast with Google TV, onn., TCL, Hisense, Sony BRAVIA (Google TV)</td><td data-label="Turn on Developer options">Settings, System, About, press <strong>Android TV OS build</strong> 7 times</td><td data-label="Then open">Settings, System, Developer options</td></tr><tr><td data-label="Your device">Sony BRAVIA (older Android TV), Philips, Sharp</td><td data-label="Turn on Developer options">Settings, Device Preferences, About, press <strong>Build</strong> 7 times</td><td data-label="Then open">Settings, Device Preferences, Developer options</td></tr><tr><td data-label="Your device">Xiaomi Mi Box S, Mi TV Stick, Xiaomi TV</td><td data-label="Turn on Developer options">Settings, Device Preferences, About, press <strong>Build</strong> 7 times</td><td data-label="Then open">Settings, Device Preferences, Developer options</td></tr><tr><td data-label="Your device">NVIDIA Shield TV</td><td data-label="Turn on Developer options">Settings, Device Preferences, About, press <strong>Build</strong> 7 times</td><td data-label="Then open">Settings, Device Preferences, Developer options</td></tr></tbody></table></div></div></li>
+<li><div><h3>Switch debugging on</h3><p>In Developer options, turn on <strong>USB debugging</strong>. Some TVs call it <strong>Network debugging</strong>. On Android 11 and newer you may see <strong>Wireless debugging</strong> instead; see <a href="#pairing">pairing</a> below.</p></div></li>
+<li><div><h3>Allow your computer</h3><p>The first time the computer connects, the TV asks <em>Allow USB debugging?</em>. Choose <strong>Always allow from this computer</strong> and press OK. Look at the TV screen, not the computer.</p></div></li>
+<li><div><h3>Find the TV&rsquo;s address (optional)</h3><p>The wizard usually finds the TV by itself. If it cannot, note the IP address under Settings, Network &amp; Internet, then your connection (for example <code>192.168.1.50</code>).</p></div></li>
+</ol></section><section id="wizard" aria-labelledby="wizard-h"><h2 id="wizard-h">2. Run the setup wizard</h2>
+<p>Open a terminal (macOS, Linux) or PowerShell (Windows), and run the line for your computer. No administrator rights are needed.</p>
+<div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="setup-tab-mac" data-os="mac" aria-controls="setup-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="setup-tab-linux" data-os="linux" aria-controls="setup-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="setup-tab-windows" data-os="windows" aria-controls="setup-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="setup-panel-mac" aria-labelledby="setup-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="setup-panel-linux" aria-labelledby="setup-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="setup-panel-windows" aria-labelledby="setup-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex ((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))</code></pre></div></div></div>
+<p>The wizard is five short steps. Move with the arrow keys (or <kbd>j</kbd>/<kbd>k</kbd>), choose with <kbd>Enter</kbd>, switch options with <kbd>Space</kbd>, go back with <kbd>Esc</kbd>, quit with <kbd>q</kbd>.</p>
+<ol class="steps">
+<li><div><h3>TV</h3><p>Lists TVs adb already knows, TVs announcing Wireless debugging on your network, and addresses you saved. Or type an address, or pair with a code. It checks the TV runs Android 12 or newer.</p></div></li>
+<li><div><h3>Build</h3><p><strong>Standard</strong>, or <strong>Offline</strong> which has no internet permission at all (no weather, no remote posters).</p></div></li>
+<li><div><h3>Options</h3><p>Optional permissions, making it the home screen, a faster compile, the screen saver, and <a href="#block-ads">ad and tracker blocking</a> (off unless you tick it).</p></div></li>
+<li><div><h3>Review</h3><p>Shows the exact commands, then asks once.</p></div></li>
+<li><div><h3>Install</h3><p>Downloads the release from GitHub, checks its SHA-256 against the published <code>SHA256SUMS</code>, installs it, and applies your options. Every command that changes the TV is printed first, on a line starting with <code>+</code>.</p></div></li>
+</ol>
+<h3>Without a menu</h3>
+<p>For scripts and unattended installs, pass options. <code>--yes</code> (<code>-Yes</code> on Windows) takes every default and asks nothing.</p>
+<div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="flags-tab-mac" data-os="mac" aria-controls="flags-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="flags-tab-linux" data-os="linux" aria-controls="flags-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="flags-tab-windows" data-os="windows" aria-controls="flags-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="flags-panel-mac" aria-labelledby="flags-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --tv 192.168.1.50:5555 --variant offline --yes</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="flags-panel-linux" aria-labelledby="flags-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --tv 192.168.1.50:5555 --variant offline --yes</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="flags-panel-windows" aria-labelledby="flags-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>&amp; ([scriptblock]::Create((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))) -Tv 192.168.1.50:5555 -Variant offline -Yes</code></pre></div></div></div>
+<div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Option</th><th scope="col">Windows</th><th scope="col">What it does</th></tr></thead><tbody><tr><td data-label="Option"><code>--tv ADDRESS</code></td><td data-label="Windows"><code>-Tv</code></td><td data-label="What it does">The TV&rsquo;s address, with or without <code>:5555</code>.</td></tr><tr><td data-label="Option"><code>--variant release|offline</code></td><td data-label="Windows"><code>-Variant</code></td><td data-label="What it does">Standard (default) or Offline.</td></tr><tr><td data-label="Option"><code>--release v0.4.0</code></td><td data-label="Windows"><code>-Release</code></td><td data-label="What it does">A specific release instead of the latest.</td></tr><tr><td data-label="Option"><code>--apk FILE</code></td><td data-label="Windows"><code>-Apk</code></td><td data-label="What it does">Install an APK you already have.</td></tr><tr><td data-label="Option"><code>--no-home</code>, <code>--no-widgets</code>, <code>--no-aot</code></td><td data-label="Windows"><code>-NoHome</code>, <code>-NoWidgets</code>, <code>-NoAot</code></td><td data-label="What it does">Skip one step.</td></tr><tr><td data-label="Option"><code>--saver</code></td><td data-label="Windows"><code>-Saver</code></td><td data-label="What it does">Also use the shangOS screen saver.</td></tr><tr><td data-label="Option"><code>--block-ads</code></td><td data-label="Windows"><code>-BlockAds</code></td><td data-label="What it does">Also turn on ad and tracker blocking for the whole TV (<a href="#block-ads">read the limits</a>).</td></tr><tr><td data-label="Option"><code>--dns adguard|HOSTNAME|off</code></td><td data-label="Windows"><code>-Dns</code></td><td data-label="What it does">Only change the TV&rsquo;s Private DNS; no install.</td></tr><tr><td data-label="Option"><code>--status</code></td><td data-label="Windows"><code>-Status</code></td><td data-label="What it does">Show what is installed and what Home opens.</td></tr><tr><td data-label="Option"><code>--uninstall</code></td><td data-label="Windows"><code>-Uninstall</code></td><td data-label="What it does">Undo everything.</td></tr><tr><td data-label="Option"><code>--pair HOST:PORT --code 123456</code></td><td data-label="Windows"><code>-Pair</code>, <code>-Code</code></td><td data-label="What it does">Pair with a TV that shows a code.</td></tr><tr><td data-label="Option"><code>--plain</code>, <code>--no-color</code></td><td data-label="Windows"><code>-Plain</code>, <code>-NoColor</code></td><td data-label="What it does">No menus, or no colours.</td></tr></tbody></table></div>
+<div class="callout" id="read-first"><h3>Read it before you run it</h3><p>It is a plain text script. The wizard only talks to GitHub (to download the release) and to your TV; the one exception is your own package manager, if you let it install adb.</p></div>
+<div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="read-tab-mac" data-os="mac" aria-controls="read-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="read-tab-linux" data-os="linux" aria-controls="read-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="read-tab-windows" data-os="windows" aria-controls="read-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="read-panel-mac" aria-labelledby="read-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL -o setup.sh https://shangos.madusha.dev/setup.sh
+<span class="p">$ </span>less setup.sh
+<span class="p">$ </span>bash setup.sh</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="read-panel-linux" aria-labelledby="read-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL -o setup.sh https://shangos.madusha.dev/setup.sh
+<span class="p">$ </span>less setup.sh
+<span class="p">$ </span>bash setup.sh</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="read-panel-windows" aria-labelledby="read-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>(New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;) | Set-Content setup.ps1
+<span class="p">PS&gt; </span>notepad setup.ps1
+<span class="p">PS&gt; </span>powershell -ExecutionPolicy Bypass -File .\setup.ps1</code></pre></div></div></div>
+<p><strong>No adb on your computer?</strong> The wizard offers to install it with your package manager (Homebrew, apt, dnf, pacman, zypper, or on Windows winget, Scoop or Chocolatey) and shows the command first. Or get <a href="https://developer.android.com/tools/releases/platform-tools" rel="noopener">platform-tools</a> from Google.</p></section><section id="block-ads" aria-labelledby="block-ads-h"><h2 id="block-ads-h">Optional: block ads and trackers on the whole TV</h2>
+<p>shangOS itself shows no ads, but your other apps can. This optional step sets the TV&rsquo;s <strong>Private DNS</strong> (an Android setting since Android 9) to a server that refuses known ad and tracker domains. It applies to every app that uses the TV&rsquo;s normal DNS, and it does not touch shangOS.</p>
+<div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="setup-dns-tab-mac" data-os="mac" aria-controls="setup-dns-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="setup-dns-tab-linux" data-os="linux" aria-controls="setup-dns-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="setup-dns-tab-windows" data-os="windows" aria-controls="setup-dns-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="setup-dns-panel-mac" aria-labelledby="setup-dns-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal: turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns adguard</code></pre></div><div class="term"><div class="term__bar"><span>Terminal: turn it off again</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns off</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="setup-dns-panel-linux" aria-labelledby="setup-dns-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal: turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns adguard</code></pre></div><div class="term"><div class="term__bar"><span>Terminal: turn it off again</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns off</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="setup-dns-panel-windows" aria-labelledby="setup-dns-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell: turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>&amp; ([scriptblock]::Create((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))) -Dns adguard</code></pre></div><div class="term"><div class="term__bar"><span>PowerShell: turn it off again</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>&amp; ([scriptblock]::Create((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))) -Dns off</code></pre></div></div></div>
+<p>Or tick <em>Block ads and trackers</em> in the wizard&rsquo;s options, or pass <code>--block-ads</code> (<code>-BlockAds</code>) when installing. Choose <em>Use my own DNS hostname</em> in the wizard&rsquo;s menu for a NextDNS profile, your own AdGuard Home or a Pi-hole that speaks DNS-over-TLS. The wizard checks that the TV can still look up names afterwards, and puts the old setting back if it cannot.</p>
+<h3>By hand</h3>
+<div class="term"><div class="term__bar"><span>Turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb shell settings put global private_dns_specifier dns.adguard-dns.com
+<span class="p">$ </span>adb shell settings put global private_dns_mode hostname</code></pre></div>
+<div class="term"><div class="term__bar"><span>Turn it off again (back to the TV&#x27;s default, called Automatic)</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb shell settings put global private_dns_mode opportunistic</code></pre></div>
+<h3>What to know first</h3>
+<div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Topic</th><th scope="col">Details</th></tr></thead><tbody><tr><td data-label="Topic">Who sees what</td><td data-label="Details">The DNS provider sees the names your TV looks up (for example <code>example.com</code>), though not the pages. Pick one you trust and read its privacy policy. The default here is AdGuard DNS (<code>dns.adguard-dns.com</code>), which blocks ads, trackers and known malicious domains.</td></tr><tr><td data-label="Topic">It is system-wide</td><td data-label="Details">Free streaming apps may show fewer ads, load slowly, or refuse to start when their ad servers do not answer. If that happens, turn it off.</td></tr><tr><td data-label="Topic">Apps can skip it</td><td data-label="Details">Apps that bring their own DNS, or a fixed one, ignore the TV&rsquo;s setting. Nothing on the TV can stop that without root.</td></tr><tr><td data-label="Topic">Needs</td><td data-label="Details">Android 9 or newer. The wizard checks that names still resolve after the change and undoes it if not; if the TV was offline when you set it, it cannot check.</td></tr><tr><td data-label="Topic">Undo</td><td data-label="Details"><code>--dns off</code> (<code>-Dns off</code>) puts back whatever the TV had before, or Automatic. Removing shangOS leaves it as it is, and offers to undo it.</td></tr></tbody></table></div>
+<div class="callout"><h3>For apps that skip the filter (advanced)</h3><p>The place to catch them is your router, not the TV. Run a filter on your own network (Pi-hole or AdGuard Home), send all DNS requests on port 53 to it, and block outgoing port 853 (DNS-over-TLS) so apps cannot use another server. DNS-over-HTTPS looks like ordinary web traffic, so it can only be stopped with a domain list of known servers. <strong>Do one or the other:</strong> blocking port 853 also blocks the Private DNS setting above, unless its server is on your own network.</p></div></section><section id="pairing" aria-labelledby="pairing-h"><h2 id="pairing-h">TVs that show a pairing code</h2>
+<p>Newer Google TV builds can use <strong>Wireless debugging</strong>, which asks for a one-time pairing first.</p>
+<ol class="steps">
+<li><div><h3>Open the pairing box</h3><p>Developer options, Wireless debugging, <strong>Pair device with pairing code</strong>. The TV shows an address with a port, and a six-digit code. Keep that box open.</p></div></li>
+<li><div><h3>Pair</h3><p>In the wizard choose <em>Pair with a code</em>, or run it yourself:</p><div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="pair-tab-mac" data-os="mac" aria-controls="pair-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="pair-tab-linux" data-os="linux" aria-controls="pair-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="pair-tab-windows" data-os="windows" aria-controls="pair-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="pair-panel-mac" aria-labelledby="pair-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb pair 192.168.1.50:37123</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="pair-panel-linux" aria-labelledby="pair-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb pair 192.168.1.50:37123</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="pair-panel-windows" aria-labelledby="pair-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>adb pair 192.168.1.50:37123</code></pre></div></div></div><p>Type the six-digit code when asked.</p></div></li>
+<li><div><h3>Connect</h3><p>Close the box. The main Wireless debugging screen shows a <em>different</em> port. Use that one: <code>adb connect 192.168.1.50:41234</code>, or pick the TV in the wizard (it appears under &ldquo;Found on your network&rdquo;).</p></div></li>
+</ol></section><section id="manual" aria-labelledby="manual-h"><h2 id="manual-h">Do it by hand with adb</h2>
+<p>The wizard runs exactly these. Replace the address and the file name with yours.</p>
+<div class="term"><div class="term__bar"><span>adb</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="c"># 1. connect, and accept the prompt on the TV</span>
+<span class="p">$ </span>adb connect 192.168.1.50:5555
+<span class="c"># 2. install the signed release</span>
+<span class="p">$ </span>adb install -r shangos-v0.4.0-release.apk
+<span class="c"># 3. make it the home screen</span>
+<span class="p">$ </span>adb shell cmd package set-home-activity --user 0 dev.madusha.shangos/.MainActivity</code></pre></div>
+<p>Press Home on the remote. If the TV still opens its own launcher, that is normal on some Google TVs. Open shangOS from the app row, or choose &ldquo;Always&rdquo; if the TV asks which home to use. Do not switch the TV&rsquo;s own home or setup app off unless you have read <a href="#loop">the warning below</a>: on some Google TVs the TV then cannot start.</p>
+<p>Optional permissions for Up Next, Now Playing and recent apps:</p>
+<div class="term"><div class="term__bar"><span>adb</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb shell pm grant dev.madusha.shangos android.permission.READ_TV_LISTINGS
+<span class="p">$ </span>adb shell cmd notification allow_listener dev.madusha.shangos/dev.madusha.shangos.MediaListener
+<span class="p">$ </span>adb shell appops set dev.madusha.shangos GET_USAGE_STATS allow</code></pre></div></section><section id="undo" aria-labelledby="undo-h"><h2 id="undo-h">Undo everything</h2>
+<p>Run the wizard and choose <em>Remove shangOS</em>, or pass the uninstall option:</p>
+<div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="undo-tab-mac" data-os="mac" aria-controls="undo-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="undo-tab-linux" data-os="linux" aria-controls="undo-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="undo-tab-windows" data-os="windows" aria-controls="undo-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="undo-panel-mac" aria-labelledby="undo-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --uninstall</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="undo-panel-linux" aria-labelledby="undo-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --uninstall</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="undo-panel-windows" aria-labelledby="undo-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>&amp; ([scriptblock]::Create((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))) -Uninstall</code></pre></div></div></div>
+<p>By hand, switch your TV&rsquo;s launcher back on <em>before</em> removing shangOS, so the TV always has a home screen:</p>
+<div class="term"><div class="term__bar"><span>adb</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb shell pm enable --user 0 com.google.android.tvlauncher
+<span class="c"># or com.google.android.apps.tv.launcherx on newer Google TV builds</span>
+<span class="p">$ </span>adb uninstall dev.madusha.shangos</code></pre></div>
+<div class="callout callout--warn"><h3>Order matters</h3><p>Removing shangOS while the TV&rsquo;s own launcher is still switched off can leave the TV with no home screen. If that happens, run <code>adb shell pm enable --user 0 com.google.android.tvlauncher</code> from your computer.</p></div></section><section id="loop" aria-labelledby="loop-h"><h2 id="loop-h">If your TV loops after a restart</h2>
+<div class="callout callout--warn"><h3>Some Google TVs cannot start without their own home or setup app</h3><p>Older versions of this wizard switched those off to make shangOS the home screen. On some Google TVs (a Sony Bravia, for one) that leaves the TV unable to start: a blank screen, a restart, and round again. Since 0.6 the wizard never switches the setup app off, leaves the TV&rsquo;s own home on unless you pass <code>--disable-stock</code>, and switches anything an older version turned off back on.</p></div>
+<p><strong>If your TV is looping now:</strong></p>
+<ol class="steps">
+<li><div><h3>Switch the TV off at the wall</h3><p>Leave it off for 10 to 15 minutes, then switch it on again. Have your computer ready.</p></div></li>
+<li><div><h3>Switch them back on as soon as the TV answers</h3><p>Each loop gives a short window. Keep trying until the commands go through:</p>
+<div class="term"><div class="term__bar"><span>adb</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>adb connect 192.168.1.50:5555
+<span class="p">$ </span>adb shell pm enable com.google.android.apps.tv.launcherx
+<span class="p">$ </span>adb shell pm enable com.google.android.tungsten.setupwraith
+<span class="p">$ </span>adb shell pm enable com.google.android.tvlauncher</code></pre></div>
+<p>Some of these are not on your TV; the error for those is harmless.</p></div></li>
+<li><div><h3>Then run the wizard again</h3><p>The current version leaves them on. If you set shangOS up with an older version and the TV is not looping, run the wizard once before the next restart: it switches them back on by itself.</p></div></li>
+</ol>
+<p>If shangOS itself crashes twice within five minutes, it stands aside and lets the TV&rsquo;s own home open, and tries again a few minutes later, so a broken build cannot hold the TV in a loop either.</p></section><section id="verify" aria-labelledby="verify-h"><h2 id="verify-h">Verify a download</h2>
+<p>If you download the APK yourself, check it before installing. Put the APK and <code>SHA256SUMS</code> from the same release in one folder.</p>
+<div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="verify-tab-mac" data-os="mac" aria-controls="verify-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="verify-tab-linux" data-os="linux" aria-controls="verify-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="verify-tab-windows" data-os="windows" aria-controls="verify-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="verify-panel-mac" aria-labelledby="verify-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>shasum -a 256 -c SHA256SUMS --ignore-missing
+<span class="p">$ </span>apksigner verify --print-certs shangos-v0.4.0-release.apk</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="verify-panel-linux" aria-labelledby="verify-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>sha256sum -c SHA256SUMS --ignore-missing
+<span class="p">$ </span>apksigner verify --print-certs shangos-v0.4.0-release.apk</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="verify-panel-windows" aria-labelledby="verify-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>(Get-FileHash .\shangos-v0.4.0-release.apk -Algorithm SHA256).Hash
+<span class="c"># compare with the line in SHA256SUMS</span>
+<span class="p">PS&gt; </span>apksigner verify --print-certs shangos-v0.4.0-release.apk</code></pre></div></div></div>
+<p><code>apksigner</code> is part of Android&rsquo;s build-tools. The certificate SHA-256 it prints must match the release notes on GitHub, and the one shown on the TV under Settings, Privacy, This build.</p></section><section id="troubleshooting" aria-labelledby="troubleshooting-h"><h2 id="troubleshooting-h">If something goes wrong</h2><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead><tbody><tr><td data-label="What you see"><code>failed to connect</code>, or the TV is not listed</td><td data-label="What to do">The TV and computer must be on the same network, and debugging must be on. Wake the TV first. Try the address with <code>:5555</code>. On newer builds use Wireless debugging and <a href="#pairing">pair</a>.</td></tr><tr><td data-label="What you see"><code>unauthorized</code></td><td data-label="What to do">Look at the TV. An <em>Allow USB debugging?</em> box is waiting: choose Always allow from this computer, then OK.</td></tr><tr><td data-label="What you see">Home still opens the old launcher</td><td data-label="What to do">Some TVs insist on their own. shangOS leaves it on, because on some Google TVs the TV cannot start without it. Open shangOS from the app row. At your own risk, <code>--disable-stock</code> (<code>-DisableStock</code> on Windows) switches the launcher off after asking; read <a href="#loop">the warning</a> first.</td></tr><tr><td data-label="What you see"><code>INSTALL_FAILED_UPDATE_INCOMPATIBLE</code></td><td data-label="What to do">The TV has shangOS signed with another key, for example a build you made yourself. Android will not update it in place. The wizard offers to remove the old one first; that clears shangOS&rsquo;s own settings only.</td></tr><tr><td data-label="What you see"><code>INSTALL_FAILED_VERSION_DOWNGRADE</code></td><td data-label="What to do">The TV has a newer version than the one you are installing. The wizard offers to downgrade.</td></tr><tr><td data-label="What you see">No TV found by the wizard</td><td data-label="What to do">Some routers block the announcements that discovery uses. Give the address yourself: <code>--tv 192.168.1.50:5555</code>.</td></tr><tr><td data-label="What you see">GitHub is rate-limiting</td><td data-label="What to do">Wait a few minutes, or download the APK from the <a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">release page</a> and pass it with <code>--apk</code>.</td></tr><tr><td data-label="What you see">Windows: &ldquo;running scripts is disabled&rdquo;</td><td data-label="What to do">That applies to saved files only. The one-line command is not affected. For a saved copy, use <code>powershell -ExecutionPolicy Bypass -File .\setup.ps1</code>.</td></tr><tr><td data-label="What you see">Apps stopped loading after I turned on ad blocking</td><td data-label="What to do">Turn it off with <code>--dns off</code> (<code>-Dns off</code>). Some apps depend on the ad servers answering.</td></tr><tr><td data-label="What you see">Colours or boxes look broken</td><td data-label="What to do">Use a modern terminal (Terminal, iTerm2, GNOME Terminal, Windows Terminal), or add <code>--plain</code> (<code>-Plain</code>) for plain text.</td></tr></tbody></table></div></section></div>
+    <details class="toc" open><summary>On this page</summary><nav aria-label="On this page"><h2 class="vh">On this page</h2><ol><li><a href="#before">Before you start</a></li><li><a href="#debugging">1. Turn on debugging on the TV</a></li><li><a href="#wizard">2. Run the setup wizard</a></li><li><a href="#block-ads">Optional: block ads and trackers on the whole TV</a></li><li><a href="#pairing">TVs that show a pairing code</a></li><li><a href="#manual">Do it by hand with adb</a></li><li><a href="#undo">Undo everything</a></li><li><a href="#loop">If your TV loops after a restart</a></li><li><a href="#verify">Verify a download</a></li><li><a href="#troubleshooting">If something goes wrong</a></li></ol></nav></details>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+        <p class="footer-note">A home screen for Android TV and Google TV. A hobby project, open source under the MIT licence. No accounts, no ads, no trackers, and this website sets no cookies and loads nothing from other sites.</p>
+      </div>
+      <div><h2>Use it</h2><ul><li><a href="/setup/">Set up on your TV</a></li><li><a href="/guide/">User guide</a></li><li><a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release</a></li></ul></div>
+      <div><h2>Trust it</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/licenses/">Licences and credits</a></li><li><a href="/setup/#verify">Verify a download</a></li></ul></div>
+      <div><h2>Source</h2><ul><li><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub</a></li><li><a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">Report a problem</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; shangOS contributors. MIT licence.</span><span>Not affiliated with Google, Sony or any TV maker.</span></div>
+  </div>
+</footer>
+</body>
+</html>

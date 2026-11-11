@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "generated": "2026-10-30T05:39:07Z",
+  "tool": "tools/bench.sh (tools/baseline.sh)",
+  "method": "https://github.com/madushas/shangos-launcher/blob/main/docs/MEASURING.md",
+  "device": {
+    "description": "onn. Full HD Streaming Device, Android 14 (API 34), armeabi-v7a",
+    "memory_kb": 1483088,
+    "display": "1280x720 at 213 dpi"
+  },
+  "results": [
+    {
+      "id": "upstream",
+      "name": "Luma TV",
+      "variant": null,
+      "package": "dev.luma.tv",
+      "version": "2.4",
+      "measured_at": "2026-10-30T05:34:13Z",
+      "compile": "speed-profile",
+      "metrics": {
+        "apk_bytes": 6978135,
+        "launch_runs": 8,
+        "launch_first_ms": 535,
+        "launch_median_ms": 458,
+        "launch_min_ms": 454,
+        "launch_max_ms": 535,
+        "mem_pss_kb": 72501,
+        "mem_java_kb": 2256,
+        "mem_native_kb": 34128,
+        "mem_graphics_kb": 26672,
+        "mem_code_kb": 924,
+        "mem_swap_kb": 155,
+        "cpu_idle_pct": 9.57,
+        "frames": 230,
+        "jank_pct": 6.96,
+        "p50_ms": 5,
+        "p90_ms": 34,
+        "p99_ms": 48,
+        "slow_ui_frames": 9,
+        "return_ms_median": 143,
+        "return_ms_max": 177,
+        "return_jank_pct": 10.5,
+        "mem_after_returns_pss_kb": 105475
+      },
+      "highlights": {
+        "memory_idle_mb": 70.8,
+        "memory_after_returns_mb": 103.0,
+        "first_frame_ms": 458,
+        "return_to_home_ms": 143,
+        "cpu_idle_percent_of_core": 9.6,
+        "janky_frames_percent": 7.0,
+        "apk_mb": 6.7
+      },
+      "complete": true
+    },
+    {
+      "id": "shangos-auto",
+      "name": "shangOS",
+      "variant": "auto",
+      "package": "com.madushas.shangos",
+      "version": "0.2.2",
+      "measured_at": "2026-10-30T05:39:07Z",
+      "compile": "speed-profile",
+      "metrics": {
+        "apk_bytes": 4470845,
+        "launch_runs": 8,
+        "launch_first_ms": 531,
+        "launch_median_ms": 477,
+        "launch_min_ms": 465,
+        "launch_max_ms": 531,
+        "fully_drawn_median_ms": 663,
+        "mem_pss_kb": 47745,
+        "mem_java_kb": 2092,
+        "mem_native_kb": 16812,
+        "mem_graphics_kb": 19224,
+        "mem_code_kb": 836,
+        "mem_swap_kb": 158,
+        "cpu_idle_pct": 4.43,
+        "frames": 162,
+        "jank_pct": 3.7,
+        "p50_ms": 22,
+        "p90_ms": 30,
+        "p99_ms": 40,
+        "slow_ui_frames": 3,
+        "return_ms_median": 136,
+        "return_ms_max": 156,
+        "return_jank_pct": 9.04,
+        "mem_after_returns_pss_kb": 58985
+      },
+      "highlights": {
+        "memory_idle_mb": 46.6,
+        "memory_after_returns_mb": 57.6,
+        "first_frame_ms": 477,
+        "return_to_home_ms": 136,
+        "cpu_idle_percent_of_core": 4.4,
+        "janky_frames_percent": 3.7,
+        "apk_mb": 4.3
+      },
+      "complete": true
+    }
+  ]
+}

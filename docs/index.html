@@ -1,559 +1,155 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>shangOS — A calm home screen for your TV</title>
-  <meta name="description" content="shangOS replaces the noisy default launcher on Android TV and Google TV with a fast, quiet one: your apps, what you were watching, and nothing else.">
-  <meta property="og:title" content="shangOS — A calm home screen for your TV">
-  <meta property="og:description" content="No ads, no sponsored rows, no tracking, no accounts. Free and open source for Android TV & Google TV.">
-  <meta property="og:type" content="website">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpolygon points='13,10 23,16 13,22' fill='%23fff'/%3E%3C/svg%3E">
-
-  <!-- Prevent theme flash before CSS loads -->
-  <script>
-    (() => {
-      try {
-        const t = localStorage.getItem('shangos-theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="stylesheet" href="assets/site.css">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>shangOS: a calmer home screen for Android TV and Google TV</title>
+<meta name="description" content="shangOS is an open-source home screen for Android TV and Google TV. Three quiet pages, widgets you choose, no accounts, no ads, no tracking. Reversible, and set up from your computer in about five minutes.">
+<link rel="canonical" href="https://shangos.madusha.dev/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9faef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="shangOS">
+<meta property="og:title" content="shangOS: a calmer home screen for your TV">
+<meta property="og:description" content="shangOS is an open-source home screen for Android TV and Google TV. Three quiet pages, widgets you choose, no accounts, no ads, no tracking. Reversible, and set up from your computer in about five minutes.">
+<meta property="og:url" content="https://shangos.madusha.dev/">
+<meta property="og:image" content="https://shangos.madusha.dev/assets/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("shangos-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"shangOS","applicationCategory":"UtilitiesApplication","operatingSystem":"Android TV 12+, Google TV","license":"https://opensource.org/licenses/MIT","url":"https://shangos.madusha.dev/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 </head>
 <body>
-  <a href="#main" class="skip">Skip to content</a>
-
-  <header class="site">
-    <div class="wrap site-nav-wrap">
-      <div class="brand-group">
-        <a href="./" class="brand" aria-label="shangOS home">
-          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-          </svg>
-          <span class="brand-name">shangOS</span>
-        </a>
-        <a href="https://github.com/madushas/shangos-launcher/releases/latest"
-           class="badge-version"
-           target="_blank"
-           rel="noopener"
-           title="View latest release notes on GitHub">
-          <span class="dot"></span>
-          <!-- APP_VERSION_START -->v0.3.0<!-- APP_VERSION_END -->
-        </a>
-      </div>
-
-      <div class="header-actions">
-        <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-          <a href="./" aria-current="page">Overview</a>
-          <a href="setup/">Setup</a>
-          <a href="guide/">Guide</a>
-          <a href="privacy/">Privacy</a>
-          <a href="licenses/">Licenses</a>
-        </nav>
-
-        <div class="header-controls">
-          <a href="https://github.com/madushas/shangos-launcher"
-             class="btn-icon gh-link" target="_blank" rel="noopener"
-             aria-label="View source repository on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.03 11.03 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.26 5.66.41.35.78 1.05.78 2.11 0 1.53-.01 2.76-.01 3.14 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
-            </svg>
-          </a>
-
-          <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle light or dark display mode">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </button>
-
-          <button class="btn-icon nav-toggle" id="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="site-nav">
-            <svg class="nav-toggle-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-            <svg class="nav-toggle-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Main"><a href="/" aria-current="page">Home</a><a href="/setup/">Set up</a><a href="/guide/">Guide</a><a href="/privacy/">Privacy</a><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub<span class="vh"> (opens in a new tab)</span></a></nav>
+    <div class="header-tools">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-sun"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
-  </header>
+  </div>
+</header>
+<main id="main">
 
-  <main id="main">
-
-    <!-- ================= HERO ================= -->
-    <section class="hero" id="overview">
-      <div class="wrap">
-        <div class="hero-header">
-          <!-- M3 Tonal Status Badge -->
-          <div class="hero-pill-badge">
-            <span class="badge-pip" aria-hidden="true"></span>
-            <span class="badge-label">Free &amp; Open Source</span>
-            <span class="badge-divider" aria-hidden="true">·</span>
-            <span class="badge-platform">Android TV &amp; Google TV</span>
-          </div>
-
-          <!-- Confident Editorial Typography -->
-          <h1 class="hero-title">
-            A calm home screen for your TV.
-            <span class="hero-title-sub">Nothing to sell you.</span>
-          </h1>
-
-          <p class="hero-lead">
-            Your apps, what you were watching, and pure living room clarity. No ads, tracking, or accounts.
-          </p>
-
-          <!-- Action Cluster -->
-          <div class="hero-actions">
-            <div class="hero-btn-group">
-              <a href="setup/" class="btn primary btn-lg">
-                Set up on your TV <span class="arrow" aria-hidden="true">→</span>
-              </a>
-              <a href="guide/" class="btn secondary btn-lg">Read the Guide</a>
-            </div>
-
-            <!-- Integrated CLI Runner Pill -->
-            <div class="hero-cli-card">
-              <div class="cli-command">
-                <span class="cli-prompt" aria-hidden="true">$</span>
-                <code>curl -fsSL https://shangos.madusha.dev/setup.sh | bash</code>
-              </div>
-              <button class="copy-btn-inline" type="button" aria-label="Copy install command" data-copy="curl -fsSL https://shangos.madusha.dev/setup.sh | bash">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                <span class="copy-label">Copy</span>
-              </button>
-            </div>
-
-            <!-- Subtle Trust Meta Strip -->
-            <div class="hero-meta-strip">
-              <span class="meta-pill">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-                Local Wi-Fi ADB
-              </span>
-              <span class="meta-dot" aria-hidden="true">·</span>
-              <span class="meta-pill">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                ~5 minutes
-              </span>
-              <span class="meta-dot" aria-hidden="true">·</span>
-              <span class="meta-pill">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                100% reversible
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cinematic OLED TV Showcase -->
-        <div class="tv-stage">
-          <div class="tv-ambient-glow" aria-hidden="true"></div>
-          <div class="tv-chassis">
-            <div class="tv-bezel">
-              <div class="tv-screen">
-                <img src="assets/home.webp"
-                     alt="shangOS home screen showing app tiles, aurora wallpaper, Up Next and Now Playing widgets."
-                     width="1280" height="720" fetchpriority="high" decoding="async">
-                <div class="tv-screen-glare" aria-hidden="true"></div>
-              </div>
-            </div>
-            <div class="tv-chin">
-              <span class="tv-status-led" aria-hidden="true"></span>
-            </div>
-          </div>
-          <div class="tv-pedestal-shadow" aria-hidden="true"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= ARCHITECTURAL PRINCIPLES ================= -->
-        <section class="wrap section-principles">
-          <div class="section-heading">
-            <span class="kicker">Core Principles</span>
-            <h2>Tuned for human peace of mind</h2>
-            <p class="sub">Modern television operating systems are built as advertising real estate. shangOS reclaims your living room as a high-fidelity display.</p>
-          </div>
-
-          <div class="bento-grid">
-            <!-- Main Bento Hero Card: Pure Privacy & Offline Isolation -->
-            <div class="bento-card bento-span-2 highlight-card">
-              <div class="bento-badge">Zero Sockets</div>
-              <div class="bento-content">
-                <div class="card-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <h3>Air-gapped and kernel isolated</h3>
-                <p>No telemetry, no background analytics, no cloud pings, and no crash collectors. Our dedicated Offline Edition is compiled without the <code>android.permission.INTERNET</code> declaration entirely — meaning Linux kernel socket creation is blocked at the operating system level.</p>
-
-                <!-- Micro-Graphic: Kernel Security Sandbox Diagram -->
-                <div class="micro-hud-diagram" aria-hidden="true">
-                  <span class="hud-node">Outbound Pings</span>
-                  <span class="hud-arrow">➔</span>
-                  <span class="hud-node">[ Linux Kernel Sandbox ]</span>
-                  <span class="hud-arrow">➔</span>
-                  <span class="hud-blocked"><span class="hud-blocked-dot"></span> Socket Denied (0 KB/s)</span>
-                </div>
-
-                <div class="pill-group">
-                  <span class="spec-chip">0 Tracking Libraries</span>
-                  <span class="spec-chip">No Account Required</span>
-                  <span class="spec-chip">Manifest Hardened</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card: Modest Hardware Performance -->
-            <div class="bento-card">
-              <div class="card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              </div>
-              <h3>Optimized for modest sticks</h3>
-              <p>Tuned and benchmarked on a 1.4 GB, 32-bit streaming stick. Built in native Java without React Native, Flutter, or WebView bloat. Animations stay locked at 60 Hz on inexpensive hardware.</p>
-            </div>
-
-            <!-- Card: Up Next & Now Playing -->
-            <div class="bento-card">
-              <div class="card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-              <h3>Up Next &amp; Now Playing</h3>
-              <p>Direct integration with Android’s system-level <code>MediaSession</code> and Leanback recommendations. Seamlessly resume SmartTube, Jellyfin, Plex, or Netflix without ad rows interfering.</p>
-
-              <!-- Micro-Graphic: Equalizer audio bars -->
-              <div class="equalizer-graphic" aria-hidden="true">
-                <span class="eq-bar"></span>
-                <span class="eq-bar"></span>
-                <span class="eq-bar"></span>
-                <span class="eq-bar"></span>
-              </div>
-            </div>
-
-            <!-- Card: Non-destructive reversibility -->
-            <div class="bento-card">
-              <div class="card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-              </div>
-              <h3>100% Non-destructive</h3>
-              <p>No rooting. The factory launcher is simply silenced via official Android ADB debugging flags. Run one command to revert your television back to its out-of-the-box factory state in seconds.</p>
-
-              <!-- Micro-Graphic: Non-destructive switcher -->
-              <div class="switch-pill-graphic" aria-hidden="true">
-                <span>Restore Factory UI</span>
-                <span class="switch-thumb"></span>
-              </div>
-            </div>
-
-            <!-- Card: Privacy Weather -->
-            <div class="bento-card">
-              <div class="card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-              </div>
-              <h3>Coarse local weather</h3>
-              <p>Disabled by default. When enabled, shangOS contacts Open-Meteo using approximate coordinates derived strictly from your local timezone offset. No GPS or location permissions requested.</p>
-            </div>
-          </div>
-        </section>
-
-
-    <!-- ================= MEASURED BENCHMARKS ================= -->
-    <section class="wrap section-benchmarks">
-      <div class="section-heading">
-        <span class="kicker">Telemetry &amp; Profiles</span>
-        <h2>Small, light, and measured</h2>
-        <p class="sub">Benchmarked via automated test harnesses on an onn. FHD Streaming Stick (Android 14, 1.4 GB RAM, 720p). Measured against upstream Luma TV and the stock Google TV launcher under identical conditions.</p>
-      </div>
-
-      <div class="benchmark-dashboard">
-        <!-- Telemetry comparison board -->
-        <div class="bench-comparison-card">
-          <div class="bench-comparison-head">
-            <div>
-              <span class="bench-kicker">Memory Footprint</span>
-              <h3>PSS RAM Allocation After 10 App Switches</h3>
-            </div>
-            <span class="bench-delta-pill negative">−59% vs Upstream</span>
-          </div>
-
-          <div class="bar-chart-group">
-            <div class="bar-item">
-              <div class="bar-meta">
-                <span class="bar-name">shangOS v0.3.0</span>
-                <span class="bar-value">46.8 MB</span>
-              </div>
-              <div class="bar-track">
-                <div class="bar-fill brand" style="width: 40%;"></div>
-              </div>
-            </div>
-
-            <div class="bar-item">
-              <div class="bar-meta">
-                <span class="bar-name">Upstream Luma TV</span>
-                <span class="bar-value">114.7 MB</span>
-              </div>
-              <div class="bar-track">
-                <div class="bar-fill muted" style="width: 78%;"></div>
-              </div>
-            </div>
-
-            <div class="bar-item">
-              <div class="bar-meta">
-                <span class="bar-name">Factory Stock Launcher</span>
-                <span class="bar-value">195.0+ MB</span>
-              </div>
-              <div class="bar-track">
-                <div class="bar-fill alert" style="width: 100%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <p class="bench-note">Measured using <code>dumpsys meminfo</code> after cycling 10 launches and returns. Zero memory leaks detected.</p>
-        </div>
-
-        <!-- 3 Metric Cards with Real Engineering Craft -->
-        <div class="bench-stats-col">
-          <div class="bench-stat-tile">
-            <div class="bench-stat-top">
-              <span class="bench-metric-value">2.4 MB</span>
-              <span class="bench-metric-badge">Native Java</span>
-            </div>
-            <strong class="bench-stat-title">Total Binary Size</strong>
-            <p class="bench-stat-desc">Zero bundled dependencies. 36% smaller APK than upstream.</p>
-          </div>
-
-          <div class="bench-stat-tile">
-            <div class="bench-stat-top">
-              <span class="bench-metric-value">3.7%</span>
-              <span class="bench-metric-badge">Jank Free</span>
-            </div>
-            <strong class="bench-stat-title">D-Pad Traversal Jank</strong>
-            <p class="bench-stat-desc">Measured via Choreographer frame timing during rapid remote inputs.</p>
-          </div>
-
-          <div class="bench-stat-tile">
-            <div class="bench-stat-top">
-              <span class="bench-metric-value">~0.47 s</span>
-              <span class="bench-metric-badge">Cold Frame</span>
-            </div>
-            <strong class="bench-stat-title">Wake-up To First Paint</strong>
-            <p class="bench-stat-desc">Pre-cached application manifest enables instantaneous home screen recovery.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= RELEASE DOWNLOADS ================= -->
-    <section class="wrap section-downloads" id="downloads">
-      <div class="section-heading">
-        <span class="kicker">Distribution</span>
-        <h2>Choose your build</h2>
-        <p class="sub">Both variants are cryptographically signed with the official project key and include SHA-256 build provenance attestations.</p>
-      </div>
-
-      <div class="releases-grid">
-        <!-- Standard Release Card -->
-        <div class="release-card primary-release">
-          <div class="release-header">
-            <div class="release-title-row">
-              <h3>Standard Edition</h3>
-              <span class="pill-badge accent">Recommended</span>
-            </div>
-            <p class="release-lead">The balanced living room build. Enables optional Open-Meteo weather forecasts and downloads high-resolution posters for Continue Watching.</p>
-          </div>
-
-          <div class="release-meta-strip">
-            <span class="meta-item"><strong>Format:</strong> Universal APK</span>
-            <span class="meta-item"><strong>Size:</strong> <span class="apk-size-release">2.4 MB</span></span>
-            <span class="meta-item"><strong>Target:</strong> Android 12+</span>
-          </div>
-
-          <ul class="release-specs">
-            <li>Full leanback landscape launcher with smooth D-pad focus</li>
-            <li>Continue Watching high-res artwork fetcher</li>
-            <li>Opt-in local weather widget via Open-Meteo</li>
-            <li>All 8 live &amp; CC0 dynamic wallpapers included</li>
-            <li>Runtime network disable switch in Settings → Privacy</li>
-          </ul>
-
-          <div class="release-actions">
-            <a href="https://github.com/madushas/shangos-launcher/releases/latest/download/shangos-<!-- RAW_VERSION_START -->v0.3.0<!-- RAW_VERSION_END -->-release.apk" class="btn primary" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Download shangos-<!-- RAW_VERSION_START -->v0.3.0<!-- RAW_VERSION_END -->-release.apk</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- Offline Hardened Card -->
-        <div class="release-card">
-          <div class="release-header">
-            <div class="release-title-row">
-              <h3>Offline Edition</h3>
-              <span class="pill-badge muted">Zero Net Sockets</span>
-            </div>
-            <p class="release-lead">Engineered without the <code>android.permission.INTERNET</code> declaration. Guaranteed kernel-level network silence.</p>
-          </div>
-
-          <div class="release-meta-strip">
-            <span class="meta-item"><strong>Format:</strong> Universal APK</span>
-            <span class="meta-item"><strong>Size:</strong> <span class="apk-size-offline">2.3 MB</span></span>
-            <span class="meta-item"><strong>Target:</strong> Android 12+</span>
-          </div>
-
-          <ul class="release-specs">
-            <li>Full leanback landscape launcher with smooth D-pad focus</li>
-            <li>Zero network permissions declared in AndroidManifest.xml</li>
-            <li>Linux kernel refuses all outbound socket creation requests</li>
-            <li>Uses locally bundled application banner art for Up Next</li>
-            <li class="muted-spec">Network weather services strictly unavailable</li>
-          </ul>
-
-          <div class="release-actions">
-            <a href="https://github.com/madushas/shangos-launcher/releases/latest" class="btn secondary" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Download Latest Offline APK</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= CRYPTOGRAPHIC ATTESTATION ================= -->
-    <div class="wrap">
-      <div class="verification-panel" id="verify">
-        <div class="verify-header">
-          <div class="verify-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </div>
-          <div>
-            <h3 class="verify-title">Cryptographic Integrity &amp; Provenance</h3>
-            <p class="verify-desc">Verify release integrity before installation using standard tools or compare against the certificate in <strong>Settings → Privacy → This build</strong>:</p>
-          </div>
-        </div>
-
-        <div class="code-wrap">
-          <pre class="term"><span class="ps">$ </span>sha256sum -c SHA256SUMS
-        <span class="ps">$ </span>apksigner verify --print-certs shangos-*-release.apk</pre>
-          <button class="copy-btn" type="button" aria-label="Copy verification commands" data-copy="sha256sum -c SHA256SUMS&#10;apksigner verify --print-certs shangos-*-release.apk">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>Copy</span>
-          </button>
-        </div>
-      </div>
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <span class="kicker">For Google TV and Android TV</span>
+      <h1>A TV home screen <em>without the ads and trackers.</em></h1>
+      <p class="lead">shangOS shows your apps and nothing else: no promoted rows, no sign-in, no tracking. It is free, open source and reversible, and you set it up from your computer in about five minutes.</p>
+      <div class="btn-row"><a class="btn btn--primary" href="/setup/">Set it up</a><a class="btn btn--ghost" href="/privacy/">See what it sends</a></div>
+      <ul class="chips" aria-label="At a glance"><li class="chip">Android 12 or newer</li><li class="chip">About 2.4 MB</li><li class="chip">MIT licence</li><li class="chip">Fully reversible</li></ul>
     </div>
+    <figure class="tv">
+      <div class="tv__frame"><img src="/assets/home-720.webp" srcset="/assets/home-720.webp 720w, /assets/home.webp 1280w" sizes="(min-width: 62rem) 40rem, 92vw" width="1280" height="720" fetchpriority="high" alt="The shangOS Home page on a TV: a large greeting with the weather, an Up Next row, a weather card, and a row of app tiles for Jellyfin, Proton VPN, Stremio, VLC, Settings and Pluto TV."></div>
+      <div class="tv__stand" aria-hidden="true"></div>
+      <figcaption>Home with the Daybreak wallpaper, from a release build.</figcaption>
+    </figure>
+  </div>
+</section>
 
-    <!-- ================= FAQ ================= -->
-    <section class="wrap section-faq">
-      <div class="section-heading">
-        <span class="kicker">Common Questions</span>
-        <h2>Frequently asked questions</h2>
-      </div>
-
-      <div class="faq-accordion">
-        <details class="faq">
-          <summary>
-            <span>Why is ADB debugging needed to install shangOS?</span>
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-content">
-            <p>Unlike Android phones, modern Android TV and Google TV systems do not expose a “Default Home App” picker in their consumer settings menu. Setting shangOS as your primary launcher is completed once via ADB (Android's standard developer interface) over your local home Wi-Fi network. Once configured, pressing the remote’s Home button opens shangOS instantaneously.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>
-            <span>Will this break my TV, casting, or HDMI inputs?</span>
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-content">
-            <p>No. shangOS exclusively replaces the visual home screen layer. All fundamental TV hardware and platform capabilities — including Google Cast (Chromecast receiver), HDMI CEC input switching, picture mode calibration, and Bluetooth voice remotes — operate completely outside the launcher and continue functioning uninterrupted.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>
-            <span>How do application updates work?</span>
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-content">
-            <p>To update, install the newer APK over your existing install (via the setup script or standard ADB). Because every official release is signed with our persistent cryptographic release key, Android preserves your wallpaper configurations, custom app drawer sorting, and hidden app settings.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>
-            <span>Can I revert back to the stock factory launcher at any time?</span>
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-content">
-            <p>Yes, completely. Running <code>bash setup.sh --uninstall</code> or selecting “Restore Factory Launcher” in the setup wizard immediately re-enables your manufacturer launcher. You can also re-enable it manually via standard ADB commands at any time. Zero traces remain.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>
-            <span>What is the difference between Release and Offline builds?</span>
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-content">
-            <p>The standard Release APK includes network permission strictly to query coarse Open-Meteo forecasts (if turned on) and to download Up Next artwork cards. The Offline edition is compiled without <code>android.permission.INTERNET</code> declared in its manifest, guaranteeing that the Android operating system kernel refuses any outbound connection attempts.</p>
-          </div>
-        </details>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="site">
-    <div class="wrap">
-      <div class="footer-grid">
-        <div class="footer-brand-col">
-          <a href="./" class="brand" aria-label="shangOS home">
-            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-              <rect width="32" height="32" rx="8" fill="currentColor"/>
-              <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-            </svg>
-            <span class="brand-name">shangOS</span>
-          </a>
-          <p class="footer-mission">
-            A fast, calm, ad-free home screen for Android TV and Google TV. Free software, no accounts, and no surveillance.
-          </p>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Documentation</strong>
-          <ul>
-            <li><a href="setup/">Setup Guide</a></li>
-            <li><a href="guide/">User Guide</a></li>
-            <li><a href="#downloads">Downloads</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Security &amp; Legal</strong>
-          <ul>
-            <li><a href="privacy/">Privacy Statement</a></li>
-            <li><a href="licenses/">Open Source Licenses</a></li>
-            <li><a href="#verify">Verification Keys</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Project</strong>
-          <ul>
-            <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-            <li><a href="https://github.com/madushas/shangos-launcher/releases" target="_blank" rel="noopener">Release Archive ↗</a></li>
-            <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© 2026 shangOS · Released under the <a href="licenses/">MIT License</a> · Forked with respect from <a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a>.</p>
-      </div>
+<section class="section" aria-labelledby="what-h">
+  <div class="wrap">
+    <div class="section__head"><span class="kicker">Why it exists</span><h2 id="what-h">A home screen that just shows your apps</h2><p>The first thing you see every day should not be an advert or a data collector. Everything here is reachable with the d-pad and OK: no phone, account or keyboard.</p></div>
+    <div class="cards">
+      <article class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>No ads, no promoted rows</h3><p>Home shows your own apps and what you were in the middle of watching. Nothing on it is sponsored or sold.</p></article>
+      <article class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><h3>Nothing leaves your TV</h3><p>No accounts, analytics or crash reports. Weather and poster pictures can use the internet, both only if you allow them, and the Offline build removes even that permission.</p></article>
+      <article class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 4-5"/></svg></div><h3>Light on cheap sticks</h3><p>Built and tested on a stick with 1.4&nbsp;GB of RAM. It picks a performance level for your TV, shows why, and lets you change it.</p></article>
+      <article class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div><h3>Yours to arrange</h3><p>Choose the order of your apps and which widgets show: Up Next, Now Playing, Control, Inputs and Weather. Hide what you never use.</p></article>
+      <article class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg></div><h3>A calm look</h3><p>Eight wallpapers, a clock-over-wallpaper screen saver, and your own photo <span class="tag" title="Added in 0.4.5; the latest release is 0.4.0">In 0.4.5</span>. Tiles take their colour from each app&rsquo;s own icon.</p></article>
+      <article class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H5v4"/><path d="M5 11a8 8 0 1 1 2 6"/></svg></div><h3>Easy to undo</h3><p>Home goes back to your TV&rsquo;s launcher before shangOS is removed. The wizard remembers what it changed so it can reverse it.</p></article>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <script src="assets/site.js" defer></script>
+<section class="section section--sunk" aria-labelledby="install-h">
+  <div class="wrap">
+    <div class="section__head"><span class="kicker">One line</span><h2 id="install-h">Install it from your computer</h2>
+    <p>Run this in a terminal on a computer on the same Wi-Fi as the TV. A guided wizard finds the TV, shows every command before it runs, and installs the signed release.</p></div>
+    <div class="quick"><div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="home-tab-mac" data-os="mac" aria-controls="home-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="home-tab-linux" data-os="linux" aria-controls="home-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="home-tab-windows" data-os="windows" aria-controls="home-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="home-panel-mac" aria-labelledby="home-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="home-panel-linux" aria-labelledby="home-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="home-panel-windows" aria-labelledby="home-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex ((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))</code></pre></div></div></div></div>
+    <p class="fine" style="margin-top:var(--s-4)">First time? <a href="/setup/">The setup page</a> shows how to turn on debugging on the TV. You can <a href="/setup/#read-first">read the script before running it</a>.</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="dns-h">
+  <div class="wrap split">
+    <div class="stack"><span class="kicker">Optional</span><h2 id="dns-h">Block ads and trackers in your other apps too</h2>
+    <p class="lead">shangOS itself shows no ads, but your other apps still can. One setting makes the whole TV refuse known ad and tracker domains.</p>
+    <p>It uses Android&rsquo;s built-in <strong>Private DNS</strong>, set to AdGuard DNS or to a server of your own. It is off unless you ask for it, and one command turns it off again.</p>
+    <p class="fine">Be aware: the DNS provider you pick sees the names your TV looks up. Some apps may show fewer ads, load differently, or refuse to start. Apps that use their own DNS skip the filter. <a href="/setup/#block-ads">The details and the limits</a>.</p></div>
+    <div class="stack"><div data-tabs><div class="tabs__list" role="tablist" aria-label="Your computer"><button class="tabs__tab" role="tab" id="home-dns-tab-mac" data-os="mac" aria-controls="home-dns-panel-mac" aria-selected="false" tabindex="-1">macOS</button><button class="tabs__tab" role="tab" id="home-dns-tab-linux" data-os="linux" aria-controls="home-dns-panel-linux" aria-selected="false" tabindex="-1">Linux</button><button class="tabs__tab" role="tab" id="home-dns-tab-windows" data-os="windows" aria-controls="home-dns-panel-windows" aria-selected="false" tabindex="-1">Windows</button></div><div class="tabs__panel" role="tabpanel" id="home-dns-panel-mac" aria-labelledby="home-dns-tab-mac"><p class="tabs__panel-title">macOS</p><div class="term"><div class="term__bar"><span>Terminal: turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns adguard</code></pre></div><div class="term"><div class="term__bar"><span>Terminal: turn it off again</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns off</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="home-dns-panel-linux" aria-labelledby="home-dns-tab-linux"><p class="tabs__panel-title">Linux</p><div class="term"><div class="term__bar"><span>Terminal: turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns adguard</code></pre></div><div class="term"><div class="term__bar"><span>Terminal: turn it off again</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>curl -fsSL https://shangos.madusha.dev/setup.sh | bash -s -- --dns off</code></pre></div></div><div class="tabs__panel" role="tabpanel" id="home-dns-panel-windows" aria-labelledby="home-dns-tab-windows"><p class="tabs__panel-title">Windows</p><div class="term"><div class="term__bar"><span>PowerShell: turn it on</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>&amp; ([scriptblock]::Create((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))) -Dns adguard</code></pre></div><div class="term"><div class="term__bar"><span>PowerShell: turn it off again</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">PS&gt; </span>&amp; ([scriptblock]::Create((New-Object Net.WebClient).DownloadString(&#x27;https://shangos.madusha.dev/setup.ps1&#x27;))) -Dns off</code></pre></div></div></div></div>
+  </div>
+</section>
+
+<section class="section section--sunk" aria-labelledby="looks-h">
+  <div class="wrap">
+    <div class="section__head"><span class="kicker">Wallpapers</span><h2 id="looks-h">Eight looks, plus your own</h2><p>Pick one in Settings with a live preview. Daybreak follows the time of day. Milky Way and Calm Sea are photographs from Poly Haven (CC0); the other six were generated for this project.</p></div>
+    <ul class="looks looks--scroll"><li><figure class="look"><img src="/assets/looks/daybreak_day.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Daybreak wallpaper: a full-screen backdrop for the Home page"><figcaption>Daybreak<span>follows the sun</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/aurora.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Aurora wallpaper: a full-screen backdrop for the Home page"><figcaption>Aurora<span>drawn in code</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/ember.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Ember wallpaper: a full-screen backdrop for the Home page"><figcaption>Ember<span>drawn in code</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/tide.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Tide wallpaper: a full-screen backdrop for the Home page"><figcaption>Tide<span>drawn in code</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/orchid.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Orchid wallpaper: a full-screen backdrop for the Home page"><figcaption>Orchid<span>drawn in code</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/glacier.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Glacier wallpaper: a full-screen backdrop for the Home page"><figcaption>Glacier<span>for bright rooms</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/milkyway.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Milky Way wallpaper: a full-screen backdrop for the Home page"><figcaption>Milky Way<span>photo, CC0</span></figcaption></figure></li><li><figure class="look"><img src="/assets/looks/sea.webp" width="560" height="315" loading="lazy" decoding="async" alt="The Calm Sea wallpaper: a full-screen backdrop for the Home page"><figcaption>Calm Sea<span>photo, CC0</span></figcaption></figure></li></ul>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="priv-h">
+  <div class="wrap split">
+    <div class="stack"><span class="kicker">Privacy</span><h2 id="priv-h">Small list of what leaves the TV</h2><p class="lead">There are two things, both under your control. Everything else stays on the device.</p><p><a class="btn btn--ghost" href="/privacy/">Read the privacy page</a></p></div>
+    <div class="stack">
+      <h3>Can reach the internet</h3>
+      <ul class="list-clean"><li><span><strong>Weather</strong>, only if you switch it on: a coarse location of the city you chose (about 1&nbsp;km) goes to Open-Meteo.</span></li><li><span><strong>Poster pictures</strong> for Up Next: fetched from the address the streaming app publishes, on Wi-Fi or Ethernet by default.</span></li></ul>
+      <h3>Never</h3>
+      <ul class="list-clean list-clean--no"><li><span>Accounts, identifiers, analytics, crash reports or advertising.</span></li><li><span>Backups to the cloud. Uninstalling removes every stored byte.</span></li><li><span>Network access at all, in the Offline build.</span></li></ul>
+    </div>
+  </div>
+</section>
+
+
+<section class="section section--sunk" aria-labelledby="num-h">
+  <div class="wrap">
+    <div class="section__head"><span class="kicker">Measured</span><h2 id="num-h">How light is it?</h2><p>After ten trips back to Home, shangOS 0.2.2 held 57.6&nbsp;MB and Luma TV 2.4 held 103&nbsp;MB (44% less). Start-up time was about the same.</p></div>
+    <div class="table-wrap table-wrap--stack"><table><caption>Lower is better in every row</caption><thead><tr><th scope="col">Measure</th><th scope="col">Luma TV 2.4</th><th scope="col">shangOS 0.2.2 (auto)</th></tr></thead><tbody><tr><td data-label="Measure">Memory in use, idle on Home</td><td data-label="Luma TV 2.4">70.8 MB</td><td data-label="shangOS 0.2.2 (auto)">46.6 MB</td></tr><tr><td data-label="Measure">Memory after 10 trips back to Home</td><td data-label="Luma TV 2.4">103.0 MB</td><td data-label="shangOS 0.2.2 (auto)">57.6 MB</td></tr><tr><td data-label="Measure">Time to first frame after a restart (median of 8)</td><td data-label="Luma TV 2.4">458 ms</td><td data-label="shangOS 0.2.2 (auto)">477 ms</td></tr><tr><td data-label="Measure">Trip back to Home</td><td data-label="Luma TV 2.4">143 ms</td><td data-label="shangOS 0.2.2 (auto)">136 ms</td></tr><tr><td data-label="Measure">Processor use while idle on Home</td><td data-label="Luma TV 2.4">9.6 % of one core</td><td data-label="shangOS 0.2.2 (auto)">4.4 % of one core</td></tr><tr><td data-label="Measure">Janky frames while moving around</td><td data-label="Luma TV 2.4">7.0 %</td><td data-label="shangOS 0.2.2 (auto)">3.7 %</td></tr></tbody></table></div>
+    <p class="fine" style="margin-top:var(--s-4)">Measured 2026-10-30 on one TV: onn. Full HD Streaming Device, Android 14 (API 34), armeabi-v7a (1.4&nbsp;GB RAM, 1280x720 at 213 dpi). The current release is 0.4.0; shangOS 0.2.2 was measured, so newer versions have not been measured yet. One TV on one day is a guide, not a promise; differences under about 10% are noise. Memory is Android&rsquo;s own figure (PSS), in MB of 1,024&nbsp;kB. The method is <a href="https://github.com/madushas/shangos-launcher/blob/main/docs/MEASURING.md" rel="noopener">written down</a>, the raw numbers are in <a href="/data/bench.json">bench.json</a>, and <code>tools/bench.sh</code> measures your own TV.</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="dl-h">
+  <div class="wrap split">
+    <div class="stack"><span class="kicker">Download</span><h2 id="dl-h">Prefer to do it by hand?</h2><p class="lead">Every release has two APKs (Standard and Offline) and a <code>SHA256SUMS</code> file. The setup page lists the few <code>adb</code> commands and how to check the signature.</p>
+    <div class="btn-row"><a class="btn btn--primary" href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release on GitHub</a><a class="btn btn--ghost" href="/setup/#manual">Manual steps</a></div></div>
+    <div class="stack"><figure class="banner"><img src="/assets/banner.svg" alt="The shangOS banner: the word shang next to a lime play button that reads os" width="760" height="428" loading="lazy" decoding="async"><figcaption>The banner your TV shows for shangOS in its app list.</figcaption></figure><div class="term"><div class="term__bar"><span>Verify</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="c"># check the download, then the signer</span>
+<span class="p">$ </span>sha256sum -c SHA256SUMS --ignore-missing
+<span class="p">$ </span>apksigner verify --print-certs shangos-*-release.apk</code></pre></div>
+    <p class="fine">The certificate fingerprint must match the release notes and the TV&rsquo;s own Settings, Privacy, This build screen.</p></div>
+  </div>
+</section>
+
+<section class="section section--sunk" aria-labelledby="faq-h">
+  <div class="wrap" style="max-width:52rem">
+    <div class="section__head"><span class="kicker">Questions</span><h2 id="faq-h">Good to know first</h2></div>
+    <div class="faq"><details><summary>Why do I need a computer?</summary><div class="faq__a"><p>Android TV and Google TV have no setting for choosing a different home app, so it is set once with <code>adb</code>, Android&rsquo;s standard developer tool, over your home network. The setup wizard does it for you and takes about five minutes.</p></div></details><details><summary>Is it safe?</summary><div class="faq__a"><p>You can check each part yourself. The source is public. Each release is signed, ships with a <code>SHA256SUMS</code> file, and the setup wizard checks it before installing. The app has no accounts and no analytics, and the Offline build does not even ask Android for network access. Read the <a href="/privacy/">privacy page</a> for exactly what is sent, and when.</p></div></details><details><summary>Does it block ads in other apps?</summary><div class="faq__a"><p>shangOS itself shows none, but it does not change other apps. If you want that, the setup wizard can switch on an optional ad and tracker filter for the whole TV (Android&rsquo;s Private DNS). It is off by default, it can be undone with one command, and it has limits: <a href="/setup/#block-ads">read them first</a>.</p></div></details><details><summary>Will it work on my TV?</summary><div class="faq__a"><p>It needs an Android TV or Google TV on Android 12 or newer, and the wizard checks that for you. It was built and measured on one small stick (an onn. Full HD Streaming Device) and has not been tested on every brand, so please <a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">tell me what you find</a>. Not for phones, tablets or Fire TV.</p></div></details><details><summary>What does it change on my TV?</summary><div class="faq__a"><p>It installs one app and makes it the home screen. The TV&rsquo;s own home and setup apps stay switched on, so the TV always has a home to start with; if the TV keeps opening its own home, open shangOS from the app row. Nothing else is touched: no root, no firmware. <a href="/setup/#what-changes">Full list</a>.</p></div></details><details><summary>How do I go back?</summary><div class="faq__a"><p>Run the wizard again and choose <em>Remove shangOS</em>. It gives Home back to your TV&rsquo;s launcher first, then removes the app. <a href="/setup/#undo">Manual steps</a> are on the setup page.</p></div></details><details><summary>How do updates work?</summary><div class="faq__a"><p>shangOS does not check for or download updates itself. Run the wizard again, or install the new APK over the old one with <code>adb install -r</code>. Releases are signed with the same key, so your order, name and wallpaper stay.</p></div></details><details><summary>Does it work on a phone or tablet?</summary><div class="faq__a"><p>No. It is built for the remote and a TV screen, and needs Android 12 or newer on an Android TV or Google TV device.</p></div></details><details><summary>Who makes it?</summary><div class="faq__a"><p>It is a hobby project, maintained in spare time and published under the MIT licence. It began as a fork of <a href="https://github.com/0xProbabillity/luma-tv" rel="noopener">Luma TV</a> (see <a href="/licenses/">credits</a>). Bugs and ideas go on <a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">GitHub</a>.</p></div></details></div>
+  </div>
+</section>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+        <p class="footer-note">A home screen for Android TV and Google TV. A hobby project, open source under the MIT licence. No accounts, no ads, no trackers, and this website sets no cookies and loads nothing from other sites.</p>
+      </div>
+      <div><h2>Use it</h2><ul><li><a href="/setup/">Set up on your TV</a></li><li><a href="/guide/">User guide</a></li><li><a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release</a></li></ul></div>
+      <div><h2>Trust it</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/licenses/">Licences and credits</a></li><li><a href="/setup/#verify">Verify a download</a></li></ul></div>
+      <div><h2>Source</h2><ul><li><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub</a></li><li><a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">Report a problem</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; shangOS contributors. MIT licence.</span><span>Not affiliated with Google, Sony or any TV maker.</span></div>
+  </div>
+</footer>
 </body>
 </html>

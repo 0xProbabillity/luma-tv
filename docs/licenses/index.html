@@ -1,225 +1,77 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Licenses and credits — shangOS</title>
-  <meta name="description" content="Complete open source licenses, third-party assets, and credits for shangOS.">
-  <meta property="og:title" content="Licenses and credits — shangOS">
-  <meta property="og:description" content="Complete open source licenses, third-party assets, and credits for shangOS.">
-  <meta property="og:image" content="../assets/home.webp">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#fdfbf7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpolygon points='13,10 23,16 13,22' fill='%23fff'/%3E%3C/svg%3E">
-
-  <script>
-    (() => {
-      try {
-        const t = localStorage.getItem('shangos-theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="stylesheet" href="../assets/site.css">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Licences and credits | shangOS</title>
+<meta name="description" content="The licences and credits for shangOS: its MIT licence, the Luma TV project it began from, and the wallpapers and data it uses.">
+<link rel="canonical" href="https://shangos.madusha.dev/licenses/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9faef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="shangOS">
+<meta property="og:title" content="Licences and credits | shangOS">
+<meta property="og:description" content="The licences and credits for shangOS: its MIT licence, the Luma TV project it began from, and the wallpapers and data it uses.">
+<meta property="og:url" content="https://shangos.madusha.dev/licenses/">
+<meta property="og:image" content="https://shangos.madusha.dev/assets/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("shangos-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
-  <a href="#main" class="skip">Skip to content</a>
-
-  <header class="site">
-    <div class="wrap site-nav-wrap">
-      <div class="brand-group">
-        <a href="../" class="brand" aria-label="shangOS home">
-          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-          </svg>
-          <span class="brand-name">shangOS</span>
-        </a>
-        <a href="https://github.com/madushas/shangos-launcher/releases/latest"
-           class="badge-version"
-           target="_blank"
-           rel="noopener"
-           title="View latest release notes on GitHub">
-          <span class="dot"></span>
-          <!-- APP_VERSION_START -->v0.3.0<!-- APP_VERSION_END -->
-        </a>
-      </div>
-
-      <div class="header-actions">
-        <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-          <a href="../">Overview</a>
-          <a href="../setup/">Setup</a>
-          <a href="../guide/">Guide</a>
-          <a href="../privacy/">Privacy</a>
-          <a href="./" aria-current="page">Licenses</a>
-        </nav>
-
-        <div class="header-controls">
-          <a href="https://github.com/madushas/shangos-launcher"
-             class="btn-icon gh-link" target="_blank" rel="noopener"
-             aria-label="View source repository on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.03 11.03 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.26 5.66.41.35.78 1.05.78 2.11 0 1.53-.01 2.76-.01 3.14 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
-            </svg>
-          </a>
-
-          <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </button>
-
-          <button class="btn-icon nav-toggle" id="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
-            <svg class="nav-toggle-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-            <svg class="nav-toggle-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Main"><a href="/">Home</a><a href="/setup/">Set up</a><a href="/guide/" aria-current="page">Guide</a><a href="/privacy/">Privacy</a><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub<span class="vh"> (opens in a new tab)</span></a></nav>
+    <div class="header-tools">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-sun"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
+  </div>
+</header>
+<main id="main">
+<div class="wrap">
+  <header class="page-head">
+    <span class="kicker">Credits</span>
+    <h1 style="font-size:clamp(2rem,4vw + 0.5rem,3.25rem)">Licences and credits</h1>
+    <p class="lead">What is bundled or used, who made it, and under which licence. This mirrors Settings, About, Licences in the app.</p>
+    <nav class="subnav" aria-label="Documentation">
+      <a href="/setup/">Set up</a>
+      <a href="/guide/">Guide</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/licenses/" aria-current="page">Licences</a>
+    </nav>
   </header>
-
-  <main id="main">
-    <div class="wrap doc-page">
-      <div class="doc-layout no-toc">
-
-        <aside class="doc-sidebar">
-          <div class="sidebar-group">
-            <span class="sidebar-title">Documentation</span>
-            <ul class="sidebar-nav">
-              <li><a href="../setup/">Setup Guide</a></li>
-              <li><a href="../guide/">User Guide</a></li>
-              <li><a href="../privacy/">Privacy Architecture</a></li>
-              <li><a href="./" aria-current="page">Licenses &amp; Credits</a></li>
-            </ul>
-          </div>
-          <div class="sidebar-group">
-            <span class="sidebar-title">Project Source</span>
-            <ul class="sidebar-nav">
-              <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/releases/latest" target="_blank" rel="noopener">Latest Releases ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-            </ul>
-          </div>
-        </aside>
-
-        <article class="doc-content">
-          <span class="kicker">Attribution &amp; Integrity</span>
-          <h1>Licenses and credits</h1>
-          <p class="intro">shangOS contains zero third-party Java libraries or SDKs. This page documents all standalone components, datasets, and creative commons assets bundled or queried by the launcher — mirroring <strong>Settings → About → Licenses</strong> in the app.</p>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Component</th>
-                  <th>Author / Origin</th>
-                  <th>License (SPDX)</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">shangOS</a></strong></td>
-                  <td>madushas &amp; contributors</td>
-                  <td><span class="spec-chip">MIT</span></td>
-                  <td>The primary launcher application and system daemon.</td>
-                </tr>
-                <tr>
-                  <td><strong><a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a></strong></td>
-                  <td>0xProbability</td>
-                  <td><span class="spec-chip">MIT</span></td>
-                  <td>Upstream architecture shangOS was originally forked from.</td>
-                </tr>
-                <tr>
-                  <td><strong><a href="https://polyhaven.com" target="_blank" rel="noopener">Poly Haven</a></strong></td>
-                  <td>Poly Haven &amp; artists</td>
-                  <td><span class="spec-chip">CC0-1.0</span></td>
-                  <td>The <em>Milky Way</em> and <em>Calm Sea</em> photographic wallpapers.</td>
-                </tr>
-                <tr>
-                  <td><strong><a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></strong></td>
-                  <td>Open-Meteo.com</td>
-                  <td><span class="spec-chip"><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a></span></td>
-                  <td>Opt-in coarse weather forecast API queries.</td>
-                </tr>
-                <tr>
-                  <td><strong><a href="https://www.iana.org/time-zones" target="_blank" rel="noopener">IANA Time Zone DB</a></strong></td>
-                  <td>IANA</td>
-                  <td><span class="spec-chip">Public Domain</span></td>
-                  <td>Reference coordinates for time zone-inferred city mapping.</td>
-                </tr>
-                <tr>
-                  <td><strong><a href="https://github.com/googlefonts/roboto" target="_blank" rel="noopener">Roboto</a></strong></td>
-                  <td>Google</td>
-                  <td><span class="spec-chip"><a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache-2.0</a></span></td>
-                  <td>Letterform glyphs rendered in the TV banner visual.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p>Full license declarations are bundled directly in the application binary and maintained in the repository root within <a href="https://github.com/madushas/shangos-launcher/blob/main/LICENSE" target="_blank" rel="noopener">LICENSE</a> and <a href="https://github.com/madushas/shangos-launcher/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE.md</a>.</p>
-          <p>The generative dynamic themes — <strong>Aurora</strong>, <strong>Ember</strong>, <strong>Tide</strong>, <strong>Orchid</strong>, <strong>Glacier</strong>, and <strong>Daybreak</strong> — were procedurally synthesized specifically for this project and are published under the MIT license.</p>
-        </article>
-
+  <div class="doc">
+    <div class="doc__body"><section id="components" aria-labelledby="components-h"><h2 id="components-h">What is in it</h2><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Component</th><th scope="col">From</th><th scope="col">Licence</th><th scope="col">Used for</th></tr></thead><tbody><tr><td data-label="Component">shangOS</td><td data-label="From">madushas and contributors</td><td data-label="Licence">MIT</td><td data-label="Used for">The launcher itself.</td></tr><tr><td data-label="Component">Luma TV</td><td data-label="From">0xProbabillity</td><td data-label="Licence">MIT</td><td data-label="Used for">The project shangOS began as a fork of. Its licence notice is kept.</td></tr><tr><td data-label="Component">Poly Haven photographs</td><td data-label="From">Poly Haven and its artists</td><td data-label="Licence">CC0 1.0</td><td data-label="Used for">The Milky Way and Calm Sea wallpapers.</td></tr><tr><td data-label="Component">Open-Meteo</td><td data-label="From">Open-Meteo.com</td><td data-label="Licence">CC BY 4.0</td><td data-label="Used for">Weather forecasts, only if you turn Weather on.</td></tr><tr><td data-label="Component">IANA time zone database</td><td data-label="From">IANA</td><td data-label="Licence">Public domain</td><td data-label="Used for">Linking a time zone to a city for weather and sunrise when no city is chosen.</td></tr><tr><td data-label="Component">GeoNames</td><td data-label="From">GeoNames contributors, via the all-the-cities package (MIT)</td><td data-label="Licence">CC BY 4.0</td><td data-label="Used for">The built-in list of about 23,000 cities for Settings, City. Nothing is looked up online.</td></tr><tr><td data-label="Component">Roboto</td><td data-label="From">Google</td><td data-label="Licence">Apache 2.0</td><td data-label="Used for">Letters in the TV banner image.</td></tr></tbody></table></div>
+<p>shangOS contains no third-party Java libraries. The full texts are bundled in the app (Settings, About, Licences) and kept as <code>LICENSE</code> and <code>NOTICE.md</code> in the repository.</p></section><section id="wallpapers" aria-labelledby="wallpapers-h"><h2 id="wallpapers-h">Wallpapers</h2>
+<p>Aurora, Ember, Tide, Orchid, Glacier and Daybreak were generated in code for this project and are published under the MIT licence. Milky Way and Calm Sea are photographs from <a href="https://polyhaven.com" rel="noopener">Poly Haven</a>, released as CC0.</p></section><section id="trademarks" aria-labelledby="trademarks-h"><h2 id="trademarks-h">Names</h2>
+<p>Product and app names shown on this site (for example in screenshots) belong to their owners. shangOS is not affiliated with or endorsed by Google, Sony, or any TV or streaming company.</p></section></div>
+    <details class="toc" open><summary>On this page</summary><nav aria-label="On this page"><h2 class="vh">On this page</h2><ol><li><a href="#components">What is in it</a></li><li><a href="#wallpapers">Wallpapers</a></li><li><a href="#trademarks">Names</a></li></ol></nav></details>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+        <p class="footer-note">A home screen for Android TV and Google TV. A hobby project, open source under the MIT licence. No accounts, no ads, no trackers, and this website sets no cookies and loads nothing from other sites.</p>
       </div>
+      <div><h2>Use it</h2><ul><li><a href="/setup/">Set up on your TV</a></li><li><a href="/guide/">User guide</a></li><li><a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release</a></li></ul></div>
+      <div><h2>Trust it</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/licenses/">Licences and credits</a></li><li><a href="/setup/#verify">Verify a download</a></li></ul></div>
+      <div><h2>Source</h2><ul><li><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub</a></li><li><a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">Report a problem</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li></ul></div>
     </div>
-  </main>
-
-  <footer class="site">
-    <div class="wrap">
-      <div class="footer-grid">
-        <div class="footer-brand-col">
-          <a href="../" class="brand" aria-label="shangOS home">
-            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-              <rect width="32" height="32" rx="8" fill="currentColor"/>
-              <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-            </svg>
-            <span class="brand-name">shangOS</span>
-          </a>
-          <p class="footer-mission">
-            A fast, calm, ad-free home screen for Android TV and Google TV. Free software, no accounts, and no surveillance.
-          </p>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Documentation</strong>
-          <ul>
-            <li><a href="../setup/">Setup Guide</a></li>
-            <li><a href="../guide/">User Guide</a></li>
-            <li><a href="../#downloads">Downloads</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Security &amp; Legal</strong>
-          <ul>
-            <li><a href="../privacy/">Privacy Statement</a></li>
-            <li><a href="./">Open Source Licenses</a></li>
-            <li><a href="../#verify">Verification Keys</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Project</strong>
-          <ul>
-            <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-            <li><a href="https://github.com/madushas/shangos-launcher/releases" target="_blank" rel="noopener">Release Archive ↗</a></li>
-            <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© 2026 shangOS · Released under the <a href="./">MIT License</a> · Forked from <a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a>.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="../assets/site.js" defer></script>
+    <div class="footer-bottom"><span>&copy; shangOS contributors. MIT licence.</span><span>Not affiliated with Google, Sony or any TV maker.</span></div>
+  </div>
+</footer>
 </body>
 </html>

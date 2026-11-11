@@ -1,271 +1,81 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Privacy Architecture — shangOS</title>
-  <meta name="description" content="shangOS has zero accounts, telemetry, crash reporting, or cloud analytics. Complete breakdown of network use and permissions.">
-  <meta name="theme-color" content="#fdfbf7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpolygon points='13,10 23,16 13,22' fill='%23fff'/%3E%3C/svg%3E">
-
-  <script>
-    (() => {
-      try {
-        const t = localStorage.getItem('shangos-theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="stylesheet" href="../assets/site.css">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy | shangOS</title>
+<meta name="description" content="Exactly what shangOS sends over the network and when, which permissions it asks for, and what it stores. No accounts, analytics or trackers.">
+<link rel="canonical" href="https://shangos.madusha.dev/privacy/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9faef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="shangOS">
+<meta property="og:title" content="Privacy | shangOS">
+<meta property="og:description" content="Exactly what shangOS sends over the network and when, which permissions it asks for, and what it stores. No accounts, analytics or trackers.">
+<meta property="og:url" content="https://shangos.madusha.dev/privacy/">
+<meta property="og:image" content="https://shangos.madusha.dev/assets/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("shangos-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
-  <a href="#main" class="skip">Skip to content</a>
-
-  <header class="site">
-    <div class="wrap site-nav-wrap">
-      <div class="brand-group">
-        <a href="../" class="brand" aria-label="shangOS home">
-          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-          </svg>
-          <span class="brand-name">shangOS</span>
-        </a>
-        <a href="https://github.com/madushas/shangos-launcher/releases/latest"
-           class="badge-version"
-           target="_blank"
-           rel="noopener"
-           title="View latest release notes on GitHub">
-          <span class="dot"></span>
-          <!-- APP_VERSION_START -->v0.3.0<!-- APP_VERSION_END -->
-        </a>
-      </div>
-
-      <div class="header-actions">
-        <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-          <a href="../">Overview</a>
-          <a href="../setup/">Setup</a>
-          <a href="../guide/">Guide</a>
-          <a href="./" aria-current="page">Privacy</a>
-          <a href="../licenses/">Licenses</a>
-        </nav>
-
-        <div class="header-controls">
-          <a href="https://github.com/madushas/shangos-launcher"
-             class="btn-icon gh-link" target="_blank" rel="noopener"
-             aria-label="View source repository on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.03 11.03 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.26 5.66.41.35.78 1.05.78 2.11 0 1.53-.01 2.76-.01 3.14 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
-            </svg>
-          </a>
-
-          <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </button>
-
-          <button class="btn-icon nav-toggle" id="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
-            <svg class="nav-toggle-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-            <svg class="nav-toggle-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Main"><a href="/">Home</a><a href="/setup/">Set up</a><a href="/guide/">Guide</a><a href="/privacy/" aria-current="page">Privacy</a><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub<span class="vh"> (opens in a new tab)</span></a></nav>
+    <div class="header-tools">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-sun"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
+  </div>
+</header>
+<main id="main">
+<div class="wrap">
+  <header class="page-head">
+    <span class="kicker">Privacy</span>
+    <h1 style="font-size:clamp(2rem,4vw + 0.5rem,3.25rem)">What shangOS sends, and when</h1>
+    <p class="lead">No accounts, no analytics, no crash reports, no identifiers. Two optional features can use the internet, and the Offline build has neither.</p>
+    <nav class="subnav" aria-label="Documentation">
+      <a href="/setup/">Set up</a>
+      <a href="/guide/">Guide</a>
+      <a href="/privacy/" aria-current="page">Privacy</a>
+      <a href="/licenses/">Licences</a>
+    </nav>
   </header>
-
-  <main id="main">
-    <div class="wrap doc-page">
-      <div class="doc-layout">
-
-        <aside class="doc-sidebar">
-          <div class="sidebar-group">
-            <span class="sidebar-title">Documentation</span>
-            <ul class="sidebar-nav">
-              <li><a href="../setup/">Setup Guide</a></li>
-              <li><a href="../guide/">User Guide</a></li>
-              <li><a href="./" aria-current="page">Privacy Architecture</a></li>
-              <li><a href="../licenses/">Licenses &amp; Credits</a></li>
-            </ul>
-          </div>
-          <div class="sidebar-group">
-            <span class="sidebar-title">Project Source</span>
-            <ul class="sidebar-nav">
-              <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/releases/latest" target="_blank" rel="noopener">Latest Releases ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-            </ul>
-          </div>
-        </aside>
-
-        <article class="doc-content">
-          <span class="kicker">Security &amp; Privacy</span>
-          <h1>Privacy Architecture</h1>
-          <p class="intro">shangOS has zero accounts, analytics trackers, crash monitors, or background telemetry pings. It collects no identifiers and contains no server backends. The application mirrors this page identically in <strong>Settings → Privacy</strong>.</p>
-
-          <!-- Collapsible in-page jump menu on mobile screens -->
-          <details class="mobile-toc">
-            <summary>
-              <span>On this page</span>
-              <svg class="mobile-toc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </summary>
-            <ul class="mobile-toc-list">
-              <li><a href="#the-network">Network Usage</a></li>
-              <li><a href="#permissions">Declared Permissions</a></li>
-              <li><a href="#stored-on-the-tv">Local Storage</a></li>
-              <li><a href="#verify-it">Auditing &amp; Reproducibility</a></li>
-            </ul>
-          </details>
-
-          <h2 id="the-network">Network Usage</h2>
-          <p>Only two features within the Standard Release APK can initiate outbound TCP sockets, both strictly under user control:</p>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Feature</th>
-                  <th>Trigger Conditions</th>
-                  <th>Payload &amp; Remote Endpoint</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Weather Widget</strong></td>
-                  <td>Strictly opt-in (disabled by default)</td>
-                  <td>Sends an HTTPS GET query to <code>api.open-meteo.com</code> containing coarse coordinates (~1 km radius): of the main city of your TV's time zone, or of the city you pinned in Settings → Weather location. Open-Meteo receives only the TV's external IP address. Searching for a city there sends the text you type to <code>geocoding-api.open-meteo.com</code>, and only while you search.</td>
-                </tr>
-                <tr>
-                  <td><strong>Remote Poster Artwork</strong></td>
-                  <td>Wi-Fi and Ethernet only by default</td>
-                  <td>Cover posters published by installed media apps for the Continue Watching row are retrieved from the HTTPS URL declared by the app. Queries never target local RFC-1918 private LAN addresses.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p><strong>Runtime Offline Mode:</strong> Toggling this switch in <em>Settings → Privacy</em> immediately cuts all network threads. Furthermore, our dedicated <strong>Offline Edition APK</strong> is compiled without the <code>android.permission.INTERNET</code> declaration, ensuring the Linux kernel blocks all outbound socket creation at the OS level.</p>
-
-          <h2 id="permissions">Declared Permissions</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Android Permission</th>
-                  <th>Architectural Justification</th>
-                  <th>Requirement Level</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>READ_TV_LISTINGS</code></td>
-                  <td>Enables Up Next Continue Watching cards shared by streaming apps. Read-only.</td>
-                  <td><span class="spec-chip">Optional</span></td>
-                </tr>
-                <tr>
-                                  <td><code>PACKAGE_USAGE_STATS</code></td>
-                                  <td>Ranks recent applications by actual foreground launch timestamps.</td>
-                                  <td><span class="spec-chip">Optional</span></td>
-                                </tr>
-                                <tr>
-                                  <td><code>BIND_NOTIFICATION_LISTENER</code></td>
-                                  <td>Accesses active media playback controls (Now Playing). The listener contains zero notification-parsing logic; it binds strictly to the OS <code>MediaSessionManager</code>.</td>
-                                  <td><span class="spec-chip">Optional</span></td>
-                                </tr>
-                                <tr>
-                                  <td><code>REQUEST_DELETE_PACKAGES</code></td>
-                                  <td>Lets the launcher ask Android to show its own uninstall confirmation when you choose Uninstall on an app&rsquo;s menu. Nothing is removed unless you confirm there.</td>
-                                  <td><span class="spec-chip">On request</span></td>
-                                </tr>
-                                <tr>
-                                  <td><code>ACCESS_NETWORK_STATE</code></td>
-                                  <td>Checks for unmetered Ethernet or Wi-Fi before attempting poster queries.</td>
-                                  <td><span class="spec-chip">System</span></td>
-                                </tr>
-                                <tr>
-                                  <td><code>INTERNET</code></td>
-                                  <td>Queries Open-Meteo weather and loads Up Next posters. <em>Completely stripped from the Offline Edition.</em></td>
-                                  <td><span class="spec-chip">Opt-in Only</span></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-
-                          <h2 id="stored-on-the-tv">Local On-Device Storage</h2>
-                          <p>All user configurations, custom app rankings, and cached asset previews reside exclusively on local device flash in <code>/data/data/dev.madusha.shangos/</code>. Cloud synchronization (<code>android:allowBackup</code>) is hard-coded to <code>false</code> in the manifest. Uninstallation permanently wipes every stored byte.</p>
-
-                          <h2 id="verify-it">Auditing &amp; Reproducibility</h2>
-                          <p>All network logic is isolated into a single source file (<code>Net.java</code>), and application preferences are kept in (<code>Prefs.java</code>). CI static analysis checks enforce this boundary at every pull request. Check the cryptographic SHA-256 fingerprint on your television in <strong>Settings → Privacy → This build</strong> and <a href="../#verify">compare it with GitHub release attestations</a>.</p>
-                        </article>
-
-                        <aside class="doc-toc">
-                          <span class="toc-heading">On this page</span>
-                          <ul class="toc-list">
-                            <li><a href="#the-network">Network Usage</a></li>
-                            <li><a href="#permissions">Declared Permissions</a></li>
-                            <li><a href="#stored-on-the-tv">Local Storage</a></li>
-                            <li><a href="#verify-it">Auditing &amp; Reproducibility</a></li>
-                          </ul>
-                        </aside>
-
-                      </div>
-                    </div>
-                  </main>
-
-                  <footer class="site">
-                    <div class="wrap">
-                      <div class="footer-grid">
-                        <div class="footer-brand-col">
-                          <a href="../" class="brand" aria-label="shangOS home">
-                            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                              <rect width="32" height="32" rx="8" fill="currentColor"/>
-                              <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-                            </svg>
-                            <span class="brand-name">shangOS</span>
-                          </a>
-                          <p class="footer-mission">
-                            A fast, calm, ad-free home screen for Android TV and Google TV. Free software, no accounts, and no surveillance.
-                          </p>
-                        </div>
-
-                        <div class="footer-links-col">
-                          <strong class="footer-heading">Documentation</strong>
-                          <ul>
-                            <li><a href="../setup/">Setup Guide</a></li>
-                            <li><a href="../guide/">User Guide</a></li>
-                            <li><a href="../#downloads">Downloads</a></li>
-                          </ul>
-                        </div>
-
-                        <div class="footer-links-col">
-                          <strong class="footer-heading">Security &amp; Legal</strong>
-                          <ul>
-                            <li><a href="./">Privacy Statement</a></li>
-                            <li><a href="../licenses/">Open Source Licenses</a></li>
-                            <li><a href="../#verify">Verification Keys</a></li>
-                          </ul>
-                        </div>
-
-                        <div class="footer-links-col">
-                          <strong class="footer-heading">Project</strong>
-                          <ul>
-                            <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-                            <li><a href="https://github.com/madushas/shangos-launcher/releases" target="_blank" rel="noopener">Release Archive ↗</a></li>
-                            <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      <div class="footer-bottom">
-                        <p>© 2026 shangOS · Released under the <a href="../licenses/">MIT License</a> · Forked from <a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a>.</p>
-                      </div>
-                    </div>
-                  </footer>
-
-                  <script src="../assets/site.js" defer></script>
-                </body>
-                </html>
+  <div class="doc">
+    <div class="doc__body"><section id="network" aria-labelledby="network-h"><h2 id="network-h">What can use the network</h2>
+<p>Two features in the Standard build can open a network connection. Both are under your control. The Offline build has neither.</p><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Feature</th><th scope="col">When</th><th scope="col">What is sent, and to whom</th></tr></thead><tbody><tr><td data-label="Feature">Weather</td><td data-label="When">Only if you turn it on. Off by default.</td><td data-label="What is sent, and to whom">An HTTPS request to <code>api.open-meteo.com</code> with a coarse location (two decimals, about 1&nbsp;km) of the city you chose in setup or Settings (picked from a list built into the app, so choosing it sends nothing), or else the main city of your TV&rsquo;s time zone. It is never taken from GPS or looked up from your internet address. Open-Meteo sees the request and your internet address, as any website would.</td></tr><tr><td data-label="Feature">Poster pictures</td><td data-label="When">Wi-Fi and Ethernet only, by default. You can set it to Off or Always.</td><td data-label="What is sent, and to whom">Streaming apps publish a poster address for their Continue watching items. shangOS fetches that picture from the address the app gave. It does not fetch from addresses on your home network.</td></tr></tbody></table></div>
+<div class="callout"><h3>Offline, two ways</h3><p><strong>Offline mode</strong> in Settings, Privacy stops the app&rsquo;s own network use immediately. The <strong>Offline build</strong> is compiled without the <code>INTERNET</code> permission, so Android itself refuses it any network access.</p></div></section><section id="permissions" aria-labelledby="permissions-h"><h2 id="permissions-h">Permissions it asks for</h2><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Permission</th><th scope="col">Why</th><th scope="col">When</th></tr></thead><tbody><tr><td data-label="Permission"><code>READ_TV_LISTINGS</code></td><td data-label="Why">Lets Up Next show Continue watching items that streaming apps share. Read only.</td><td data-label="When">Optional</td></tr><tr><td data-label="Permission"><code>READ_EPG_DATA</code></td><td data-label="Why">Goes with the permission above: the system&rsquo;s TV provider asks for both before it shares Continue watching items.</td><td data-label="When">Optional</td></tr><tr><td data-label="Permission"><code>PACKAGE_USAGE_STATS</code></td><td data-label="Why">Orders recent apps by when you last opened them.</td><td data-label="When">Optional</td></tr><tr><td data-label="Permission"><code>BIND_NOTIFICATION_LISTENER</code></td><td data-label="Why">Lets Now Playing see media sessions. It reads media playback only, not your notifications.</td><td data-label="When">Optional</td></tr><tr><td data-label="Permission"><code>REQUEST_DELETE_PACKAGES</code></td><td data-label="Why">Lets shangOS ask Android to show its uninstall confirmation. Nothing is removed unless you confirm there.</td><td data-label="When">When you choose Uninstall <span class="tag" title="Added in 0.4.5; the latest release is 0.4.0">In 0.4.5</span></td></tr><tr><td data-label="Permission"><code>ACCESS_NETWORK_STATE</code></td><td data-label="Why">Tells whether you are on Wi-Fi or Ethernet before fetching posters.</td><td data-label="When">System</td></tr><tr><td data-label="Permission"><code>INTERNET</code></td><td data-label="Why">Weather and poster pictures. Not present in the Offline build.</td><td data-label="When">Standard build only</td></tr></tbody></table></div></section><section id="dns" aria-labelledby="dns-h"><h2 id="dns-h">Ad blocking is separate</h2>
+<p>The optional ad and tracker filter is a setting of your TV, not a feature of the app. shangOS does not look up or send any names itself. If you switch it on, the DNS provider you chose sees the domain names your TV looks up, for every app. See <a href="/setup/#block-ads">the setup page</a> for what to weigh first.</p></section><section id="storage" aria-labelledby="storage-h"><h2 id="storage-h">What is stored</h2>
+<p>Your settings, app order, name and cached pictures live in the app&rsquo;s private storage on the TV. Cloud backup is switched off in the app&rsquo;s manifest (<code>allowBackup=false</code>). Uninstalling removes all of it.</p>
+<p>There are no accounts, no analytics, no crash reporting and no identifiers. This website sets no cookies and loads nothing from other sites; the only thing it remembers, in your browser, is your theme choice.</p></section><section id="audit" aria-labelledby="audit-h"><h2 id="audit-h">Check it yourself</h2>
+<p>All network code is in one file, <code>Net.java</code>, and the repository&rsquo;s audit script fails if sockets or web views appear anywhere else. Settings holds all preferences in <code>Prefs.java</code>.</p>
+<p>To confirm you are running the build you think you are, open Settings, Privacy, This build on the TV and compare the SHA-256 fingerprint with the one in the release notes on <a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">GitHub</a>. This page mirrors the Privacy screen in the app.</p></section></div>
+    <details class="toc" open><summary>On this page</summary><nav aria-label="On this page"><h2 class="vh">On this page</h2><ol><li><a href="#network">What can use the network</a></li><li><a href="#permissions">Permissions it asks for</a></li><li><a href="#dns">Ad blocking is separate</a></li><li><a href="#storage">What is stored</a></li><li><a href="#audit">Check it yourself</a></li></ol></nav></details>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+        <p class="footer-note">A home screen for Android TV and Google TV. A hobby project, open source under the MIT licence. No accounts, no ads, no trackers, and this website sets no cookies and loads nothing from other sites.</p>
+      </div>
+      <div><h2>Use it</h2><ul><li><a href="/setup/">Set up on your TV</a></li><li><a href="/guide/">User guide</a></li><li><a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release</a></li></ul></div>
+      <div><h2>Trust it</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/licenses/">Licences and credits</a></li><li><a href="/setup/#verify">Verify a download</a></li></ul></div>
+      <div><h2>Source</h2><ul><li><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub</a></li><li><a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">Report a problem</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; shangOS contributors. MIT licence.</span><span>Not affiliated with Google, Sony or any TV maker.</span></div>
+  </div>
+</footer>
+</body>
+</html>

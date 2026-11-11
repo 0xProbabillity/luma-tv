@@ -1,370 +1,97 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>User Guide — shangOS</title>
-  <meta name="description" content="Complete guide to shangOS: Home navigation, app management, widgets, dynamic wallpapers, performance tiers, and privacy controls.">
-  <meta property="og:title" content="User Guide — shangOS">
-  <meta property="og:description" content="Complete guide to shangOS: Home navigation, widgets, performance tiers, and privacy architecture.">
-  <meta property="og:image" content="../assets/home.webp">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#fdfbf7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpolygon points='13,10 23,16 13,22' fill='%23fff'/%3E%3C/svg%3E">
-
-  <script>
-    (() => {
-      try {
-        const t = localStorage.getItem('shangos-theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="stylesheet" href="../assets/site.css">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User guide | shangOS</title>
+<meta name="description" content="How to use shangOS with a TV remote: Home, Apps, widgets, Settings, wallpapers, performance levels and privacy controls.">
+<link rel="canonical" href="https://shangos.madusha.dev/guide/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9faef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="shangOS">
+<meta property="og:title" content="User guide | shangOS">
+<meta property="og:description" content="How to use shangOS with a TV remote: Home, Apps, widgets, Settings, wallpapers, performance levels and privacy controls.">
+<meta property="og:url" content="https://shangos.madusha.dev/guide/">
+<meta property="og:image" content="https://shangos.madusha.dev/assets/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("shangos-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
-  <a href="#main" class="skip">Skip to content</a>
-
-  <header class="site">
-    <div class="wrap site-nav-wrap">
-      <div class="brand-group">
-        <a href="../" class="brand" aria-label="shangOS home">
-          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-          </svg>
-          <span class="brand-name">shangOS</span>
-        </a>
-        <a href="https://github.com/madushas/shangos-launcher/releases/latest"
-           class="badge-version"
-           target="_blank"
-           rel="noopener"
-           title="View latest release notes on GitHub">
-          <span class="dot"></span>
-          <!-- APP_VERSION_START -->v0.3.0<!-- APP_VERSION_END -->
-        </a>
-      </div>
-
-      <div class="header-actions">
-        <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-          <a href="../">Overview</a>
-          <a href="../setup/">Setup</a>
-          <a href="./" aria-current="page">Guide</a>
-          <a href="../privacy/">Privacy</a>
-          <a href="../licenses/">Licenses</a>
-        </nav>
-
-        <div class="header-controls">
-          <a href="https://github.com/madushas/shangos-launcher"
-             class="btn-icon gh-link" target="_blank" rel="noopener"
-             aria-label="View source repository on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.03 11.03 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.26 5.66.41.35.78 1.05.78 2.11 0 1.53-.01 2.76-.01 3.14 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
-            </svg>
-          </a>
-
-          <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </button>
-
-          <button class="btn-icon nav-toggle" id="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
-            <svg class="nav-toggle-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-            <svg class="nav-toggle-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Main"><a href="/">Home</a><a href="/setup/">Set up</a><a href="/guide/" aria-current="page">Guide</a><a href="/privacy/">Privacy</a><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub<span class="vh"> (opens in a new tab)</span></a></nav>
+    <div class="header-tools">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-sun"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
+  </div>
+</header>
+<main id="main">
+<div class="wrap">
+  <header class="page-head">
+    <span class="kicker">User guide</span>
+    <h1 style="font-size:clamp(2rem,4vw + 0.5rem,3.25rem)">Using shangOS</h1>
+    <p class="lead">Everything is reachable with the d-pad and OK. This is a tour of what is where.</p>
+    <nav class="subnav" aria-label="Documentation">
+      <a href="/setup/">Set up</a>
+      <a href="/guide/" aria-current="page">Guide</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/licenses/">Licences</a>
+    </nav>
   </header>
-
-  <main id="main">
-    <div class="wrap doc-page">
-      <div class="doc-layout">
-
-        <aside class="doc-sidebar">
-          <div class="sidebar-group">
-            <span class="sidebar-title">Documentation</span>
-            <ul class="sidebar-nav">
-              <li><a href="../setup/">Setup Guide</a></li>
-              <li><a href="./" aria-current="page">User Guide</a></li>
-              <li><a href="../privacy/">Privacy Architecture</a></li>
-              <li><a href="../licenses/">Licenses &amp; Credits</a></li>
-            </ul>
-          </div>
-          <div class="sidebar-group">
-            <span class="sidebar-title">Project Source</span>
-            <ul class="sidebar-nav">
-              <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/releases/latest" target="_blank" rel="noopener">Latest Releases ↗</a></li>
-              <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-            </ul>
-          </div>
-        </aside>
-
-        <article class="doc-content">
-          <span class="kicker">Reference</span>
-          <h1>The shangOS guide</h1>
-          <p class="intro">A complete manual for your TV remote. shangOS is organized around three pages — <strong>Home</strong>, <strong>Apps</strong>, and <strong>Settings</strong> — navigating via standard remote directional pads with fluid, predictable motion.</p>
-
-          <!-- Collapsible in-page jump menu on mobile screens -->
-          <details class="mobile-toc">
-            <summary>
-              <span>On this page</span>
-              <svg class="mobile-toc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </summary>
-            <ul class="mobile-toc-list">
-              <li><a href="#home">The Home screen</a></li>
-              <li><a href="#apps">The Apps page</a></li>
-              <li><a href="#widgets">Home Widgets</a></li>
-              <li><a href="#settings">Settings Overview</a></li>
-              <li><a href="#wallpapers">Wallpapers &amp; Rendering</a></li>
-              <li><a href="#performance">Performance Tiers</a></li>
-              <li><a href="#privacy">Privacy Controls</a></li>
-              <li><a href="#first-run">First-Run Wizard</a></li>
-              <li><a href="#update">Updates &amp; Uninstallation</a></li>
-              <li><a href="#for-developers">For Developers</a></li>
-            </ul>
-          </details>
-
-          <h2 id="home">The Home screen</h2>
-          <p>Home opens with a calm greeting (personalized via Settings), today’s date, and your selected wallpaper. The top edge houses the clock (optional) and a minimal page indicator for jumping between Home, Apps, and Settings.</p>
-          <p>Directly below sits your curated primary application row. The focused card features an ambient light glow, moving between cards applies a slight parallax tilt to the wallpaper, and pressing <kbd>OK</kbd> launches it, its window growing out of the card. The light behind the row takes the colour of the app you are on (Settings → Room lighting turns it off), and the line under the app&rsquo;s name says what you were watching (&ldquo;Continue: &hellip; · 18 min left&rdquo;, from the Continue watching list you allow in Privacy) or when you last opened it, and stays true while you sit there. Subtle ambient lighting glides across the wallpaper when idle, pausing immediately upon any key press or after 10 minutes of inactivity (30 minutes on the Quality tier).</p>
-
-          <h2 id="apps">The Apps page</h2>
-          <p>The second page displays all installed Leanback and standard applications without exception. Holding <kbd>OK</kbd> on any tile lifts it: move it with the d-pad and press <kbd>OK</kbd> again to put it down (<kbd>Back</kbd> puts it down where it is). Order changes persist across both the Apps page and the Home row. If you put the tile down without moving it, its menu opens:</p>
-          <ul class="release-specs">
-            <li><strong>Open</strong> and <strong>Move to first position</strong>.</li>
-            <li><strong>Hide from Home</strong> — Keeps an app accessible in the full Apps list while removing it from the calm Home row.</li>
-            <li><strong>App info</strong> — The system page of the app.</li>
-            <li><strong>Uninstall</strong> — Asks Android to remove an app you installed; Android asks you to confirm. Not offered for the TV&rsquo;s own apps.</li>
-          </ul>
-
-          <h2 id="widgets">Home Widgets</h2>
-          <p>Widgets populate below the application row on Home, cycled using remote vertical directions (<kbd>▲</kbd> / <kbd>▼</kbd>). <strong>Settings → Home widgets</strong> includes a live interactive editor allowing you to reorder, enable, or disable widgets with immediate preview.</p>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Widget</th>
-                  <th>Display Information</th>
-                  <th>Required Permissions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Up Next</strong></td>
-                  <td>Android TV Continue Watching items (from Netflix, YouTube, Plex, Jellyfin) and recent applications. Pressing <kbd>OK</kbd> deep-links into the specific program.</td>
-                  <td><span class="spec-chip">Read TV Listings</span> (Optional for third-party Continue Watching)</td>
-                </tr>
-                <tr>
-                  <td><strong>Now Playing</strong></td>
-                  <td>Active media playback session (Spotify, YouTube Music, Plex) showing cover art, playback scrubbing, and remote control keys.</td>
-                  <td><span class="spec-chip">Notification Access</span> (Android requirement to read active <code>MediaSession</code> tokens; no notifications are read)</td>
-                </tr>
-                <tr>
-                  <td><strong>Control</strong></td>
-                  <td>Quick status tiles for Wi-Fi connection, picture mode, sound, and Bluetooth remotes. Selecting a tile opens the corresponding system menu.</td>
-                  <td><span class="spec-chip">None</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Inputs</strong></td>
-                  <td>Physical HDMI input selector and antenna tuner. HDMI-CEC connected hardware displays custom assigned device names.</td>
-                  <td><span class="spec-chip">None</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Weather</strong></td>
-                  <td>Local forecasts derived from the TV’s timezone capital city. Toggles between hourly and 7-day outlooks. Cached locally on disk.</td>
-                  <td><span class="spec-chip">Opt-in</span> (Disabled by default; queries Open-Meteo with coarse city coordinates)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h2 id="settings">Settings Overview</h2>
-          <p>Settings opens over a soft translucent scrim so wallpaper changes reflect in real-time. A live card tracks your focused category:</p>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Functionality</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Wallpaper</strong></td>
-                  <td>Visual gallery picker featuring all eight looks with live full-bleed previews.</td>
-                </tr>
-                <tr>
-                  <td><strong>Your name</strong></td>
-                  <td>Custom greeting string, stored strictly on-device in application private storage.</td>
-                </tr>
-                <tr>
-                  <td><strong>Clock</strong></td>
-                  <td>Toggle the Home screen corner clock visibility.</td>
-                </tr>
-                <tr>
-                  <td><strong>Performance</strong></td>
-                  <td>Toggle rendering profiles: Auto, Light, Balanced, and Quality.</td>
-                </tr>
-                <tr>
-                  <td><strong>Home widgets</strong></td>
-                  <td>Live drag-and-drop widget toggler and ordering manager.</td>
-                </tr>
-                <tr>
-                  <td><strong>Privacy</strong></td>
-                  <td>Inspect network switches, permission states, and APK signature verification.</td>
-                </tr>
-                <tr>
-                  <td><strong>Setup guide</strong></td>
-                  <td>Relaunch the initial first-run onboarding sequence at any time.</td>
-                </tr>
-                <tr>
-                  <td><strong>About</strong></td>
-                  <td>Binary version, authorship, commit hashes, and SPDX open source licenses.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h2 id="wallpapers">Wallpapers &amp; Rendering</h2>
-          <p><strong>Your own photo:</strong> from a computer on the same network, run <code>./shangos.sh wallpaper ~/photo.jpg</code>. The picture goes straight into shangOS&rsquo;s private storage over adb: no media permission, no Photos or cloud account, no network. It appears in Settings → Wallpaper as &ldquo;Your photo&rdquo; and the screen saver shows it dimmed. <code>./shangos.sh wallpaper --remove</code> deletes it.</p>
-          <p>Eight distinct environments are included. Six were procedurally synthesized for this launcher: <strong>Aurora</strong>, <strong>Ember</strong>, <strong>Tide</strong>, <strong>Orchid</strong>, <strong>Glacier</strong> (high-contrast for sunny rooms), and <strong>Daybreak</strong> (solar-synchronized daylight transition). Two are high-resolution CC0 photographs: <strong>Milky Way</strong> and <strong>Calm Sea</strong> from Poly Haven.</p>
-          <p>Rendering is handled directly on a dedicated render thread without compositing bloat. Motion is suspended during remote interactions and entirely disabled on the Light performance tier. Texture buffers immediately unbind and free memory when backgrounded.</p>
-
-          <h2 id="performance">Performance Tiers</h2>
-          <p>On first boot, shangOS inspects available RAM, CPU architecture, and core counts to set an optimal hardware profile:</p>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Tier</th>
-                  <th>Behavior &amp; Budget</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Auto</strong></td>
-                  <td>Hardware-inferred profile (Default). Displays rationale in Settings.</td>
-                </tr>
-                <tr>
-                  <td><strong>Light</strong></td>
-                  <td>Static wallpapers, zero background render passes. Tuned for budget 1.0–1.5 GB streaming sticks.</td>
-                </tr>
-                <tr>
-                  <td><strong>Balanced</strong></td>
-                  <td>Subtle wallpaper motion and parallax within a strict frame budget.</td>
-                </tr>
-                <tr>
-                  <td><strong>Quality</strong></td>
-                  <td>Full dynamic lighting shaders and 30-minute idle sleep thresholds.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h2 id="privacy">Privacy Controls</h2>
-          <p>Consolidated into a single settings pane displaying live socket and permission states:</p>
-          <ul class="release-specs">
-            <li><strong>Weather Toggle</strong> — Disabled out-of-the-box. Displays disclosure of city coordinates prior to first query.</li>
-            <li><strong>Remote Posters</strong> — Off / Wi-Fi &amp; Ethernet only / Always.</li>
-            <li><strong>Runtime Offline Mode</strong> — One switch that instantly cuts all outbound application HTTP sockets.</li>
-            <li><strong>Build Signature</strong> — Displays the SHA-256 fingerprint of the installed APK to verify against release attestations.</li>
-          </ul>
-
-          <h2 id="first-run">First-Run Wizard</h2>
-          <p>Upon initial launch, an interactive 5-step setup covers performance tier selection, privacy preferences, optional permissions, and primary launcher configuration (complete with a pairing QR code linking to our <a href="../setup/">setup guide</a>). All steps can be skipped with <kbd>Back</kbd>.</p>
-
-          <h2 id="update">Updates &amp; Uninstallation</h2>
-          <p>Subsequent releases are signed with identical private keys and install directly over existing versions without wiping app ordering or wallpaper preferences. To restore factory TV firmware defaults, see our <a href="../setup/#undo">Undo Guide</a>.</p>
-
-          <h2 id="for-developers">For Developers</h2>
-          <p>Written in native Java with zero third-party dependencies, single-process execution, and a single main Activity. Layouts are computed using native design-grid units (1/960 of display width). Complete technical documentation is maintained in the repository:</p>
-          <ul class="release-specs">
-            <li><a href="https://github.com/madushas/shangos-launcher/blob/main/docs/dev/ARCHITECTURE.md" target="_blank" rel="noopener"><strong>Architecture Guide ↗</strong></a> — Package structure, module responsibilities, and layer boundaries.</li>
-            <li><a href="https://github.com/madushas/shangos-launcher/blob/main/docs/dev/RELEASING.md" target="_blank" rel="noopener"><strong>Release Pipeline ↗</strong></a> — Cryptographic signing keys, automated reproducibility checks, and CI security attestations.</li>
-            <li><a href="https://github.com/madushas/shangos-launcher/blob/main/README.md" target="_blank" rel="noopener"><strong>Build &amp; Test Matrix ↗</strong></a> — Running <code>./build.sh release | offline | debug</code> and executing headless emulator harness scripts via <code>./test/run.sh</code>.</li>
-          </ul>
-        </article>
-
-        <aside class="doc-toc">
-          <span class="toc-heading">On this page</span>
-          <ul class="toc-list">
-            <li><a href="#home">The Home screen</a></li>
-            <li><a href="#apps">The Apps page</a></li>
-            <li><a href="#widgets">Home Widgets</a></li>
-            <li><a href="#settings">Settings Overview</a></li>
-            <li><a href="#wallpapers">Wallpapers &amp; Rendering</a></li>
-            <li><a href="#performance">Performance Tiers</a></li>
-            <li><a href="#privacy">Privacy Controls</a></li>
-            <li><a href="#first-run">First-Run Wizard</a></li>
-            <li><a href="#update">Updates &amp; Uninstallation</a></li>
-            <li><a href="#for-developers">For Developers</a></li>
-          </ul>
-        </aside>
-
+  <div class="doc">
+    <div class="doc__body"><section id="home" aria-labelledby="home-h"><h2 id="home-h">The Home page</h2>
+<p>Home opens with a greeting (set your name in Settings), the date, and your wallpaper. The row of app tiles sits below. The focused tile glows, the wallpaper tilts slightly as you move, and pressing OK opens the app out of its tile. The light behind the row takes the colour of the focused app (Settings, Room lighting turns it off). <span class="tag" title="Added in 0.4.3; the latest release is 0.4.0">In 0.4.3</span></p>
+<p>The line under each app&rsquo;s name says when you last opened it. With Continue watching allowed in Privacy, it can say what you were in the middle of instead (&ldquo;Continue: &hellip; &middot; 18 min left&rdquo;), with the programme&rsquo;s artwork faded in behind the greeting. <span class="tag" title="Added in 0.4.3; the latest release is 0.4.0">In 0.4.3</span> <span class="tag" title="Added in 0.5.0; the latest release is 0.4.0">In 0.5.0</span> When you open an app and come back, focus is on that app&rsquo;s tile again. <span class="tag" title="Added in 0.4.2; the latest release is 0.4.0">In 0.4.2</span></p>
+<p>The page switcher at the top moves between Home, Apps and Settings. The clock can be hidden. A small lock appears beside it while a VPN is on, and an amber crossed Wi-Fi when the TV is offline. <span class="tag" title="Added in 0.5.0; the latest release is 0.4.0">In 0.5.0</span></p>
+<p>Bars, cards and menus are frosted glass: they show a blurred copy of your wallpaper behind them (Settings, Frosted glass). <span class="tag" title="Added in 0.5.0; the latest release is 0.4.0">In 0.5.0</span> After 20 quiet seconds the tab bar and clock fade back so the wallpaper has the room, and any key brings them back (Settings, Calm mode). <span class="tag" title="Added in 0.5.0; the latest release is 0.4.0">In 0.5.0</span></p></section><section id="apps" aria-labelledby="apps-h"><h2 id="apps-h">The Apps page</h2>
+<p>Every installed app, including the ones the TV hides from its own list. The order is shared with the Home row. Hold OK on a tile to open its menu:</p>
+<ul><li><strong>Open</strong> and <strong>Move to first position</strong>.</li><li><strong>Hide from Home</strong> keeps the app in Apps and takes it off the Home row.</li><li><strong>App info</strong> opens Android&rsquo;s page for the app.</li><li><strong>Uninstall</strong> asks Android to remove an app you installed; Android asks you to confirm. It is not offered for the TV&rsquo;s own apps. <span class="tag" title="Added in 0.4.5; the latest release is 0.4.0">In 0.4.5</span></li></ul>
+<p><strong>Grab to move.</strong> Hold OK on a tile and it lifts. Move it with the d-pad and press OK to put it down; Back puts it down where it is. Put down without moving it, and the menu opens. <span class="tag" title="Added in 0.4.5; the latest release is 0.4.0">In 0.4.5</span> Before 0.4.5 the menu has Move left and Move right instead.</p></section><section id="widgets" aria-labelledby="widgets-h"><h2 id="widgets-h">Widgets</h2>
+<p>Widgets sit below the app row on Home. Press up and down to cycle them. Settings, Home widgets opens an editor where you can reorder and switch them off, with a live preview.</p><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Widget</th><th scope="col">Shows</th><th scope="col">Needs</th></tr></thead><tbody><tr><td data-label="Widget">Up Next</td><td data-label="Shows">Items from your streaming apps&rsquo; Continue watching rows, and recently used apps. OK jumps into the programme.</td><td data-label="Needs">Optional: permission to read TV listings, and usage access for recent apps.</td></tr><tr><td data-label="Widget">Now Playing</td><td data-label="Shows">What is playing in Spotify, YouTube Music, Plex and similar apps: cover, progress and remote keys.</td><td data-label="Needs">Optional: notification access. Android needs it to see media sessions; no notification is read.</td></tr><tr><td data-label="Widget">Control</td><td data-label="Shows">Tiles for Wi-Fi, picture mode, sound and Bluetooth remotes. Each opens the matching system screen.</td><td data-label="Needs">Nothing.</td></tr><tr><td data-label="Widget">Inputs</td><td data-label="Shows">Your HDMI inputs and tuner, with the names your connected devices report.</td><td data-label="Needs">Nothing.</td></tr><tr><td data-label="Widget">Weather</td><td data-label="Shows">Hourly and seven-day forecast for your chosen city, or the main city of your TV&rsquo;s time zone. Cached on the TV.</td><td data-label="Needs">Off until you turn it on. Uses the internet; see <a href="/privacy/">Privacy</a>.</td></tr></tbody></table></div></section><section id="settings" aria-labelledby="settings-h"><h2 id="settings-h">Settings</h2>
+<p>Settings opens over a soft scrim so you see wallpaper changes as you make them. The first page lists five entries: Appearance, Motion and sound, Home, Privacy and System. Each group is a page of its own, and Back returns to the first page.{nx_060}</p><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Section</th><th scope="col">What it does</th></tr></thead><tbody><tr><td data-label="Section">Appearance: Wallpaper</td><td data-label="What it does">A gallery of all eight looks, with a full-screen preview, and your own photo once you add one (from 0.4.5).</td></tr><tr><td data-label="Section">Appearance: Your name</td><td data-label="What it does">The greeting on Home. Stored only on the TV.</td></tr><tr><td data-label="Section">Home: City</td><td data-label="What it does">Where the weather and the sunrise are for. Choose your city from a list built into the app (also in the first-run setup), or keep Automatic, the main city of your TV&rsquo;s time zone. Nothing is looked up and nothing leaves the TV (from 0.4.6).</td></tr><tr><td data-label="Section">Home: Temperature</td><td data-label="What it does">Automatic follows the country of the city, or choose Celsius or Fahrenheit.</td></tr><tr><td data-label="Section">Appearance: Clock</td><td data-label="What it does">Show or hide the clock.</td></tr><tr><td data-label="Section">Motion and sound: Performance</td><td data-label="What it does">Auto, Light, Balanced or Quality. See below.</td></tr><tr><td data-label="Section">Home: Home widgets</td><td data-label="What it does">The live widget editor.</td></tr><tr><td data-label="Section">Home: Apps order</td><td data-label="What it does">How the Apps tab is ordered: your own order, A to Z, or recently used (from 0.6.0).</td></tr><tr><td data-label="Section">Home: Hidden apps</td><td data-label="What it does">The apps hidden from Home; choose one to show it again (from 0.6.0).</td></tr><tr><td data-label="Section">Motion and sound: Room lighting</td><td data-label="What it does">The coloured light behind the app row (from 0.4.3).</td></tr><tr><td data-label="Section">Appearance: Frosted glass</td><td data-label="What it does">Bars, cards and menus show a blurred copy of the wallpaper behind them. Off with the Light performance level (from 0.5.0).</td></tr><tr><td data-label="Section">Motion and sound: Calm mode</td><td data-label="What it does">The tab bar and clock fade back after 20 quiet seconds (from 0.5.0).</td></tr><tr><td data-label="Section">Privacy</td><td data-label="What it does">Switches for weather and posters, a runtime Offline mode, and the signing fingerprint of this build.</td></tr><tr><td data-label="Section">System: Setup guide</td><td data-label="What it does">Shows the first-run walkthrough again, with a QR code for the setup page.</td></tr><tr><td data-label="Section">System: About</td><td data-label="What it does">Version, credits and licences.</td></tr></tbody></table></div></section><section id="wallpapers" aria-labelledby="wallpapers-h"><h2 id="wallpapers-h">Wallpapers and your own photo</h2>
+<p>Eight looks are included. Aurora, Ember, Tide, Orchid, Glacier (clear for bright rooms) and Daybreak (changes through the day) were generated in code for this project. Milky Way and Calm Sea are CC0 photographs from Poly Haven.</p>
+<p><strong>Your own photo</strong> (from 0.4.5)<strong>:</strong> from a computer on the same network, with a copy of the repository, run <code>./shangos.sh wallpaper ~/photo.jpg</code>. The picture goes straight into shangOS&rsquo;s private storage over adb: no media permission, no Photos or cloud account, no network. It appears in Settings, Wallpaper as &ldquo;Your photo&rdquo;, and the screen saver shows it dimmed. <code>./shangos.sh wallpaper --remove</code> deletes it.</p>
+<p>The screen saver (optional, in the setup wizard) shows a clock over your wallpaper after your TV&rsquo;s own screen-saver delay.</p></section><section id="performance" aria-labelledby="performance-h"><h2 id="performance-h">Performance levels</h2>
+<p>On first run shangOS looks at the TV&rsquo;s memory, processor and core count, and picks a level. Settings shows why, and you can change it.</p><div class="table-wrap table-wrap--stack"><table><thead><tr><th scope="col">Level</th><th scope="col">What it means</th></tr></thead><tbody><tr><td data-label="Level">Auto</td><td data-label="What it means">The level shangOS picked for this TV. The default.</td></tr><tr><td data-label="Level">Light</td><td data-label="What it means">Static wallpapers and no background drawing. For sticks with about 1 to 1.5 GB of RAM.</td></tr><tr><td data-label="Level">Balanced</td><td data-label="What it means">Gentle wallpaper motion and parallax.</td></tr><tr><td data-label="Level">Quality</td><td data-label="What it means">All lighting and motion effects, for TVs with plenty of headroom.</td></tr></tbody></table></div></section><section id="privacy" aria-labelledby="privacy-h"><h2 id="privacy-h">Privacy controls</h2>
+<p>One Settings screen shows the live state of everything that can touch the network.</p>
+<ul><li><strong>Weather</strong> is off until you turn it on, and tells you what it will send before the first request.</li><li><strong>Remote posters</strong>: Off, Wi-Fi and Ethernet only, or Always.</li><li><strong>Offline mode</strong> stops the app&rsquo;s own network use at once, without reinstalling.</li><li><strong>This build</strong> shows the SHA-256 fingerprint of the installed APK to compare with the release notes.</li></ul>
+<p>For the full list see <a href="/privacy/">Privacy</a>.</p></section><section id="updates" aria-labelledby="updates-h"><h2 id="updates-h">Updates and removal</h2>
+<p>shangOS does not update itself. New releases are signed with the same key, so you install them over the old one (run the setup wizard again, or <code>adb install -r</code>) and keep your order, name and wallpaper. To go back to your TV&rsquo;s launcher, see <a href="/setup/#undo">Undo</a>.</p></section><section id="benchmarks" aria-labelledby="benchmarks-h"><h2 id="benchmarks-h">Measure your own TV</h2>
+<p>The numbers on the home page come from one TV. To measure yours, install shangOS (and, if you like, Luma TV) on it and run the benchmark from a copy of the <a href="https://github.com/madushas/shangos-launcher" rel="noopener">repository</a>. It runs each launcher in turn, with the same steps and the same wallpaper, and gives the TV&rsquo;s original Home back at the end.</p>
+<div class="term"><div class="term__bar"><span>Repository folder</span><button class="copy" type="button">Copy</button></div><pre tabindex="0"><code><span class="p">$ </span>tools/bench.sh -s 192.168.1.50:5555
+<span class="c"># writes docs/data/bench.json: which TV, which versions, when, and every number</span></code></pre></div>
+<p>The file is checked by <code>python3 tools/bench-json.py --check docs/data/bench.json</code>, and the release build publishes it next to the APKs. The method and what each number means are in <a href="https://github.com/madushas/shangos-launcher/blob/main/docs/MEASURING.md" rel="noopener">MEASURING.md</a>.</p></section><section id="developers" aria-labelledby="developers-h"><h2 id="developers-h">For developers</h2>
+<p>shangOS is plain Java with no third-party libraries, one process and one activity. The architecture notes, the release process and the build and test scripts are in the repository.</p>
+<ul><li><a href="https://github.com/madushas/shangos-launcher/blob/main/docs/dev/ARCHITECTURE.md" rel="noopener">Architecture</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/docs/dev/RELEASING.md" rel="noopener">Releasing</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/docs/TESTING.md" rel="noopener">Building and testing</a></li></ul></section></div>
+    <details class="toc" open><summary>On this page</summary><nav aria-label="On this page"><h2 class="vh">On this page</h2><ol><li><a href="#home">The Home page</a></li><li><a href="#apps">The Apps page</a></li><li><a href="#widgets">Widgets</a></li><li><a href="#settings">Settings</a></li><li><a href="#wallpapers">Wallpapers and your own photo</a></li><li><a href="#performance">Performance levels</a></li><li><a href="#privacy">Privacy controls</a></li><li><a href="#updates">Updates and removal</a></li><li><a href="#benchmarks">Measure your own TV</a></li><li><a href="#developers">For developers</a></li></ol></nav></details>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32"><span>shangOS</span></a>
+        <p class="footer-note">A home screen for Android TV and Google TV. A hobby project, open source under the MIT licence. No accounts, no ads, no trackers, and this website sets no cookies and loads nothing from other sites.</p>
       </div>
+      <div><h2>Use it</h2><ul><li><a href="/setup/">Set up on your TV</a></li><li><a href="/guide/">User guide</a></li><li><a href="https://github.com/madushas/shangos-launcher/releases/latest" rel="noopener">Latest release</a></li></ul></div>
+      <div><h2>Trust it</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/licenses/">Licences and credits</a></li><li><a href="/setup/#verify">Verify a download</a></li></ul></div>
+      <div><h2>Source</h2><ul><li><a href="https://github.com/madushas/shangos-launcher" rel="noopener">GitHub</a></li><li><a href="https://github.com/madushas/shangos-launcher/issues" rel="noopener">Report a problem</a></li><li><a href="https://github.com/madushas/shangos-launcher/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li></ul></div>
     </div>
-  </main>
-
-  <footer class="site">
-    <div class="wrap">
-      <div class="footer-grid">
-        <div class="footer-brand-col">
-          <a href="../" class="brand" aria-label="shangOS home">
-            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-              <rect width="32" height="32" rx="8" fill="currentColor"/>
-              <polygon points="13,10 23,16 13,22" class="brand-mark"/>
-            </svg>
-            <span class="brand-name">shangOS</span>
-          </a>
-          <p class="footer-mission">
-            A fast, calm, ad-free home screen for Android TV and Google TV. Free software, no accounts, and no surveillance.
-          </p>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Documentation</strong>
-          <ul>
-            <li><a href="../setup/">Setup Guide</a></li>
-            <li><a href="./">User Guide</a></li>
-            <li><a href="../#downloads">Downloads</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Security &amp; Legal</strong>
-          <ul>
-            <li><a href="../privacy/">Privacy Statement</a></li>
-            <li><a href="../licenses/">Open Source Licenses</a></li>
-            <li><a href="../#verify">Verification Keys</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-col">
-          <strong class="footer-heading">Project</strong>
-          <ul>
-            <li><a href="https://github.com/madushas/shangos-launcher" target="_blank" rel="noopener">GitHub Repository ↗</a></li>
-            <li><a href="https://github.com/madushas/shangos-launcher/releases" target="_blank" rel="noopener">Release Archive ↗</a></li>
-            <li><a href="https://github.com/madushas/shangos-launcher/issues" target="_blank" rel="noopener">Issue Tracker ↗</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© 2026 shangOS · Released under the <a href="../licenses/">MIT License</a> · Forked from <a href="https://github.com/0xProbabillity/luma-tv" target="_blank" rel="noopener">Luma TV</a>.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="../assets/site.js" defer></script>
+    <div class="footer-bottom"><span>&copy; shangOS contributors. MIT licence.</span><span>Not affiliated with Google, Sony or any TV maker.</span></div>
+  </div>
+</footer>
 </body>
 </html>
