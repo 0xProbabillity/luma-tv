@@ -71,7 +71,7 @@ public class AmbientDream extends DreamService {
         Prefs prefs = Prefs.of(this);
         int choice = Wallpaper.choice(prefs);
         int variant =
-                Wallpaper.variant(choice, new Daylight(this).isDay(System.currentTimeMillis()));
+                Wallpaper.variant(choice, new Daylight(this, prefs).isDay(System.currentTimeMillis()));
         picture = decode(Wallpaper.picture(variant), width);
         if (picture != null) {
             ImageView background = new ImageView(this);

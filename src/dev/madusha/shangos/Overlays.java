@@ -264,7 +264,7 @@ final class Overlays {
     /** A dark glass panel centred on the overlay. */
     FrameLayout panel(FrameLayout overlay, float width, float height) {
         FrameLayout panel = new FrameLayout(overlay.getContext());
-        panel.setBackground(ui.shape(Theme.PANEL, 24));
+        panel.setBackground(ui.darkGlass(panel, 24));
         panel.setElevation(ui.px(24));
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ui.px(width), ui.px(height));
         lp.gravity = Gravity.CENTER;

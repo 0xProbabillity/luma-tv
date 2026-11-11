@@ -78,11 +78,13 @@ final class AppTile extends FrameLayout {
     final int index;
     final TileMotion movement;
     private final Ui ui;
+    private final AppRepo repo;
     private final Host host;
 
     AppTile(Context context, Ui ui, AppRepo repo, Host host, App item, int number) {
         super(context);
         this.ui = ui;
+        this.repo = repo;
         this.host = host;
         app = item;
         index = number;
@@ -147,6 +149,7 @@ final class AppTile extends FrameLayout {
             host.blurred();
             return;
         }
+        tintShadow();
         host.selected(app);
         host.follow(index);
         if (index < COLUMNS) host.scrollToTop();
@@ -158,6 +161,18 @@ final class AppTile extends FrameLayout {
                             getWidth() + ui.px(12),
                             getHeight() + ui.px(5)),
                     false);
+    }
+
+    /**
+     * The shadow under the lifted card takes the colour of the app's icon: a faint glow of its own.
+     * The colour is known once the icon has been read (then this runs again).
+     */
+    private void tintShadow() {
+        int accent = repo.accent(app, () -> {
+            if (isAttachedToWindow() && isFocused()) tintShadow();
+        });
+        face.setOutlineSpotShadowColor(
+                accent == Tint.NEUTRAL ? 0xFF000000 : 0xFF000000 | (accent & 0x00FFFFFF));
     }
 
     /** Picks the tile up or puts it down: bigger, with what to do next in the label. */

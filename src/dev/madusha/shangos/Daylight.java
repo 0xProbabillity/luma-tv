@@ -7,16 +7,31 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Sunrise and sunset at the main city of the TV's time zone (res/raw/zones.txt): no location
- * permission, no network. Accurate to a few minutes, which is all a wallpaper needs.
+ * Sunrise and sunset at the city chosen in setup or Settings, else at the main city of the TV's
+ * time zone (res/raw/zones.txt): no location permission, no network. Accurate to a few minutes,
+ * which is all a wallpaper needs.
  */
 final class Daylight {
-    private final double lat, lon;
+    private volatile double lat, lon;
     private final TimeZone zone;
+    private String followed = "\u0000"; // the pinned city these coordinates are for
 
-    Daylight(Context context) {
+    Daylight(Context context, Prefs prefs) {
         zone = TimeZone.getDefault();
-        double[] place = lookup(context, zone.getID());
+        follow(context, prefs);
+    }
+
+    /**
+     * Takes the coordinates of the chosen city, or of the time zone's main city when none is
+     * chosen. Cheap when nothing changed, so it can be called whenever the light is checked.
+     */
+    void follow(Context context, Prefs prefs) {
+        String pinned = prefs.placePinned();
+        if (pinned.equals(followed)) return;
+        followed = pinned;
+        Places.Place city = Places.pinned(prefs);
+        double[] place = city != null ? new double[] {city.lat, city.lon} : null;
+        if (place == null) place = lookup(context, zone.getID());
         if (place == null)
             place =
                     new double[] {

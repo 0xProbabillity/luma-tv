@@ -41,6 +41,7 @@ public final class MainActivity extends Activity {
     private FrameLayout root, content;
     private Wallpaper wallpaper;
     private Chrome chrome;
+    private Calm calm;
 
     // The pages and the screens opened from Settings.
     private Hero hero;
@@ -54,6 +55,7 @@ public final class MainActivity extends Activity {
     private LicensesScreen licences;
     private AboutScreen about;
     private SetupGuide setup;
+    private CityPicker cityPicker;
 
     // State shared with the collaborators through their hosts.
     private String page = "home";
@@ -65,18 +67,33 @@ public final class MainActivity extends Activity {
 
     /** An app was opened from here and Home has not come back to the front yet. */
     private boolean appOpen;
+
+    /** The first page after the launcher starts rises in (AppPages.rise). */
+    private boolean intro = true;
     private long backGuardUntil;
     private long lastInteraction = SystemClock.uptimeMillis();
 
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
+        if (CrashGuard.begin(this)) { // crashed twice just now: the TV's own home takes over
+            finish();
+            return;
+        }
         prefs = Prefs.of(this);
         ui = new Ui(this, getResources().getDisplayMetrics().widthPixels / 960f);
         overlays = new Overlays(overlaysHost, ui);
-        hero = new Hero(this, ui, prefs, handler, new WatchNext(this, WidgetBoard.IO), heroHost);
+        WatchNext watchNext = new WatchNext(this, WidgetBoard.IO);
+        hero = new Hero(this, ui, prefs, handler, watchNext, () -> feedback.motion(), () -> light);
         chrome = new Chrome(this, ui, handler, chromeHost);
+        calm =
+                new Calm(
+                        handler,
+                        chrome,
+                        () -> prefs.calm() && !page.equals("settings") && !overlays.isOpen(),
+                        () -> SystemClock.uptimeMillis() - lastInteraction);
         homeScreen = new HomeScreen(this, overlays);
+        cityPicker = new CityPicker(this, ui, prefs, overlays, screenHost);
         nameEditor = new NameEditor(this, ui, prefs, overlays, screenHost, nameEditorHost);
         wallpaperPicker =
                 new WallpaperPicker(this, ui, prefs, overlays, screenHost, wallpaperPickerHost);
@@ -85,7 +102,24 @@ public final class MainActivity extends Activity {
                         this, ui, prefs, overlays, screenHost, () -> settings.privacyRow());
         licences = new LicensesScreen(this, ui, overlays, screenHost, () -> settings.aboutRow());
         about = new AboutScreen(this, ui, overlays, screenHost, privacy, licences);
-        setup = new SetupGuide(this, ui, prefs, overlays, privacy, setupHost);
+        setup = new SetupGuide(this, ui, prefs, overlays, privacy, cityPicker, setupHost);
+        WeatherSettings weather = new WeatherSettings(prefs, overlays, cityPicker, this::reload);
+        SettingsPages settingsPages =
+                new SettingsPages(
+                        this,
+                        ui,
+                        prefs,
+                        overlays,
+                        screenHost,
+                        settingsHost,
+                        setup,
+                        about,
+                        wallpaperPicker,
+                        nameEditor,
+                        homeScreen,
+                        weather,
+                        new ScreenSaverSettings(this, overlays, privacy),
+                        new AppsSettings(prefs, repo, overlays, () -> pages.order(), this::reload));
         settings =
                 new SettingsScreen(
                         this,
@@ -95,19 +129,14 @@ public final class MainActivity extends Activity {
                         screenHost,
                         settingsHost,
                         privacy,
-                        setup,
-                        about,
-                        wallpaperPicker,
-                        nameEditor,
-                        homeScreen,
-                        new WeatherSettings(this, ui, prefs, overlays, screenHost, this::reload));
-        getWindow()
-                .setDecorFitsSystemWindows(
-                        false); // edge to edge: the layout draws under any system bar
+                        weather,
+                        settingsPages);
+        getWindow().setDecorFitsSystemWindows(false); // edge to edge, under any system bar
         sonic = new SonicFeedback(this);
         feedback = new Feedback(prefs, sonic);
         performance = new Performance(this, prefs);
-        daylightSync = new DaylightSync(new Daylight(this), prefs, handler, daylightHost);
+        daylightSync =
+                new DaylightSync(this, new Daylight(this, prefs), prefs, handler, daylightHost);
         HashSet<String> stock = new HashSet<>(Arrays.asList(HomeScreen.STOCK_HOMES));
         stock.add(getPackageName());
         lowRam = ((ActivityManager) getSystemService(ACTIVITY_SERVICE)).isLowRamDevice();
@@ -124,7 +153,22 @@ public final class MainActivity extends Activity {
                             afterFirstLoad();
                         });
         pages = new AppPages(this, ui, prefs, repo, hero, feedback, pagesHost);
-        launcher = new AppLauncher(this, prefs, repo, overlays, feedback, launcherHost);
+        launcher =
+                new AppLauncher(
+                        this,
+                        prefs,
+                        repo,
+                        overlays,
+                        feedback,
+                        app -> {
+                            pages.select(app.pkg);
+                            appOpen = true;
+                        },
+                        app -> {
+                            pages.select(app.pkg);
+                            showPage(page, true);
+                        },
+                        () -> pages.order());
         // Daybreak (pale by day, dark after sunset) is the default wallpaper, so the text colour
         // is decided before the first frame.
         light = daylightSync.pale();
@@ -149,6 +193,7 @@ public final class MainActivity extends Activity {
         started = true;
         chrome.startClock();
         hero.start();
+        calm.start();
         PhotoStore.onChanged = () -> runOnUiThread(() -> wallpaper.update());
         boolean returning = appOpen;
         appOpen = false;
@@ -201,6 +246,7 @@ public final class MainActivity extends Activity {
         repo.setActive(false);
         pages.pause();
         started = false;
+        calm.stop();
         PhotoStore.onChanged = null;
         chrome.stopClock();
         hero.stop();
@@ -266,6 +312,7 @@ public final class MainActivity extends Activity {
         super.onUserInteraction();
         lastInteraction = SystemClock.uptimeMillis();
         if (wallpaper != null) wallpaper.onInteraction();
+        if (calm != null) calm.poke();
     }
 
     @Override
@@ -329,22 +376,6 @@ public final class MainActivity extends Activity {
         if (daylightSync != null) daylightSync.dump(writer, prefix, light);
     }
 
-    private boolean motion() {
-        return feedback.motion();
-    }
-
-    private void sound() {
-        feedback.click();
-    }
-
-    private void navigationSound(int index) {
-        feedback.step(index);
-    }
-
-    private int wallpaperStyle() {
-        return Wallpaper.choice(prefs);
-    }
-
     private void createShell() {
         root = new FrameLayout(this);
         root.setClipChildren(false);
@@ -363,7 +394,7 @@ public final class MainActivity extends Activity {
 
     private void showPage(String next, boolean focus) {
         String previous = page;
-        boolean transition = repo.loaded() && !previous.equals(next) && motion();
+        boolean transition = repo.loaded() && !previous.equals(next) && feedback.motion();
         for (Animator animation : pageAnimations) animation.cancel();
         pageAnimations.clear();
         pages.clear();
@@ -371,10 +402,11 @@ public final class MainActivity extends Activity {
         content.setAlpha(1);
         content.setTranslationX(0);
         content.removeAllViews();
-        settings.clear();
+        settings.clear(previous.equals("settings") && next.equals("settings"));
         page = next;
         hero.reset(page.equals("home"));
         light = daylightSync.pale();
+        ui.frost.setEnabled(prefs.glass() && performance.tier() != Hardware.Tier.LIGHT);
         chrome.paint();
         chrome.setClockVisible(prefs.clock());
         chrome.moveIndicator(transition);
@@ -389,6 +421,8 @@ public final class MainActivity extends Activity {
             return;
         }
         pages.build(content, page.equals("home"));
+        boolean cold = intro && repo.loaded() && !transition && feedback.motion();
+        if (cold && pages.rise()) intro = false;
         final boolean greet = page.equals("home") && !appOpen;
         if (focus)
             root.post(
@@ -448,6 +482,11 @@ public final class MainActivity extends Activity {
 
     private void handleBack() {
         if (pages.cancelGrab()) return;
+        int fromGroup = page.equals("settings") && !overlays.isOpen() ? settings.up() : -1;
+        if (fromGroup >= 0) {
+            reload(fromGroup); // a Settings page goes back to the first page
+            return;
+        }
         if (overlays.isOpen()) {
             if (SystemClock.uptimeMillis() < backGuardUntil) return; // see onResume
             overlays.close(true);
@@ -507,15 +546,15 @@ public final class MainActivity extends Activity {
     private final ScreenHost screenHost =
             new ScreenHost() {
                 public boolean motion() {
-                    return MainActivity.this.motion();
+                    return feedback.motion();
                 }
 
                 public void click() {
-                    sound();
+                    feedback.click();
                 }
 
                 public void step(int index) {
-                    navigationSound(index);
+                    feedback.step(index);
                 }
 
                 public void post(Runnable action) {
@@ -542,15 +581,15 @@ public final class MainActivity extends Activity {
                 }
 
                 public boolean motion() {
-                    return MainActivity.this.motion();
+                    return feedback.motion();
                 }
 
                 public void click() {
-                    sound();
+                    feedback.click();
                 }
 
                 public void step(int index) {
-                    navigationSound(index);
+                    feedback.step(index);
                 }
 
                 public View currentFocus() {
@@ -565,7 +604,7 @@ public final class MainActivity extends Activity {
                 }
 
                 public boolean motion() {
-                    return MainActivity.this.motion();
+                    return feedback.motion();
                 }
 
                 public boolean stageSetting() {
@@ -585,7 +624,7 @@ public final class MainActivity extends Activity {
                 }
 
                 public int savedLook() {
-                    return wallpaperStyle();
+                    return Wallpaper.choice(prefs);
                 }
 
                 public boolean isDay() {
@@ -612,7 +651,7 @@ public final class MainActivity extends Activity {
                 }
 
                 public boolean motion() {
-                    return MainActivity.this.motion();
+                    return feedback.motion();
                 }
 
                 public FrameLayout content() {
@@ -631,7 +670,7 @@ public final class MainActivity extends Activity {
     private final Chrome.Host chromeHost =
             new Chrome.Host() {
                 public boolean motion() {
-                    return MainActivity.this.motion();
+                    return feedback.motion();
                 }
 
                 public boolean light() {
@@ -639,7 +678,7 @@ public final class MainActivity extends Activity {
                 }
 
                 public void click() {
-                    sound();
+                    feedback.click();
                 }
 
                 public String page() {
@@ -656,34 +695,6 @@ public final class MainActivity extends Activity {
 
                 public void focusFirst() {
                     pages.focusFirst();
-                }
-            };
-
-    private final Hero.Host heroHost =
-            new Hero.Host() {
-                public boolean motion() {
-                    return MainActivity.this.motion();
-                }
-
-                public boolean light() {
-                    return light;
-                }
-            };
-
-    private final AppLauncher.Host launcherHost =
-            new AppLauncher.Host() {
-                public void opened(App app) {
-                    pages.select(app.pkg);
-                    appOpen = true;
-                }
-
-                public void changed(App app) {
-                    pages.select(app.pkg);
-                    showPage(page, true);
-                }
-
-                public ArrayList<String> order() {
-                    return pages.order();
                 }
             };
 
@@ -768,6 +779,10 @@ public final class MainActivity extends Activity {
 
                 public void ambientChanged() {
                     wallpaper.syncAmbient();
+                }
+
+                public void glassChanged() {
+                    ui.frost.setEnabled(prefs.glass() && performance.tier() != Hardware.Tier.LIGHT);
                 }
 
                 public void reload(int row) {

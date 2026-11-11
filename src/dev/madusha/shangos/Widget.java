@@ -2,6 +2,7 @@ package dev.madusha.shangos;
 
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.*;
 import android.widget.*;
@@ -20,13 +21,16 @@ abstract class Widget extends FrameLayout {
     Widget(Context context, WidgetBoard.Host host, float width) {
         super(context);
         this.host = host;
-        ui = new Ui(context, host.unit());
+        ui = new Ui(context, host.unit(), host.frost());
         w = width;
         setClipChildren(false);
         setClipToPadding(false);
-        GradientDrawable bg = round(light() ? 0x8CFFFFFF : 0x1FFFFFFF, 22);
-        bg.setStroke(Math.max(1, px(.8f)), light() ? 0x14000000 : 0x1FFFFFFF);
-        setBackground(bg);
+        setBackground(restBackground());
+    }
+
+    /** The card at rest: frosted glass, or the plain translucent fill. */
+    final Drawable restBackground() {
+        return ui.glass(this, light(), 22);
     }
 
     /**

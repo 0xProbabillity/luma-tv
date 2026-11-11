@@ -64,7 +64,7 @@ final class Net {
     static final int MAX_IMAGE = 3_000_000, MAX_JSON = 200_000, MAX_REDIRECTS = 2;
 
     /** The only hosts JSON is fetched from. */
-    static final String[] JSON_HOSTS = {"api.open-meteo.com", "geocoding-api.open-meteo.com"};
+    static final String[] JSON_HOSTS = {"api.open-meteo.com"};
 
     // ---- Policy (what the user has allowed) ----
     /** The build has networking and the user has not switched on Offline mode. */

@@ -198,6 +198,7 @@ final class Wallpaper extends FrameLayout {
     volatile boolean ambientRunning;
     private int requestedVariant = -1;
     private long photoStamp;
+    private volatile Bitmap pendingFrost;
     private int glides;
     private boolean released;
     private ValueAnimator fadeAnimator;
@@ -405,7 +406,13 @@ final class Wallpaper extends FrameLayout {
                     // is worth decoding.
                     if (host.destroyed() || requestedVariant != variant) return;
                     Bitmap scene = load(variant, width, height);
-                    main.post(() -> apply(variant, scene));
+                    final Bitmap blurred = pendingFrost;
+                    main.post(
+                            () -> {
+                                apply(variant, scene);
+                                if (!host.destroyed() && requestedVariant == variant)
+                                    ui.frost.set(blurred);
+                            });
                 });
     }
 
@@ -421,6 +428,7 @@ final class Wallpaper extends FrameLayout {
             source = BitmapFactory.decodeResource(getResources(), LOOKS[0].day, options);
         Bitmap composed = compose(source, isPale(variant), width, height);
         source.recycle();
+        pendingFrost = Frost.blurred(composed); // the glass panels' picture, a few KB
         // A HARDWARE bitmap lives in graphics memory only: no second copy in the app's own memory.
         Bitmap gpu = composed.copy(Bitmap.Config.HARDWARE, false);
         if (gpu == null) return composed;

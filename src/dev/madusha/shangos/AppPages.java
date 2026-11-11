@@ -62,6 +62,7 @@ final class AppPages {
     private final Host host;
     private final ArrayList<AppTile> tiles = new ArrayList<>();
     private ScrollView scroll;
+    private FrameLayout heroView;
     private LinearLayout rows;
     private WidgetBoard board;
     private int homePage;
@@ -107,7 +108,15 @@ final class AppPages {
         HashSet<String> installed = new HashSet<>();
         for (App app : repo.apps()) installed.add(app.pkg);
         ArrayList<App> result = new ArrayList<>();
-        for (String pkg : AppList.visible(order(), prefs.hidden(), installed, all)) {
+        ArrayList<String> shown = AppList.visible(order(), prefs.hidden(), installed, all);
+        if (all)
+            shown =
+                    AppList.sorted(
+                            prefs.appsSort(),
+                            shown,
+                            pkg -> repo.app(pkg) == null ? pkg : repo.app(pkg).label,
+                            pkg -> Recency.lastOpened(prefs.recent(), pkg));
+        for (String pkg : shown) {
             App app = repo.app(pkg); // the index can be replaced between the two reads
             if (app != null) result.add(app);
         }
@@ -148,9 +157,11 @@ final class AppPages {
                 home
                         ? WidgetBoard.pages(prefs, !InputsWidget.list(activity).isEmpty())
                         : new ArrayList<>();
+        FrameLayout heroView = hero.build(home);
+        if (hero.backdrop() != null) content.addView(hero.backdrop(), ui.pos(960, 300, 0, 0));
         content.addView(
-                hero.build(home),
-                ui.pos(864, 88, 48, home ? (!layout.isEmpty() ? 96 : 272) : 100));
+                heroView, ui.pos(864, 88, 48, home ? (!layout.isEmpty() ? 96 : 272) : 100));
+        this.heroView = heroView;
         if (home && !layout.isEmpty()) {
             board = new WidgetBoard(activity, boardHost, layout, homePage);
             homePage = board.index;
@@ -180,7 +191,7 @@ final class AppPages {
         tiles.clear();
         ArrayList<App> list = visibleApps(!home);
         if (!repo.loaded()) {
-            rows.addView(ui.text("Finding your apps…", 15, Theme.ink(light, 0xBB), "sans-serif"));
+            skeleton(light);
         } else if (list.isEmpty()) {
             rows.addView(
                     ui.text(
@@ -207,6 +218,58 @@ final class AppPages {
                 rows.addView(row, new LinearLayout.LayoutParams(-1, ui.px(112)));
             }
         }
+    }
+
+    /** Grey tiles that shimmer while the list of apps is read. */
+    private void skeleton(boolean light) {
+        boolean moving = feedback.motion();
+        LinearLayout row = new LinearLayout(activity);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setContentDescription("Finding your apps");
+        for (int i = 0; i < AppTile.COLUMNS; i++) {
+            LinearLayout cell = new LinearLayout(activity);
+            cell.setOrientation(LinearLayout.VERTICAL);
+            cell.addView(
+                    new Shimmer(activity, light, ui.px(16), moving),
+                    new LinearLayout.LayoutParams(ui.px(132), ui.px(76)));
+            LinearLayout.LayoutParams name = new LinearLayout.LayoutParams(ui.px(70), ui.px(8));
+            name.topMargin = ui.px(16);
+            name.leftMargin = ui.px(31);
+            cell.addView(new Shimmer(activity, light, ui.px(4), moving), name);
+            LinearLayout.LayoutParams lp =
+                    new LinearLayout.LayoutParams(ui.px(132), ui.px(108));
+            if (i > 0) lp.leftMargin = ui.px(14.4f);
+            row.addView(cell, lp);
+        }
+        rows.addView(row, new LinearLayout.LayoutParams(-1, ui.px(112)));
+    }
+
+    /**
+     * The first time the apps appear after the launcher starts: the greeting, the widgets and then
+     * the tiles rise into place one after another. False when there are no tiles to show yet.
+     */
+    boolean rise() {
+        if (tiles.isEmpty() || heroView == null) return false;
+        ArrayList<View> views = new ArrayList<>();
+        views.add(heroView);
+        views.addAll(tiles);
+        for (int i = 0; i < views.size(); i++) {
+            View v = views.get(i);
+            v.setAlpha(0);
+            v.setTranslationY(ui.px(14));
+            v.animate()
+                    .alpha(1)
+                    .translationY(0)
+                    .setStartDelay(i * 40L)
+                    .setDuration(380)
+                    .setInterpolator(Motion.EASE)
+                    .start();
+        }
+        if (board != null) {
+            board.setAlpha(0);
+            board.animate().alpha(1).setStartDelay(80).setDuration(420).start();
+        }
+        return true;
     }
 
     /** The views that slide in with the page: the messages and the tiles. */
@@ -297,6 +360,10 @@ final class AppPages {
     private void grab(App app) {
         AppTile t = tile(app.pkg);
         if (t == null) return;
+        if (!home && !AppList.MANUAL.equals(prefs.appsSort())) {
+            host.menu(app); // a sorted Apps tab cannot be rearranged by hand
+            return;
+        }
         grabbed = app.pkg;
         moved = false;
         ignoreRelease = true; // the release of this very press must not put it down
@@ -469,6 +536,10 @@ final class AppPages {
             new WidgetBoard.Host() {
                 public float unit() {
                     return ui.unit;
+                }
+
+                public Frost frost() {
+                    return ui.frost;
                 }
 
                 public boolean light() {

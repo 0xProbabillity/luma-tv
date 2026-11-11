@@ -21,6 +21,10 @@ jobs:
           fi
       - run: sudo apt-get install -y junit4 shellcheck shfmt libxml2-utils
       - run: ./tools/lint.sh
+      - name: The website matches its generator, and the benchmark file is valid
+        run: |
+          python3 tools/build-site.py --check
+          [ ! -f docs/data/bench.json ] || python3 tools/bench-json.py --check docs/data/bench.json
       - run: ./build.sh debug && ./build.sh release && ./build.sh offline
       - run: ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar" ./test/run.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

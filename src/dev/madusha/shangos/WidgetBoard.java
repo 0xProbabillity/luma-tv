@@ -44,6 +44,9 @@ final class WidgetBoard extends FrameLayout {
     interface Host {
         float unit();
 
+        /** The blurred wallpaper that glass cards draw (see {@link Frost}). */
+        Frost frost();
+
         boolean light();
 
         boolean motion();

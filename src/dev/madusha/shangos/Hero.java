@@ -8,6 +8,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * The big title and one line under it at the top of Home and the Apps tab: the greeting and date
  * while nothing is focused, then the focused app's name and when it was last opened (or what a
@@ -16,25 +18,17 @@ import android.widget.TextView;
  * was last opened. Cross-fades between them, and once a minute brings the line up to date.
  */
 final class Hero {
-    /** What the hero needs from the launcher. */
-    interface Host {
-        boolean motion();
-
-        /** True on a pale wallpaper (dark text). */
-        boolean light();
-    }
-
     /** The key of the greeting; any other key is an app's package name or a widget's id. */
     private static final String GREETING = "@greeting";
 
     private final Context context;
     private final Ui ui;
     private final Prefs prefs;
-    private final Host host;
+    private final BooleanSupplier motionOn, paleOn;
     private final Handler handler;
     private final WatchNext watchNext;
     private TextView title, description;
-    private ImageView poster;
+    private ImageView poster, backdrop;
     private String posterLink;
     private String key = "";
     private boolean home;
@@ -53,13 +47,17 @@ final class Hero {
                 }
             };
 
-    Hero(Context context, Ui ui, Prefs prefs, Handler handler, WatchNext watchNext, Host host) {
+    Hero(Context context, Ui ui, Prefs prefs, Handler handler,
+            WatchNext watchNext,
+            BooleanSupplier motionOn,
+            BooleanSupplier paleOn) {
         this.context = context;
         this.ui = ui;
         this.prefs = prefs;
         this.handler = handler;
         this.watchNext = watchNext;
-        this.host = host;
+        this.motionOn = motionOn;
+        this.paleOn = paleOn;
     }
 
     /**
@@ -71,6 +69,7 @@ final class Hero {
         title = null;
         description = null;
         poster = null;
+        backdrop = null;
         posterLink = null;
         current = null;
     }
@@ -84,7 +83,7 @@ final class Hero {
                         return false;
                     }
                 };
-        boolean light = host.light();
+        boolean light = paleOn.getAsBoolean();
         title =
                 ui.text(
                         onHome ? welcome() : "All your apps",
@@ -108,6 +107,9 @@ final class Hero {
         view.addView(description, ui.pos(onHome ? 392 : 860, 22, 1, 60));
         key = onHome ? GREETING : "";
         if (onHome) {
+            backdrop = new ImageView(context);
+            backdrop.setScaleType(ImageView.ScaleType.FIT_XY);
+            backdrop.setAlpha(0f);
             // The programme's picture, when there is one to resume; it sits clear of the text.
             poster = new ImageView(context);
             poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -191,16 +193,51 @@ final class Hero {
         setPoster(resume.isEmpty() ? null : p.art());
     }
 
+    /** The soft artwork behind the hero (Home only): add it to the page before the hero. */
+    ImageView backdrop() {
+        return backdrop;
+    }
+
+    private void setBackdrop(String link) {
+        final ImageView view = backdrop;
+        if (view == null) return;
+        if (link == null) {
+            fadePoster(view, 0);
+            return;
+        }
+        final int width = 120;
+        Bitmap cached = Posters.cached(link, width);
+        if (cached != null) {
+            showBackdrop(view, cached);
+            return;
+        }
+        Posters.load(
+                context,
+                prefs,
+                view,
+                link,
+                width,
+                bitmap -> {
+                    if (backdrop == view && link.equals(posterLink)) showBackdrop(view, bitmap);
+                });
+    }
+
+    private void showBackdrop(ImageView view, Bitmap poster) {
+        view.setImageBitmap(Backdrop.make(poster, 240, 75));
+        fadePoster(view, paleOn.getAsBoolean() ? .3f : .6f);
+    }
+
     /** Fades the programme's picture in (loading it if need be), or out for {@code null}. */
     private void setPoster(String link) {
         if (poster == null || (link == null ? posterLink == null : link.equals(posterLink))) return;
         posterLink = link;
+        setBackdrop(link);
         final ImageView view = poster;
         if (link == null) {
             fadePoster(view, 0);
             return;
         }
-        Bitmap cached = Posters.cached(link);
+        Bitmap cached = Posters.cached(link, ui.px(128) * 2);
         if (cached != null) {
             view.setImageBitmap(cached);
             fadePoster(view, 1);
@@ -222,7 +259,7 @@ final class Hero {
 
     private void fadePoster(ImageView view, float alpha) {
         view.animate().cancel();
-        if (host.motion())
+        if (motionOn.getAsBoolean())
             view.animate().alpha(alpha).setDuration(260).setInterpolator(Motion.EASE).start();
         else view.setAlpha(alpha);
     }
@@ -260,7 +297,7 @@ final class Hero {
         final TextView t = title, d = description;
         t.animate().cancel();
         d.animate().cancel();
-        if (!host.motion()) {
+        if (!motionOn.getAsBoolean()) {
             t.setText(newTitle);
             d.setText(detail);
             t.setAlpha(1);

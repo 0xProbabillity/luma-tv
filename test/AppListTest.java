@@ -113,4 +113,28 @@ public class AppListTest {
         assertEquals(77, Recency.lastOpened(saved, "a"));
         assertEquals(3, Recency.lastOpened(saved, "b"));
     }
+
+    @Test
+    public void sortModesOrderTheAppsTab() {
+        List<String> pkgs = Arrays.asList("c", "a", "b", "d");
+        java.util.Map<String, String> label = new java.util.HashMap<>();
+        label.put("a", "Zoom");
+        label.put("b", "apple TV");
+        label.put("c", "Calc");
+        label.put("d", "Chess");
+        java.util.Map<String, Long> opened = new java.util.HashMap<>();
+        opened.put("a", 50L);
+        opened.put("b", 10L);
+        // c and d were never opened: they keep their old order, after the opened ones.
+        assertEquals(
+                Arrays.asList("c", "a", "b", "d"),
+                AppList.sorted(AppList.MANUAL, pkgs, label::get, k -> opened.getOrDefault(k, 0L)));
+        assertEquals(
+                Arrays.asList("b", "c", "d", "a"),
+                AppList.sorted(AppList.AZ, pkgs, label::get, k -> opened.getOrDefault(k, 0L)));
+        assertEquals(
+                Arrays.asList("a", "b", "c", "d"),
+                AppList.sorted(AppList.RECENT, pkgs, label::get, k -> opened.getOrDefault(k, 0L)));
+        assertEquals(Arrays.asList("c", "a", "b", "d"), pkgs); // never changes its input
+    }
 }

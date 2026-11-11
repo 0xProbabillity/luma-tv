@@ -27,10 +27,10 @@ final class Posters {
                 }
             };
 
-    /** The picture if it is already decoded, else null. */
-    static Bitmap cached(String link) {
+    /** The picture decoded for {@code width} pixels if it is already in memory, else null. */
+    static Bitmap cached(String link, int width) {
         synchronized (CACHE) {
-            return CACHE.get(link);
+            return CACHE.get(link + "@" + width);
         }
     }
 
@@ -63,7 +63,7 @@ final class Posters {
                         on.post(
                                 () -> {
                                     synchronized (CACHE) {
-                                        CACHE.put(link, result);
+                                        CACHE.put(link + "@" + width, result);
                                     }
                                     done.accept(result);
                                 });

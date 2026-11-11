@@ -13,30 +13,25 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-/** Opening an app, and the menu behind a long press on its tile: move, hide, App info. */
+/**
+ * Opening an app, and the menu behind a long press on its tile. {@code opened}: an app was opened
+ * from here (Home keeps it selected for the way back); {@code changed}: the order or visibility
+ * changed (rebuild the page); {@code order}: the saved order of every app.
+ */
 final class AppLauncher {
     /** How many recently opened apps are remembered. */
     private static final int RECENT = 12;
-
-    /** What the launcher does around these actions. */
-    interface Host {
-        /** An app was opened from here: Home keeps it selected for the way back. */
-        void opened(App app);
-
-        /** The order or visibility changed: rebuild the page with {@code app} selected. */
-        void changed(App app);
-
-        /** The saved order of every app. */
-        ArrayList<String> order();
-    }
 
     private final Activity activity;
     private final Prefs prefs;
     private final AppRepo repo;
     private final Overlays overlays;
     private final Feedback feedback;
-    private final Host host;
+    private final Consumer<App> opened, changed;
+    private final Supplier<ArrayList<String>> order;
 
     AppLauncher(
             Activity activity,
@@ -44,13 +39,17 @@ final class AppLauncher {
             AppRepo repo,
             Overlays overlays,
             Feedback feedback,
-            Host host) {
+            Consumer<App> opened,
+            Consumer<App> changed,
+            Supplier<ArrayList<String>> order) {
         this.activity = activity;
         this.prefs = prefs;
         this.repo = repo;
         this.overlays = overlays;
         this.feedback = feedback;
-        this.host = host;
+        this.opened = opened;
+        this.changed = changed;
+        this.order = order;
     }
 
     void launch(App app) {
@@ -76,7 +75,7 @@ final class AppLauncher {
                             : Motion.instant(activity));
             prefs.setRecent(
                     AppList.remember(prefs.recent(), app.pkg, System.currentTimeMillis(), RECENT));
-            host.opened(app);
+            opened.accept(app);
         } catch (RuntimeException error) {
             Toast.makeText(
                             activity,
@@ -96,10 +95,10 @@ final class AppLauncher {
         choices.put("Open", () -> launch(app));
         choices.put(
                 "Move to first position",
-                () -> reorder(app, AppList.moveFirst(host.order(), hidden, app.pkg)));
+                () -> reorder(app, AppList.moveFirst(order.get(), hidden, app.pkg)));
         choices.put(
                 hidden.contains(app.pkg) ? "Show on Home" : "Hide from Home",
-                () -> reorder(app, AppList.toggleHidden(host.order(), hidden, app.pkg)));
+                () -> reorder(app, AppList.toggleHidden(order.get(), hidden, app.pkg)));
         choices.put(
                 "App info",
                 () ->
@@ -118,7 +117,7 @@ final class AppLauncher {
 
     private void reorder(App app, AppList.Edit edit) {
         prefs.setOrderAndHidden(edit.orderCsv(), edit.hidden);
-        host.changed(app);
+        changed.accept(app);
     }
 
     /** Apps the user installed can be removed; the system's own cannot. */

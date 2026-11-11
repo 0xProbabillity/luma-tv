@@ -111,18 +111,11 @@ final class WeatherWidget extends Widget {
     }
 
     private void paintFocus() {
-        GradientDrawable bg =
-                round(
-                        focused
-                                ? (light() ? 0xF2FFFFFF : 0x38FFFFFF)
-                                : (light() ? 0x8CFFFFFF : 0x1FFFFFFF),
-                        22);
-        bg.setStroke(
-                Math.max(1, px(focused ? 1.2f : .8f)),
-                focused
-                        ? (light() ? 0x33000000 : 0xB3FFFFFF)
-                        : (light() ? 0x14000000 : 0x1FFFFFFF));
-        setBackground(bg);
+        if (focused) {
+            GradientDrawable bg = round(light() ? 0xF2FFFFFF : 0x38FFFFFF, 22);
+            bg.setStroke(Math.max(1, px(1.2f)), light() ? 0x33000000 : 0xB3FFFFFF);
+            setBackground(bg);
+        } else setBackground(restBackground());
         animate().cancel();
         float s = focused ? 1.04f : 1;
         // A modest shadow: the card is large, and its shadow is drawn every frame.

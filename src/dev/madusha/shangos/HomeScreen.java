@@ -26,15 +26,11 @@ final class HomeScreen {
         this.overlays = overlays;
     }
 
-    private static Intent homeIntent() {
-        return new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
-    }
-
     /** True when pressing Home on the remote opens shangOS. */
     boolean isDefault() {
         ResolveInfo r =
                 context.getPackageManager()
-                        .resolveActivity(homeIntent(), PackageManager.MATCH_DEFAULT_ONLY);
+                        .resolveActivity(SystemHome.intent(), PackageManager.MATCH_DEFAULT_ONLY);
         return r != null
                 && r.activityInfo != null
                 && context.getPackageName().equals(r.activityInfo.packageName);
@@ -83,15 +79,7 @@ final class HomeScreen {
                                 || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
             } catch (IllegalArgumentException notInstalled) {
             }
-        ResolveInfo other = null;
-        for (ResolveInfo r : pm.queryIntentActivities(homeIntent(), 0)) {
-            String pkg = r.activityInfo.packageName;
-            if (pkg.equals(context.getPackageName())
-                    || pkg.equals("com.android.tv.settings")
-                    || pkg.contains("setupwraith")
-                    || pkg.contains("provision")) continue;
-            if (other == null || r.priority > other.priority) other = r;
-        }
+        ComponentName other = SystemHome.other(context);
         if (off || other == null) {
             overlays.notice(
                     "Return to the TV's home screen",
@@ -103,10 +91,6 @@ final class HomeScreen {
         }
         forgetPreferredHome(pm);
         context.startActivity(
-                homeIntent()
-                        .setComponent(
-                                new ComponentName(
-                                        other.activityInfo.packageName, other.activityInfo.name))
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                SystemHome.intent().setComponent(other).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }

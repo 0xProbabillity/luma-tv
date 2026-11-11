@@ -2,7 +2,6 @@ package dev.madusha.shangos;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.provider.Settings;
@@ -41,6 +40,9 @@ final class SettingsScreen {
         /** The living wallpaper or the performance choice changed. */
         void ambientChanged();
 
+        /** Frosted glass was switched on or off. */
+        void glassChanged();
+
         /** Rebuild Settings and select row {@code row}. */
         void reload(int row);
 
@@ -58,12 +60,8 @@ final class SettingsScreen {
     private final ScreenHost screens;
     private final Host host;
     private final PrivacyScreen privacy;
-    private final SetupGuide setup;
-    private final AboutScreen about;
-    private final WallpaperPicker wallpaperPicker;
-    private final NameEditor nameEditor;
-    private final HomeScreen homeScreen;
     private final WeatherSettings weather;
+    private final SettingsPages pages;
 
     SettingsScreen(
             Activity activity,
@@ -73,12 +71,8 @@ final class SettingsScreen {
             ScreenHost screens,
             Host host,
             PrivacyScreen privacy,
-            SetupGuide setup,
-            AboutScreen about,
-            WallpaperPicker wallpaperPicker,
-            NameEditor nameEditor,
-            HomeScreen homeScreen,
-            WeatherSettings weather) {
+            WeatherSettings weather,
+            SettingsPages pages) {
         this.activity = activity;
         this.ui = ui;
         this.prefs = prefs;
@@ -86,12 +80,8 @@ final class SettingsScreen {
         this.screens = screens;
         this.host = host;
         this.privacy = privacy;
-        this.setup = setup;
-        this.about = about;
-        this.wallpaperPicker = wallpaperPicker;
-        this.nameEditor = nameEditor;
-        this.homeScreen = homeScreen;
         this.weather = weather;
+        this.pages = pages;
     }
 
     /** The focusable rows of the page last shown; they animate in with the page. */
@@ -99,9 +89,13 @@ final class SettingsScreen {
         return rows == null ? new ArrayList<>() : rows;
     }
 
-    /** Another page is shown: forget the rows. */
-    void clear() {
+    /** Another page is shown. {@code staying}: this is Settings again (a dialog came back). */
+    void clear(boolean staying) {
         rows = null;
+        if (!staying) {
+            group = ROOT;
+            startRow = 0;
+        }
     }
 
     int privacyRow() {
@@ -109,7 +103,7 @@ final class SettingsScreen {
     }
 
     int aboutRow() {
-        return aboutRowIndex;
+        return pages.aboutRow();
     }
 
     /** A switch row's state: "motion" also follows the system's animation setting. */
@@ -129,47 +123,6 @@ final class SettingsScreen {
         ui.shadow(t, radius, host.light());
     }
 
-    /**
-     * True when shangOS Ambient is the TV's chosen screen saver (readable by any app; nothing is
-     * requested).
-     */
-    private boolean ambientActive() {
-        try {
-            String chosen =
-                    Settings.Secure.getString(
-                            activity.getContentResolver(), "screensaver_components");
-            return chosen != null && chosen.contains(activity.getPackageName() + "/");
-        } catch (RuntimeException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Many TVs hide the screen saver choice: offer the system screen, and the computer route that
-     * always works.
-     */
-    private void screenSaverMenu() {
-        overlays.menu(
-                "Screen saver",
-                new String[] {
-                    "Open the TV's screen saver settings", "How to choose shangOS Ambient"
-                },
-                -1,
-                choice -> {
-                    if (choice == 0) {
-                        privacy.openSystem(new Intent(Settings.ACTION_DREAM_SETTINGS));
-                    } else {
-                        overlays.notice(
-                                "shangOS Ambient",
-                                "A clock over your wallpaper that moves every minute. Many TVs only"
-                                        + " let you choose a screen saver from a computer: run"
-                                        + " ./shangos.sh ambient, or see "
-                                        + SetupGuide.SETUP_URL.replace("https://", "")
-                                        + " (Screen saver).");
-                    }
-                });
-    }
-
     private ImageView previewImage;
     private TextView previewTitle, previewBody;
 
@@ -187,7 +140,8 @@ final class SettingsScreen {
 
     /** Builds the Settings page into the launcher's content frame. */
     void show(boolean focus) {
-        TextView title = ui.text("Settings", 42, ink(0xFF), "sans-serif-medium");
+        String heading = group == ROOT ? "Settings" : TITLES[group];
+        TextView title = ui.text(heading, 42, ink(0xFF), "sans-serif-medium");
         title.setLetterSpacing(-.035f);
         shadow(title, 10);
         host.content().addView(title, ui.pos(450, 52, 48, 84));
@@ -224,7 +178,7 @@ final class SettingsScreen {
         host.content().addView(frame, ui.pos(520, 400, 26, 138));
         // live preview on the right
         FrameLayout card = new FrameLayout(activity);
-        card.setBackground(ui.shape(Theme.glass(host.light()), 22));
+        card.setBackground(ui.glass(card, host.light(), 22));
         card.setClipToOutline(true);
         previewImage = new ImageView(activity);
         previewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -235,182 +189,55 @@ final class SettingsScreen {
         previewBody.setLineSpacing(ui.px(4), 1);
         card.addView(previewBody, ui.pos(316, 80, 18, 246));
         host.content().addView(card, ui.pos(352, 330, 560, 150));
-        int wp = style();
         ArrayList<View> controls = new ArrayList<>();
-        caption(list, "Appearance", true);
+        switch (group) {
+            case APPEARANCE:
+                pages.appearance(kit, list, controls);
+                break;
+            case MOTION:
+                pages.motion(kit, list, controls);
+                break;
+            case HOME:
+                pages.home(kit, list, controls);
+                break;
+            case SYSTEM:
+                pages.system(kit, list, controls);
+                break;
+            default:
+                root(list, controls);
+        }
+        rows = controls;
+        int wp = style();
+        preview(
+                Wallpaper.THUMBS[wp],
+                group == ROOT ? "Settings" : TITLES[group],
+                group == ROOT
+                        ? "Look, motion, home, privacy and system. Back returns to the page before."
+                        : "Back returns to Settings.");
+        int first = Math.min(startRow, controls.size() - 1);
+        if (focus) screens.post(() -> controls.get(first).requestFocus());
+    }
+
+    /** The first page: a row for each group of settings, and Privacy, which is one screen. */
+    private void root(LinearLayout list, ArrayList<View> controls) {
         controls.add(
-                option(
+                group(
                         list,
-                        "Wallpaper",
+                        APPEARANCE,
                         () -> Wallpaper.NAMES[style()],
-                        null,
-                        () -> wallpaperPicker.show(ROW_WALLPAPER),
-                        () ->
-                                preview(
-                                        Wallpaper.THUMBS[style()],
-                                        Wallpaper.NAMES[style()],
-                                        "Eight wallpapers, from Daybreak to Calm Sea. Daybreak is"
-                                            + " light by day and dark after sunset.")));
+                        "Wallpaper, your name, the clock, frosted glass and room lighting."));
         controls.add(
-                option(
+                group(
                         list,
-                        "Your name",
-                        () -> {
-                            String n = prefs.name();
-                            return n.isEmpty() ? "Add" : n;
-                        },
-                        null,
-                        () -> nameEditor.show(ROW_NAME),
-                        () ->
-                                preview(
-                                        0,
-                                        "Your name",
-                                        "Home greets you by name. It is saved only on this TV.")));
-        controls.add(
-                option(
-                        list,
-                        "Clock",
-                        null,
-                        "clock",
-                        () -> {},
-                        () ->
-                                preview(
-                                        0,
-                                        "Clock",
-                                        "Shows the time in the top-right corner of every page.")));
-        caption(list, "Motion and sound", false);
-        controls.add(
-                option(
-                        list,
-                        "Fluid motion",
-                        null,
-                        "motion",
-                        () -> {},
-                        () ->
-                                preview(
-                                        0,
-                                        "Fluid motion",
-                                        "Springy focus, depth and the 3D flight into your TV. Turn"
-                                                + " off for a calmer, simpler screen.")));
-        controls.add(
-                option(
-                        list,
-                        "Living wallpaper",
-                        null,
-                        "ambient",
-                        host::ambientChanged,
-                        () ->
-                                preview(
-                                        Wallpaper.THUMBS[style()],
-                                        "Living wallpaper",
-                                        "Clouds drift and water moves very slowly. Pauses whenever"
-                                                + " an app is open.")));
-        controls.add(
-                option(
-                        list,
-                        "Room lighting",
-                        null,
-                        Prefs.STAGE,
-                        () -> {},
-                        () ->
-                                preview(
-                                        Wallpaper.THUMBS[style()],
-                                        "Room lighting",
-                                        "The light behind your apps takes the colour of the one you"
-                                                + " are on, and the wallpaper dims a little. Off"
-                                                + " with the Light performance setting.")));
-        final int performanceRow = controls.size();
-        controls.add(
-                option(
-                        list,
-                        "Performance",
+                        MOTION,
                         host::performanceLabel,
-                        null,
-                        () ->
-                                overlays.menu(
-                                        "Performance",
-                                        Prefs.PERF_NAMES,
-                                        prefs.perf(),
-                                        choice -> {
-                                            prefs.setPerf(choice);
-                                            host.reload(performanceRow);
-                                            host.ambientChanged();
-                                        }),
-                        () ->
-                                preview(
-                                        0,
-                                        "Performance",
-                                        "Auto chooses for this TV ("
-                                                + Hardware.describe(activity)
-                                                + "). Light keeps the wallpaper still, the lightest"
-                                                + " and coolest. Balanced and Quality add slow"
-                                                + " gliding light that pauses while you use the"
-                                                + " remote and after a long time without a key"
-                                                + " press.")));
+                        "Motion, sounds, calm mode and performance."));
         controls.add(
-                option(
+                group(
                         list,
-                        "Navigation sounds",
-                        null,
-                        "sound",
-                        () -> {},
-                        () ->
-                                preview(
-                                        0,
-                                        "Navigation sounds",
-                                        "Soft, quiet feedback as you move and open apps.")));
-        caption(list, "Home", false);
-        widgetsRow = controls.size();
-        controls.add(
-                option(
-                        list,
-                        "Home widgets",
-                        this::widgetSummary,
-                        null,
-                        this::widgetEditor,
-                        () ->
-                                preview(
-                                        0,
-                                        "Home widgets",
-                                        "Choose what Home shows above your apps — Up Next, Weather"
-                                                + " (off until you turn it on), "
-                                                + (InputsWidget.count > 0 ? "Inputs, " : "")
-                                                + "Now Playing and Control — and their order. Left"
-                                                + " and Right turn the pages.")));
-        final int locationRow = controls.size();
-        controls.add(
-                option(
-                        list,
-                        "Weather location",
-                        weather::locationLabel,
-                        null,
-                        () -> weather.pickLocation(locationRow),
-                        () -> preview(0, "Weather location", weather.locationAbout())));
-        controls.add(
-                option(
-                        list,
-                        "Temperature",
-                        weather::unitLabel,
-                        null,
-                        () -> weather.unitMenu(locationRow + 1),
-                        () -> preview(0, "Temperature", weather.unitAbout())));
-        controls.add(
-                option(
-                        list,
-                        "Home screen",
-                        () -> homeScreen.isDefault() ? "shangOS" : "TV default",
-                        null,
-                        homeScreen::show,
-                        () ->
-                                preview(
-                                        0,
-                                        "Home screen",
-                                        homeScreen.isDefault()
-                                                ? "shangOS opens when you press Home. Choose to"
-                                                        + " return to your TV's own home screen."
-                                                : "Your TV's own home screen opens when you press"
-                                                        + " Home.")));
-        caption(list, "Privacy", false);
+                        HOME,
+                        weather::cityLabel,
+                        "Your city, temperature, widgets and how your apps are ordered."));
         privacyRowIndex = controls.size();
         controls.add(
                 option(
@@ -427,82 +254,81 @@ final class SettingsScreen {
                                                 + activity.getString(R.string.app_name)
                                                 + " can reach, which permissions it has, and the"
                                                 + " switch that turns the network off.")));
-        caption(list, "System", false);
         controls.add(
-                option(
+                group(
                         list,
-                        "Setup guide",
-                        setup::progress,
-                        null,
-                        () -> setup.show(setup.resumeStep()),
-                        () ->
-                                preview(
-                                        0,
-                                        "Setup guide",
-                                        "Privacy choices, optional permissions and the home screen,"
-                                                + " one step at a time.")));
-        controls.add(
-                option(
-                        list,
-                        "Screen saver",
-                        () -> ambientActive() ? "shangOS Ambient" : "Not set",
-                        null,
-                        this::screenSaverMenu,
-                        () ->
-                                preview(
-                                        0,
-                                        "Screen saver",
-                                        "shangOS Ambient: a quiet clock over your wallpaper that"
-                                                + " moves every minute. No network, nothing to"
-                                                + " allow.")));
-        controls.add(
-                option(
-                        list,
-                        "Device settings",
-                        () -> "",
-                        null,
-                        () -> activity.startActivity(new Intent(Settings.ACTION_SETTINGS)),
-                        () ->
-                                preview(
-                                        0,
-                                        "Device settings",
-                                        "Network, picture, sound and accounts.")));
-        aboutRowIndex = controls.size();
-        controls.add(
-                option(
-                        list,
-                        "About " + activity.getString(R.string.app_name),
-                        () -> "",
-                        null,
-                        about::show,
-                        () ->
-                                preview(
-                                        0,
-                                        "About " + activity.getString(R.string.app_name),
-                                        "Version "
-                                                + AboutScreen.version(activity)
-                                                + " · based on Luma TV (MIT)")));
-        rows = controls;
-        preview(
-                Wallpaper.THUMBS[wp],
-                Wallpaper.NAMES[wp],
-                "Eight wallpapers, from Daybreak to Calm Sea. Daybreak is light by day and dark"
-                        + " after sunset.");
-        if (focus) screens.post(() -> controls.get(0).requestFocus());
-    }
-
-    private void caption(LinearLayout list, String label, boolean first) {
-        TextView c = ui.text(label, 13, ink(0x99), "sans-serif-medium");
-        c.setPadding(ui.px(10), 0, 0, 0);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, ui.px(20));
-        lp.topMargin = ui.px(first ? 0 : 12);
-        lp.bottomMargin = ui.px(6);
-        list.addView(c, lp);
+                        SYSTEM,
+                        () -> AboutScreen.version(activity),
+                        "Screen saver, home screen, the setup guide and about."));
     }
 
     private ScrollView settingsScroll;
     private ValueAnimator settingsGlide;
-    private int widgetsRow, privacyRowIndex, aboutRowIndex;
+    private int privacyRowIndex;
+
+    private final SettingsPages.Kit kit =
+            new SettingsPages.Kit() {
+                public View option(
+                        LinearLayout parent,
+                        String title,
+                        java.util.function.Supplier<String> value,
+                        String toggle,
+                        Runnable action,
+                        Runnable onFocus) {
+                    return SettingsScreen.this.option(
+                            parent, title, value, toggle, action, onFocus);
+                }
+
+                public void preview(int thumb, String title, String body) {
+                    SettingsScreen.this.preview(thumb, title, body);
+                }
+
+                public int style() {
+                    return SettingsScreen.this.style();
+                }
+            };
+
+    // The pages: the first lists the groups, each group is a page of its own.
+    private static final int ROOT = -1, APPEARANCE = 0, MOTION = 1, HOME = 2, SYSTEM = 3;
+    private static final String[] TITLES = {"Appearance", "Motion and sound", "Home", "System"};
+    private int group = ROOT;
+
+    /** The row selected when the page is built with focus: the group just left, going back. */
+    private int startRow;
+
+    /** A row on the first page that opens a group. */
+    private View group(
+            LinearLayout list,
+            int target,
+            java.util.function.Supplier<String> value,
+            String about) {
+        return option(
+                list,
+                TITLES[target],
+                value,
+                null,
+                () -> open(target),
+                () -> preview(Wallpaper.THUMBS[style()], TITLES[target], about));
+    }
+
+    private void open(int target) {
+        group = target;
+        startRow = 0;
+        host.reload(0);
+    }
+
+    /**
+     * Back inside a group goes to the first page. Returns the row to select there, or -1 when
+     * already on the first page (Back then leaves Settings).
+     */
+    int up() {
+        if (group == ROOT) return -1;
+        // Privacy sits between Home and System on the first page.
+        int row = group == SYSTEM ? group + 1 : group;
+        group = ROOT;
+        startRow = row;
+        return row;
+    }
     private ArrayList<View> rows;
 
     /**
@@ -537,21 +363,6 @@ final class SettingsScreen {
         settingsGlide.start();
     }
 
-    private String widgetSummary() {
-        boolean inputs = !InputsWidget.list(activity).isEmpty();
-        int n = 0;
-        for (String id : WidgetBoard.IDS)
-            if (WidgetBoard.on(prefs, id)
-                    && (inputs || !id.equals("inputs"))
-                    && (Net.enabled(prefs) || !id.equals("weather"))) n++;
-        return n == 0 ? "Off" : n + " on";
-    }
-
-    private void widgetEditor() {
-        new WidgetEditor(activity, ui, prefs, overlays, screens, widgetsRow);
-    }
-
-    /** Selects row {@code i} of the Settings page once it is laid out. */
     void focusRow(int i) {
         screens.post(
                 () -> {

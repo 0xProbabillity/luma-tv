@@ -54,6 +54,15 @@ final class Credits {
                 "Weather forecasts, only if you turn Weather on. Weather data by Open-Meteo.com.",
                 R.raw.license_ccby),
         new Credit(
+                "GeoNames",
+                "GeoNames contributors",
+                "CC-BY-4.0",
+                "https://www.geonames.org",
+                "The list of about 23,000 cities in Settings, City, as packaged by the community"
+                        + " all-the-cities project (MIT). Nothing is looked up: the list is in the"
+                        + " app.",
+                R.raw.license_ccby),
+        new Credit(
                 "IANA time zone database",
                 "IANA",
                 "Public domain",

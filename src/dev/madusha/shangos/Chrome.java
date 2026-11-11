@@ -57,10 +57,11 @@ final class Chrome {
     private final View indicator;
     private final GradientDrawable indicatorShape;
     private final TextView clock;
+    private final StatusIcons status;
     private final View shade;
     private ValueAnimator indicatorMove;
     private int indicatorColor = 0x24FFFFFF;
-    private boolean clockRunning;
+    private boolean clockRunning, calm;
 
     private final Runnable clockTick =
             new Runnable() {
@@ -94,7 +95,8 @@ final class Chrome {
         bar.addView(indicator, new FrameLayout.LayoutParams(0, ui.px(36), Gravity.CENTER_VERTICAL));
         bar.addView(navigation, new FrameLayout.LayoutParams(-2, -1));
         bar.setPadding(ui.px(4), ui.px(2), ui.px(4), ui.px(2));
-        bar.setBackground(ui.shape(0x1FFFFFFF, 22));
+        bar.setBackground(ui.glass(bar, false, 22));
+        status = new StatusIcons(context, handler);
         clock = ui.text("", 18, 0xF2FFFFFF, "sans-serif-medium");
         clock.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         clock.setLetterSpacing(.01f);
@@ -168,16 +170,40 @@ final class Chrome {
                                     / 2f);
                     moveIndicator(false);
                 });
+        root.addView(status, ui.pos(70, 36, 712, 28));
         root.addView(clock, ui.pos(130, 36, 782, 28));
     }
 
     /** Colours of the tab bar, clock and shade for the current wallpaper. */
     void paint() {
         boolean light = host.light();
-        bar.setBackground(ui.shape(light ? 0x47FFFFFF : 0x1FFFFFFF, 22));
+        bar.setBackground(ui.glass(bar, light, 22));
         clock.setTextColor(Theme.ink(light, 0xF2));
+        status.setInk(Theme.ink(light, 0xE6));
         ui.shadow(clock, 6, light);
         shade.setBackgroundColor(light ? 0x73F2F2F5 : 0x80000000);
+    }
+
+    /**
+     * Calm: the tab bar and clock fade back (and the bar drifts up a little); false brings them
+     * back. Quick to return, slow to leave.
+     */
+    void setCalm(boolean value) {
+        if (calm == value) return;
+        calm = value;
+        long ms = value ? 1400 : 180;
+        bar.animate()
+                .alpha(value ? .22f : 1)
+                .translationY(value ? -ui.px(4) : 0)
+                .setDuration(host.motion() ? ms : 0)
+                .setInterpolator(Motion.EASE)
+                .start();
+        status.animate().alpha(value ? .45f : 1).setDuration(host.motion() ? ms : 0).start();
+        clock.animate()
+                .alpha(value ? .45f : 1)
+                .setDuration(host.motion() ? ms : 0)
+                .setInterpolator(Motion.EASE)
+                .start();
     }
 
     void setClockVisible(boolean visible) {
@@ -189,11 +215,13 @@ final class Chrome {
         handler.removeCallbacks(clockTick);
         clockRunning = true;
         handler.post(clockTick);
+        status.start();
     }
 
     void stopClock() {
         clockRunning = false;
         handler.removeCallbacks(clockTick);
+        status.stop();
     }
 
     private int focusedTab() {

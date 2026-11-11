@@ -49,7 +49,9 @@ final class Prefs {
             MOTION = "motion",
             AMBIENT = "ambient",
             SOUND = "sound",
-            STAGE = "stage";
+            STAGE = "stage",
+            GLASS = "glass",
+            CALM = "calm";
 
     boolean flag(String key) {
         return sp.getBoolean(key, true);
@@ -80,6 +82,23 @@ final class Prefs {
 
     boolean stage() {
         return flag(STAGE);
+    }
+
+    boolean glass() {
+        return flag(GLASS);
+    }
+
+    boolean calm() {
+        return flag(CALM);
+    }
+
+    /** How the Apps tab is ordered: "manual", "az" or "recent" (see AppList). */
+    String appsSort() {
+        return sp.getString("apps_sort", AppList.MANUAL);
+    }
+
+    void setAppsSort(String mode) {
+        sp.edit().putString("apps_sort", mode).apply();
     }
 
     // ---- Performance ----
@@ -140,6 +159,16 @@ final class Prefs {
 
     void setWallpaper(int index) {
         sp.edit().putInt("wallpaper", index).apply();
+    }
+
+    /** When shangOS last crashed (comma-separated times); see CrashGuard. */
+    String crashes() {
+        return sp.getString("crashes", "");
+    }
+
+    /** Written at once, not later: the process is about to die. */
+    void setCrashes(String times) {
+        sp.edit().putString("crashes", times).commit();
     }
 
     /** True once "Your photo" has been pushed from a computer (see PhotoStore). */

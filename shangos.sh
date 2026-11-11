@@ -1,7 +1,7 @@
 #!/bin/bash
 # shangOS on your TV, from this computer.
 #   ./shangos.sh wizard                      guided: pick the TV, install, make it the home screen, clean up
-#   ./shangos.sh [-s DEVICE] build [VARIANT] | install [VARIANT] | home | widgets | restore | status | cleanup
+#   ./shangos.sh [-s DEVICE] build [VARIANT] | install [VARIANT] | home [--disable-stock] | widgets | restore | status | cleanup
 #   ./shangos.sh [-s DEVICE] ambient [on|off|preview]    the shangOS Ambient screen saver (a clock over your wallpaper)
 #   ./shangos.sh [-s DEVICE] wallpaper FILE | --remove    your own picture as the wallpaper (and screen saver), no permission needed
 # VARIANT: release (default), offline (no network permission at all) or debug.
@@ -22,9 +22,12 @@ REPO="madushas/shangos-launcher"
 # Earlier ids of this app, and the project it started from: cleanup can remove them, nothing else ever does.
 EARLIER_IDS="com.madushas.shangos app.vela.tv"
 LUMA_ID="dev.luma.tv"
-# The only packages this script ever switches off: stock TV launchers, and Google TV's setup "recovery" home,
-# which outranks any other home screen once the launcher is off.
+# System homes this script knows. It never switches any of them off unless you pass --disable-stock, and it never
+# switches off Google TV's setup app (setupwraith) at all: on some Google TVs (a Sony Bravia, for one) the TV cannot
+# start without the Google TV home or the setup app and loops at every restart. KNOWN is what restore switches back
+# on; DISABLABLE is all that --disable-stock may switch off.
 KNOWN="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher com.google.android.tungsten.setupwraith"
+DISABLABLE="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shangos"
 ENDPOINTS="$CONFIG_DIR/endpoints"
 VARIANT="release"
@@ -83,24 +86,54 @@ do_install() {
     echo "Installed $(basename "$apk")."
 }
 
+# Switches back on any known system home or setup app that an older shangos.sh (or you) switched off.
+reenable_system_homes() {
+    local pkg
+    for pkg in $KNOWN; do
+        if installed "$pkg" && tv pm list packages -d "$pkg" | grep -qx "package:$pkg"; then
+            echo "$pkg was switched off. Some TVs cannot restart without it, so it is being switched back on."
+            run adb -s "$DEVICE" shell pm enable --user 0 "$pkg" >/dev/null || true
+        fi
+    done
+}
+
+# do_home [--disable-stock]: makes shangOS the chosen home screen and leaves the TV's own home and setup apps ON, so the
+# TV always has a home to start with. Only with --disable-stock (and after you confirm) is a stock launcher switched off.
 do_home() {
     installed "$PKG" || die "shangOS is not installed yet: ./shangos.sh install"
-    local state current pkg
+    local expert="${1:-}" state current pkg
+    [ -z "$expert" ] || [ "$expert" = "--disable-stock" ] || die "home takes no option except --disable-stock"
     state="$(state_file)"
     if [ ! -s "$state" ]; then echo "original=$(home_now)" >"$state"; fi
+    [ "$expert" = "--disable-stock" ] || reenable_system_homes
     run adb -s "$DEVICE" shell cmd package set-home-activity --user 0 "$SHANGOS" >/dev/null
-    for _ in 1 2 3 4; do
+    run adb -s "$DEVICE" shell cmd role add-role-holder --user 0 android.app.role.HOME "$PKG" >/dev/null 2>&1 || true
+    current="$(home_now)"
+    if [ "$current" != "$SHANGOS" ] && [ "$expert" != "--disable-stock" ]; then
+        echo "shangOS is chosen as the home screen, but the TV still opens $current at Home."
+        echo "shangOS does not switch the TV's own home or setup apps off: on some Google TVs (a Sony Bravia, for one) the TV"
+        echo "cannot start without them and loops at every restart. Your options:"
+        echo "  - open shangOS from the app row, or choose \"Always\" if the TV asks which home to use;"
+        echo "  - knowing the risk: ./shangos.sh home --disable-stock (reversible: ./shangos.sh restore, and docs/setup/#loop)."
+        return 0
+    fi
+    if [ "$current" != "$SHANGOS" ]; then
+        echo "WARNING: switching off a stock launcher can leave some Google TVs unable to restart (they loop at every restart)."
+        echo "If that happens, the recovery steps are on https://shangos.madusha.dev/setup/#loop"
+        yesno "Switch it off anyway?" n || die "nothing was changed."
+    fi
+    for _ in 1 2 3; do
         current="$(home_now)"
         [ "$current" = "$SHANGOS" ] && break
         pkg="${current%%/*}"
-        case " $KNOWN " in
+        case " $DISABLABLE " in
             *" $pkg "*)
-                echo "Switching off $pkg, which the TV puts above any other home screen."
+                echo "Switching off $pkg."
                 run adb -s "$DEVICE" shell pm disable-user --user 0 "$pkg" >/dev/null
                 echo "disabled=$pkg" >>"$state"
                 run adb -s "$DEVICE" shell cmd package set-home-activity --user 0 "$SHANGOS" >/dev/null
                 ;;
-            *) die "the TV still opens $current at Home, and shangos.sh does not switch off unknown apps. Nothing else was changed; ./shangos.sh restore undoes this." ;;
+            *) die "the TV still opens $current at Home, and shangos.sh never switches that off. Nothing else was changed; ./shangos.sh restore undoes this." ;;
         esac
     done
     [ "$(home_now)" = "$SHANGOS" ] || die "the TV did not accept shangOS as its home screen. ./shangos.sh restore undoes the changes."
@@ -187,6 +220,12 @@ do_status() {
     echo "shangOS: $(tv dumpsys package "$PKG" | sed -n 's/^ *versionName=//p' | head -n 1 | grep . || echo 'not installed')"
     echo "Home: $(home_now)"
     if [ "$(ambient_current)" = "$AMBIENT" ]; then echo "Screen saver: shangOS Ambient"; fi
+    local pkg
+    for pkg in $KNOWN; do
+        if installed "$pkg" && tv pm list packages -d "$pkg" | grep -qx "package:$pkg"; then
+            echo "Warning: $pkg is switched off. Some TVs cannot restart without it: ./shangos.sh home (or restore) switches it back on."
+        fi
+    done
 }
 
 # ---- Asking questions (the wizard) ----
@@ -532,7 +571,7 @@ case "$ACTION" in
         ;;
     home)
         pick_device
-        do_home
+        do_home "${2:-}"
         ;;
     widgets)
         pick_device

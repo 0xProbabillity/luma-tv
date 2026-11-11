@@ -1,5 +1,6 @@
 package dev.madusha.shangos;
 
+import android.content.Context;
 import android.os.Handler;
 import android.widget.FrameLayout;
 
@@ -34,6 +35,7 @@ final class DaylightSync {
         void rebuild();
     }
 
+    private final Context context;
     private final Daylight daylight;
     private final Prefs prefs;
     private final Handler handler;
@@ -46,7 +48,8 @@ final class DaylightSync {
      */
     private String override = "auto";
 
-    DaylightSync(Daylight daylight, Prefs prefs, Handler handler, Host host) {
+    DaylightSync(Context context, Daylight daylight, Prefs prefs, Handler handler, Host host) {
+        this.context = context;
         this.daylight = daylight;
         this.prefs = prefs;
         this.handler = handler;
@@ -54,6 +57,7 @@ final class DaylightSync {
     }
 
     boolean isDay() {
+        daylight.follow(context, prefs);
         return override.equals("auto")
                 ? daylight.isDay(System.currentTimeMillis())
                 : override.equals("day");
@@ -89,6 +93,7 @@ final class DaylightSync {
 
     /** Switches the colours if the light changed, and schedules the next check. */
     void sync() {
+        daylight.follow(context, prefs);
         handler.removeCallbacks(tick);
         if (!host.started()) return;
         long now = System.currentTimeMillis();

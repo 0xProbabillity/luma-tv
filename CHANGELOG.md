@@ -1,14 +1,55 @@
 # Changelog
 
-## 0.4.6: Weather for any city (from Luma 2.5)
-- **Settings, Weather location**: Automatic (the main city of the TV's time zone, as before, with no request) or any city you search for.
-  Results come as you type, Search on the keyboard jumps to the first, names in other alphabets are found in their own language, and only
-  towns and cities are listed, those called what you typed first. The search runs only when you type, needs Weather to be on, and sends only
-  what you typed to `geocoding-api.open-meteo.com` (the second host of the network allow-list).
-- Automatic Celsius/Fahrenheit follows the country of the weather's city. The window no longer pans under the keyboard.
-- Not taken from Luma 2.5: its automatic city from the TV's internet address (it would send the TV's address to GeoJS and ipwho.is). See
-  `NOTICE.md`.
-- `SettingsScreen` shrinks again: the temperature and location rows moved to `WeatherSettings`. Tests: 70.
+## 0.6.1: Safety (from checking couch-tv)
+- **The setup scripts no longer switch off the TV's own home or setup apps.** couch-tv found that switching off Google TV's home and setup
+  apps can leave some TVs unable to restart (a blank screen and a loop); our scripts did the same. Now `shangos.sh home`, `setup.sh` and
+  `setup.ps1` choose shangOS as the home screen and leave the TV's own home on. If the TV still opens its own home, open shangOS from the app
+  row. `--disable-stock` (`-DisableStock`) remains for experts: it asks first, warns about the loop, and never touches the setup app.
+- Running them again **switches back on** anything an older version switched off, and `status` warns if something is still off.
+- **Crash guard**: if shangOS crashes twice within five minutes, it hands Home to the TV's own home and tries again later, so a broken
+  build cannot hold a TV in a restart loop. The crash times are a few numbers kept on the TV.
+- The setup page has a new section, "If your TV loops after a restart", with the recovery steps.
+- `AGENTS.md` (rules for AI agents and new contributors) and `tools/privacy-scan.sh` (no private addresses, MACs, e-mails or keys in the repo).
+- `PLAN.md` has what we learned from couch-tv and Couchy. Tests: 82.
+
+## 0.6.0: Settings in pages
+- **Settings is now a short first page** (Appearance, Motion and sound, Home, Privacy, System). Each group is a page of its own and Back
+  returns to the first page, with the group you left selected. Dialogs (wallpaper, name, city, performance, widgets) return to the page
+  they were opened from.
+- **Home, Apps order**: the Apps tab can be Manual (your own order, as before), A to Z, or Recently used. Home keeps your own order. On a
+  sorted Apps tab, holding OK opens the app's menu instead of lifting the tile.
+- **Home, Hidden apps**: lists the apps hidden from Home; choose one to show it again.
+- **Your city also sets the sunrise and sunset** that switch Daybreak between its light and dark pictures (and the screen saver's), not just
+  the weather. Without a chosen city it is still the time zone's main city.
+- Under the hood: `SettingsScreen` keeps the pages, the list and the preview card; `SettingsPages` builds the rows of each group;
+  `AppsSettings` has the order and hidden-apps rows. Tests: 77.
+
+
+## 0.5.0: Polish
+- **Frosted glass**: the tab bar, cards, menus and the Settings preview show a blurred copy of your wallpaper behind them. The wallpaper is
+  blurred once into a tiny picture when it loads and each panel draws its part of it, so it costs next to nothing and lines up exactly.
+  Settings, Frosted glass turns it off; it is also off on the Light performance setting.
+- **Hero backdrop**: when an app has something to resume, its artwork fades softly into the wallpaper behind the greeting.
+- **Calm mode**: after 20 quiet seconds the tab bar and clock fade back so the wallpaper has the room; any key brings them back. Settings,
+  Calm mode turns it off.
+- **Shimmer** placeholders instead of "Finding your apps..." while the list is read; **rise-in**: the greeting, widgets and tiles rise into
+  place one after another when the launcher starts.
+- The shadow under the focused card takes the colour of the app's icon.
+- **Status icons** beside the clock only when they matter: a lock while a VPN is on, an amber crossed Wi-Fi when offline.
+- No Lottie library: it needs AppCompat and adds up to 1 MB. Native animation is used instead (see `docs/dev/PLAN.md`).
+- Under the hood: `Frost`, `Backdrop`, `Shimmer`, `StatusIcons`, `Calm`, `ScreenSaverSettings`; `MainActivity` lost its motion/sound wrappers.
+  The project plan for 0.6 to 1.0 is in `docs/dev/PLAN.md`. Tests: 76.
+
+## 0.4.6: Your city, from a list inside the app
+- **Settings, City** and a new setup step, **Where is this TV?**: choose your city for the weather from a list built into the app (about
+  23,000 towns and cities of 15,000 people or more). Type a name (accents and case don't matter, a later word matches too, "portland, us"
+  narrows by country); results show the biggest first. No location service, no permission, no lookup of the TV's address and no network:
+  choosing a city sends nothing anywhere. Skip it, or choose Automatic, to keep the main city of the TV's time zone.
+- The list is not hand-written. `tools/cities.js` generates `res/raw/cities.txt` from GeoNames (CC BY 4.0, credited in Settings, About,
+  Licences) as packaged by the community all-the-cities package; run it again to pick up newer data.
+- Automatic Celsius/Fahrenheit follows the country of the chosen city. The window no longer pans under the keyboard (from Luma 2.5).
+- From Luma 2.5 we did not take the automatic city from the TV's internet address, nor its online city search. See `NOTICE.md`.
+- `SettingsScreen` shrinks again: the City and Temperature rows moved to `WeatherSettings`. Tests: 72.
 
 ## 0.4.5: Grab to move, Uninstall, and your own photo
 - **Grab to move**: hold OK on a tile and it lifts; move it with the d-pad and press OK to put it down (Back puts it down where it is). It

@@ -3,7 +3,7 @@
 A fast, private, modern home screen for Android TV. Plain Java, **no third-party libraries**, no telemetry, no
 accounts, no ads. Source: https://github.com/madushas/shangos-launcher. Forked from [Luma TV](https://github.com/0xProbabillity/luma-tv) (MIT); see `NOTICE.md`.
 
-**Status: 0.4.6 is the latest release. Built, unit-tested and linted; field-tested on one TV stick.**
+**Status: 0.4.0 is the latest release; 0.6.1 is in development. Built, unit-tested and linted; field-tested on one TV stick.**
 
 Website and setup guide: https://shangos.madusha.dev (source in `docs/`). Releases are signed; the fingerprint is on each release and in the app.
 
@@ -15,7 +15,7 @@ A hardware check picks how much the wallpaper animates (Light, Balanced or Quali
 | | Full build (`release`) | `offline` build |
 |---|---|---|
 | INTERNET permission | yes | **none**: Android blocks every connection |
-| Weather | **off** until you turn it on; contacts `api.open-meteo.com` (and `geocoding-api.open-meteo.com` while you search for a city to pin) | not available |
+| Weather | **off** until you turn it on; contacts `api.open-meteo.com`. Your city comes from a list built into the app: no location lookup | not available |
 | Remote Up Next posters | Wi-Fi/Ethernet only by default; https only, never to local addresses | not available |
 | Analytics, crash reports, accounts, update checks | none | none |
 | Cleartext http | refused (platform config and code) | refused |
@@ -54,6 +54,21 @@ adb connect <TV_IP>:5555
 ./shangos.sh -s <TV_IP>:5555 home                        # becomes the home screen (reversible)
 ./shangos.sh -s <TV_IP>:5555 restore                     # undo everything
 ```
+Or use the guided wizard (Mac/Linux `curl -fsSL https://shangos.madusha.dev/setup.sh | bash`, Windows `setup.ps1`), which can also, if you ask, turn on
+ad and tracker blocking for the whole TV (Android Private DNS; `--dns off` undoes it).
+
+Measure your own TV against Luma TV and the stock launcher: `tools/bench.sh -s <TV_IP>:5555` (writes `docs/data/bench.json`, see `docs/MEASURING.md`).
 
 ## Layout
 `src/dev/madusha/shangos` code · `res` assets · `test` JUnit · `build.sh` / `shangos.sh` scripts · `docs/` the website (static) and `docs/dev/` developer docs.
+
+## If your TV loops after a restart
+Older versions of the setup scripts switched off the TV's own home and setup apps, which some Google TVs cannot start without. Switch them back on from a computer (repeat until the TV answers):
+
+```
+adb shell pm enable com.google.android.apps.tv.launcherx
+adb shell pm enable com.google.android.tungsten.setupwraith
+adb shell pm enable com.google.android.tvlauncher
+```
+
+Full steps: https://shangos.madusha.dev/setup/#loop. The current scripts leave them on.

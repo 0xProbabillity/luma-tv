@@ -388,7 +388,7 @@ final class UpNextWidget extends Widget {
 
     /** Fills a card's picture: at once if it is already decoded, else when it has loaded. */
     private void showPoster(String link, ImageView view, View fallback) {
-        Bitmap cached = Posters.cached(link);
+        Bitmap cached = Posters.cached(link, px(cardW) * 2);
         if (cached != null) {
             view.setImageBitmap(cached);
             if (fallback != null) fallback.setVisibility(INVISIBLE);

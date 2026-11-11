@@ -57,6 +57,33 @@ final class AppList {
         return result;
     }
 
+    /** The Apps tab keeps the saved order (and grab to move works). */
+    static final String MANUAL = "manual";
+
+    /** The Apps tab is A to Z. */
+    static final String AZ = "az";
+
+    /** The Apps tab shows the most recently opened first. */
+    static final String RECENT = "recent";
+
+    /**
+     * {@code pkgs} in the order a sort mode asks for: {@link #AZ} by label (ignoring case),
+     * {@link #RECENT} by when each was last opened (newest first, those never opened after them
+     * in their old order), anything else unchanged. A new list; the sort is stable.
+     */
+    static ArrayList<String> sorted(
+            String mode,
+            List<String> pkgs,
+            java.util.function.Function<String, String> label,
+            java.util.function.ToLongFunction<String> lastOpened) {
+        ArrayList<String> out = new ArrayList<>(pkgs);
+        if (AZ.equals(mode))
+            out.sort((a, b) -> label.apply(a).compareToIgnoreCase(label.apply(b)));
+        else if (RECENT.equals(mode))
+            out.sort((a, b) -> Long.compare(lastOpened.applyAsLong(b), lastOpened.applyAsLong(a)));
+        return out;
+    }
+
     /** Puts {@code pkg} first. Moving an app to the front also un-hides it. */
     static Edit moveFirst(List<String> order, Set<String> hidden, String pkg) {
         ArrayList<String> ids = new ArrayList<>(order);

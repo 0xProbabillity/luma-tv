@@ -157,15 +157,6 @@ public class NetTest {
         blocked("https://evil.example.com/v1/forecast", Net.Kind.JSON, PUBLIC);
         blocked("https://api.open-meteo.com.evil.example.com/x", Net.Kind.JSON, PUBLIC);
         blocked("https://notapi.open-meteo.com/x", Net.Kind.JSON, PUBLIC);
-        // The city search (Settings, Weather location) is the one other host.
-        assertEquals(
-                "geocoding-api.open-meteo.com",
-                Net.check(
-                                "https://geocoding-api.open-meteo.com/v1/search?name=Oslo",
-                                Net.Kind.JSON,
-                                PUBLIC)
-                        .getHost());
-        blocked("https://geocoding-api.open-meteo.com.evil.example.com/x", Net.Kind.JSON, PUBLIC);
     }
 
     @Test

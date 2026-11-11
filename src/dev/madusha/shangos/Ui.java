@@ -16,9 +16,17 @@ final class Ui {
     final Context context;
     final float unit;
 
+    /** The blurred wallpaper behind glass panels; shared by every Ui of the launcher. */
+    final Frost frost;
+
     Ui(Context context, float unit) {
+        this(context, unit, new Frost());
+    }
+
+    Ui(Context context, float unit, Frost frost) {
         this.context = context;
         this.unit = unit;
+        this.frost = frost;
     }
 
     int px(float units) {
@@ -42,6 +50,26 @@ final class Ui {
         d.setColor(color);
         d.setCornerRadius(px(radius));
         return d;
+    }
+
+    /**
+     * The glass of a card or bar on the wallpaper: the frosted picture behind {@code view} with a
+     * veil, or the plain translucent fill when frost is off. {@code light} is a pale wallpaper.
+     */
+    android.graphics.drawable.Drawable glass(android.view.View view, boolean light, float radius) {
+        return frost.glass(
+                view,
+                light ? 0x8CFFFFFF : 0x1FFFFFFF,
+                light ? 0x70FFFFFF : 0x30FFFFFF,
+                light ? 0x14000000 : 0x1FFFFFFF,
+                px(radius),
+                Math.max(1, px(.8f)));
+    }
+
+    /** Dialogs and menus: always dark glass, frosted when it can be. */
+    android.graphics.drawable.Drawable darkGlass(android.view.View view, float radius) {
+        return frost.glass(
+                view, Theme.PANEL, 0xD01C1C1E, 0x1FFFFFFF, px(radius), Math.max(1, px(.8f)));
     }
 
     /** A soft shadow under text on a wallpaper; none on a pale one, where it would smudge. */

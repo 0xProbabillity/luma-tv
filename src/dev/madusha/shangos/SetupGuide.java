@@ -52,9 +52,10 @@ final class SetupGuide {
             LOOK = 1,
             PERFORMANCE = 2,
             PRIVACY = 3,
-            PERMISSIONS = 4,
-            HOME = 5,
-            STEPS = 6;
+            PLACE = 4,
+            PERMISSIONS = 5,
+            HOME = 6,
+            STEPS = 7;
 
     /**
      * Where the default-launcher guide lives on the project website; the QR code on the last step
@@ -67,6 +68,7 @@ final class SetupGuide {
     private final Prefs prefs;
     private final Overlays overlays;
     private final PrivacyScreen privacy;
+    private final CityPicker cities;
     private final Host host;
     private ArrayList<View> rows = new ArrayList<>();
 
@@ -76,12 +78,14 @@ final class SetupGuide {
             Prefs prefs,
             Overlays overlays,
             PrivacyScreen privacy,
+            CityPicker cities,
             Host host) {
         this.activity = activity;
         this.ui = ui;
         this.prefs = prefs;
         this.overlays = overlays;
         this.privacy = privacy;
+        this.cities = cities;
         this.host = host;
     }
 
@@ -173,6 +177,9 @@ final class SetupGuide {
             case PRIVACY:
                 privacyRows(list, current);
                 break;
+            case PLACE:
+                placeRows(list, current);
+                break;
             case PERMISSIONS:
                 permissionRows(list);
                 break;
@@ -240,6 +247,16 @@ final class SetupGuide {
                                             host.performanceChanged();
                                             host.post(() -> show(current));
                                         }),
+                        null));
+    }
+
+    private void placeRows(LinearLayout list, int current) {
+        rows.add(
+                overlays.valueRow(
+                        list,
+                        "City",
+                        cities::label,
+                        () -> cities.show(() -> host.post(() -> show(current))),
                         null));
     }
 
@@ -348,6 +365,8 @@ final class SetupGuide {
                 return "Made to fit your TV";
             case PRIVACY:
                 return "Your privacy";
+            case PLACE:
+                return "Where is this TV?";
             case PERMISSIONS:
                 return "Optional permissions";
             default:
@@ -377,6 +396,10 @@ final class SetupGuide {
                                 + " both can be turned off here. Nothing else ever leaves this TV."
                         : "This build has no internet permission at all, so the system blocks every"
                                 + " connection. There is nothing to configure here.";
+            case PLACE:
+                return "Choose your city for the weather and the sunrise from a list built into the"
+                        + " app: nothing is looked up and nothing leaves this TV. Skip it to use the main city"
+                        + " of the TV's time zone. You can change it in Settings.";
             case PERMISSIONS:
                 return "Each one switches on a feature of Home, and none is required. They are"
                         + " asked for one at a time, and you can take any of them back in"

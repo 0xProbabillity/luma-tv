@@ -93,6 +93,15 @@ jobs:
           done
           echo "CERT=$expected" >> "$GITHUB_ENV"
 
+      - name: Benchmark summary (measured on a real TV, published with the release)
+        run: |
+          # tools/bench.sh writes docs/data/bench.json on a maintainer's TV; CI cannot measure a TV, so it only checks and publishes the file.
+          python3 tools/build-site.py --check
+          if [ -f docs/data/bench.json ]; then
+            python3 tools/bench-json.py --check docs/data/bench.json
+            cp docs/data/bench.json release/bench.json
+          fi
+
       - name: Checksums and release notes
         run: |
           (cd release && sha256sum shangos-*.apk > SHA256SUMS && cat SHA256SUMS)
@@ -121,7 +130,7 @@ jobs:
         run: |
           flags=()
           case "$TAG" in *-*) flags+=(--prerelease) ;; esac
-          gh release create "$TAG" --verify-tag --title "shangOS $TAG" --notes-file "$RUNNER_TEMP/notes.md" "${flags[@]}" release/*.apk release/SHA256SUMS
+          gh release create "$TAG" --verify-tag --title "shangOS $TAG" --notes-file "$RUNNER_TEMP/notes.md" "${flags[@]}" release/*.apk release/SHA256SUMS $(ls release/bench.json 2>/dev/null)
 
       - name: Remove the key from the runner
         if: always()
