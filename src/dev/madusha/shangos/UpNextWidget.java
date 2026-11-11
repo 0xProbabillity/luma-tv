@@ -5,7 +5,6 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.*;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.*;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import android.os.Process;
 import android.view.*;
 import android.widget.*;
 
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -24,22 +22,8 @@ import java.util.*;
  * except poster pictures loaded from the apps' own links.
  */
 final class UpNextWidget extends Widget {
-    static final Uri WATCH_NEXT = Uri.parse("content://android.media.tv/watch_next_program");
-    static final String LISTINGS = "android.permission.READ_TV_LISTINGS";
     static final int SLOTS = 3;
     static final float PAD = 18, GAP_X = 12, CARD_Y = 38;
-
-    /**
-     * Posters already decoded, by link: Home rebuilds often (every return from an app), posters
-     * rarely change.
-     */
-    static final LinkedHashMap<String, Bitmap> posters =
-            new LinkedHashMap<String, Bitmap>(16, .75f, true) {
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<String, Bitmap> e) {
-                    return size() > 12;
-                }
-            };
 
     static final class Item {
         String key, title, line, detail, pkg, art;
@@ -96,10 +80,10 @@ final class UpNextWidget extends Widget {
             return items;
         }
         boolean listings =
-                context.checkSelfPermission(LISTINGS) == PackageManager.PERMISSION_GRANTED;
+                context.checkSelfPermission(WatchNext.LISTINGS) == PackageManager.PERMISSION_GRANTED;
         boolean exists = true;
         try {
-            context.getPackageManager().getPermissionInfo(LISTINGS, 0);
+            context.getPackageManager().getPermissionInfo(WatchNext.LISTINGS, 0);
         } catch (PackageManager.NameNotFoundException e) {
             exists = false;
         } // no TV provider (not a TV): no Watch Next to ask for
@@ -150,81 +134,35 @@ final class UpNextWidget extends Widget {
     /** Android TV's Watch Next programmes, most recently watched first. */
     private ArrayList<Item> watchNext(Context context) {
         ArrayList<Item> out = new ArrayList<>();
-        String[] columns = {
-            "_id",
-            "package_name",
-            "title",
-            "episode_title",
-            "season_display_number",
-            "episode_display_number",
-            "poster_art_uri",
-            "thumbnail_uri",
-            "intent_uri",
-            "last_playback_position_millis",
-            "duration_millis",
-            "last_engagement_time_utc_millis",
-            "watch_next_type",
-            "browsable"
-        };
-        try (Cursor c = context.getContentResolver().query(WATCH_NEXT, columns, null, null, null)) {
-            if (c == null) return out;
-            ArrayList<Object[]> rows = new ArrayList<>();
-            while (c.moveToNext()) {
-                if (!c.isNull(13) && c.getInt(13) == 0) continue;
-                String pkg = c.getString(1);
-                if (pkg == null || host.app(pkg) == null) continue;
-                rows.add(
-                        new Object[] {
-                            c.getLong(11),
-                            c.getLong(0),
-                            pkg,
-                            c.getString(2),
-                            c.getString(3),
-                            c.getString(4),
-                            c.getString(5),
-                            c.getString(7) != null ? c.getString(7) : c.getString(6),
-                            c.getString(8),
-                            c.getLong(9),
-                            c.getLong(10),
-                            c.getInt(12)
-                        });
+        for (WatchNext.Program p : WatchNext.query(context)) {
+            App app = host.app(p.pkg);
+            if (app == null) continue;
+            Item i = new Item();
+            i.pkg = p.pkg;
+            i.key = "tv:" + p.id;
+            i.title = p.title == null ? app.label : p.title;
+            i.art = p.art();
+            try {
+                if (p.intentUri != null)
+                    i.intent = Intent.parseUri(p.intentUri, Intent.URI_INTENT_SCHEME);
+            } catch (Exception ignored) {
             }
-            Collections.sort(rows, (a, b) -> Long.compare((Long) b[0], (Long) a[0]));
-            for (Object[] r : rows) {
-                Item i = new Item();
-                i.pkg = (String) r[2];
-                i.key = "tv:" + r[1];
-                i.title = r[3] == null ? host.app(i.pkg).label : (String) r[3];
-                i.art = (String) r[7];
-                try {
-                    if (r[8] != null)
-                        i.intent = Intent.parseUri((String) r[8], Intent.URI_INTENT_SCHEME);
-                } catch (Exception ignored) {
-                }
-                long pos = (Long) r[9], dur = (Long) r[10];
-                if (dur > 0 && pos > 0) i.progress = Math.max(.03f, Math.min(1, pos / (float) dur));
-                String episode =
-                        r[5] != null && r[6] != null
-                                ? "S" + r[5] + " E" + r[6]
-                                : r[6] != null ? "Episode " + r[6] : "";
-                String state =
-                        dur > 0 && pos > 0
-                                ? left(dur - pos)
-                                : ((Integer) r[11] == 1
-                                        ? "Next episode"
-                                        : (Integer) r[11] == 2
-                                                ? "New"
-                                                : (Integer) r[11] == 3 ? "Watchlist" : "");
-                String app = host.app(i.pkg).label;
-                i.line = join(episode.isEmpty() ? state : episode, app);
-                i.detail =
-                        join(
-                                join(episode, r[4] == null ? "" : (String) r[4]),
-                                join(state, "in " + app));
-                out.add(i);
-            }
-        } catch (RuntimeException ignored) {
-            /* the provider can refuse a query; Up Next then shows recent apps */
+            i.progress = Resume.progress(p.position, p.duration);
+            String episode = Resume.episode(p.season, p.episode);
+            String state =
+                    Resume.started(p.position, p.duration)
+                            ? Resume.left(p.duration - p.position)
+                            : p.type == Resume.NEXT
+                                    ? "Next episode"
+                                    : p.type == Resume.NEW
+                                            ? "New"
+                                            : p.type == Resume.WATCHLIST ? "Watchlist" : "";
+            i.line = join(episode.isEmpty() ? state : episode, app.label);
+            i.detail =
+                    join(
+                            join(episode, p.episodeTitle == null ? "" : p.episodeTitle),
+                            join(state, "in " + app.label));
+            out.add(i);
         }
         return out;
     }
@@ -288,16 +226,7 @@ final class UpNextWidget extends Widget {
     }
 
     static String join(String a, String b) {
-        return a == null || a.isEmpty()
-                ? (b == null ? "" : b)
-                : b == null || b.isEmpty() ? a : a + " · " + b;
-    }
-
-    static String left(long ms) {
-        long m = Math.max(1, ms / 60000);
-        return m < 60
-                ? m + " min left"
-                : m / 60 + " h " + (m % 60 > 0 ? m % 60 + " min " : "") + "left";
+        return Resume.join(a, b);
     }
 
     static String ago(long at) {
@@ -358,7 +287,7 @@ final class UpNextWidget extends Widget {
                 art.setAlpha(1);
                 face.addView(art, 0, new LayoutParams(-1, -1));
             }
-            if (item.art != null) loadPoster(item.art, poster, art);
+            if (item.art != null) showPoster(item.art, poster, art);
             View shade = new View(c);
             shade.setBackground(
                     new GradientDrawable(
@@ -436,9 +365,9 @@ final class UpNextWidget extends Widget {
     private void open(Item item) {
         if (item.allow) {
             android.app.Activity a = host.activity();
-            if (a.shouldShowRequestPermissionRationale(LISTINGS) || !host.prefs().askedListings()) {
+            if (a.shouldShowRequestPermissionRationale(WatchNext.LISTINGS) || !host.prefs().askedListings()) {
                 host.prefs().setAskedListings();
-                a.requestPermissions(new String[] {LISTINGS}, 7);
+                a.requestPermissions(new String[] {WatchNext.LISTINGS}, 7);
             } else
                 host.start(
                         new Intent(
@@ -457,65 +386,31 @@ final class UpNextWidget extends Widget {
         host.launch(item.pkg);
     }
 
-    /**
-     * Loads a poster off the main thread, scaled to the card. content: and android.resource: links
-     * always work; https: only when the user allows remote posters (Settings, Privacy). All of it
-     * goes through Net, which refuses everything else.
-     */
-    private void loadPoster(String link, ImageView view, View fallback) {
-        Bitmap cached = posters.get(link);
+    /** Fills a card's picture: at once if it is already decoded, else when it has loaded. */
+    private void showPoster(String link, ImageView view, View fallback) {
+        Bitmap cached = Posters.cached(link);
         if (cached != null) {
             view.setImageBitmap(cached);
             if (fallback != null) fallback.setVisibility(INVISIBLE);
             return;
         }
-        final Context context = getContext().getApplicationContext();
-        final int width = px(cardW) * 2;
-        final Prefs prefs = host.prefs();
-        WidgetBoard.IO.execute(
-                () -> {
-                    Bitmap b = null;
-                    try {
-                        byte[] data =
-                                link.startsWith("res:")
-                                        ? resource(context, link)
-                                        : Net.image(context, prefs, link);
-                        b = Images.decode(data, width, null);
-                    } catch (Exception e) {
-                        Dbg.d("upnext", "poster: " + e.getClass().getSimpleName());
-                    }
-                    final Bitmap result = b;
-                    if (result != null)
-                        view.post(
-                                () -> {
-                                    synchronized (posters) {
-                                        posters.put(link, result);
-                                    }
-                                    view.setImageBitmap(result);
-                                    view.setAlpha(0f);
-                                    view.animate()
-                                            .alpha(1)
-                                            .setDuration(motion() ? 320 : 0)
-                                            .withEndAction(
-                                                    () -> {
-                                                        if (fallback != null)
-                                                            fallback.setVisibility(INVISIBLE);
-                                                    })
-                                            .start();
-                                });
+        Posters.load(
+                getContext(),
+                host.prefs(),
+                view,
+                link,
+                px(cardW) * 2,
+                result -> {
+                    view.setImageBitmap(result);
+                    view.setAlpha(0f);
+                    view.animate()
+                            .alpha(1)
+                            .setDuration(motion() ? 320 : 0)
+                            .withEndAction(
+                                    () -> {
+                                        if (fallback != null) fallback.setVisibility(INVISIBLE);
+                                    })
+                            .start();
                 });
-    }
-
-    /** The promo demo's pictures (debug builds only): a raw resource id after "res:". */
-    private static byte[] resource(Context context, String link) throws Exception {
-        try (InputStream s =
-                        context.getResources()
-                                .openRawResource(Integer.parseInt(link.substring(4)));
-                java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
-            byte[] buf = new byte[65536];
-            int n;
-            while ((n = s.read(buf)) > 0) out.write(buf, 0, n);
-            return out.toByteArray();
-        }
     }
 }

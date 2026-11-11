@@ -3,6 +3,7 @@ package dev.madusha.shangos;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.PathInterpolator;
 
@@ -30,5 +31,15 @@ final class Motion {
      */
     static Bundle instant(Context context) {
         return ActivityOptions.makeCustomAnimation(context, 0, 0).toBundle();
+    }
+
+    /**
+     * Launch options in which the app's window grows out of {@code origin}'s own bounds on screen.
+     * The system draws it (no timer or extra frames in this process).
+     */
+    static Bundle growFrom(View origin) {
+        return ActivityOptions.makeScaleUpAnimation(
+                        origin, 0, 0, origin.getWidth(), origin.getHeight())
+                .toBundle();
     }
 }

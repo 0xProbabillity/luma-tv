@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.madusha.shangos" android:versionCode="5" android:versionName="0.3.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.madusha.shangos" android:versionCode="7" android:versionName="0.4.6">
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- INTERNET is removed by build.sh in the offline variant. It serves two optional features only: Weather (off by default) and remote Up Next posters. -->
     <!-- Up Next reads Android TV's Continue watching list. Read only. -->
@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Optional, granted only by the user (Settings → Apps → Special app access → Usage access): recent apps. -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <!-- Lets the app ask Android to show ITS uninstall confirmation (menu of an app, Uninstall). Normal permission, no prompt; nothing is removed without the user confirming. -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-sdk android:minSdkVersion="31" android:targetSdkVersion="34" />
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -20,13 +22,22 @@
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
     </queries>
     <application android:enableOnBackInvokedCallback="true" android:label="@string/app_name" android:icon="@mipmap/app_icon" android:banner="@drawable/app_banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:networkSecurityConfig="@xml/network_security">
-        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask" android:screenOrientation="landscape" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" android:excludeFromRecents="true">
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask" android:screenOrientation="landscape" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" android:windowSoftInputMode="adjustNothing" android:excludeFromRecents="true">
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent-filter>
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
         </activity>
         <!-- Lets Now Playing see media sessions. Reads no notifications (MediaListener overrides nothing). -->
+        <!-- "Your photo" wallpaper: write-only, from a computer over adb (shangos.sh wallpaper). Exported, but protected by DUMP, a permission the adb shell holds and apps cannot get. -->
+        <provider android:name=".PhotoProvider" android:authorities="dev.madusha.shangos.photo" android:exported="true" android:permission="android.permission.DUMP" android:grantUriPermissions="false" />
         <service android:name=".MediaListener" android:label="shangOS Now Playing" android:exported="true" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter><action android:name="android.service.notification.NotificationListenerService" /></intent-filter>
+        </service>
+        <!-- The screen saver (Daydream): a clock over the user's wallpaper. Only the system can bind it. No network, no permission. -->
+        <service android:name=".AmbientDream" android:label="shangOS Ambient" android:icon="@mipmap/app_icon" android:exported="true" android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </service>
     </application>
 </manifest>

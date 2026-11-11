@@ -44,6 +44,12 @@ final class Ui {
         return d;
     }
 
+    /** A soft shadow under text on a wallpaper; none on a pale one, where it would smudge. */
+    void shadow(TextView t, float radius, boolean light) {
+        if (light) t.setShadowLayer(0, 0, 0, 0);
+        else t.setShadowLayer(px(radius), 0, px(1), 0x55000000);
+    }
+
     GradientDrawable oval(int color) {
         GradientDrawable d = new GradientDrawable();
         d.setShape(GradientDrawable.OVAL);

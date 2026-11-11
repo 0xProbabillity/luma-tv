@@ -5,19 +5,35 @@ Layout is in "design units" (1/960 of the screen width) so one design fits any T
 
 | Class | Responsibility | May depend on |
 |---|---|---|
-| `MainActivity` | Lifecycle, Home and Settings pages, tiles, focus and key handling, name and wallpaper pickers | everything below |
+| `MainActivity` | The composition root: lifecycle, wiring, page switching, Back and key policy, launching, the app menu, and the small `Host` adapters that give each collaborator exactly what it asks for. Budget 800 lines (`tools/lint.sh`) | everything below |
+| `AppPages` | The Home and Apps pages: builds the hero, the widget board and the grid of tiles; owns the tiles, the selected app and Home's widget page; which apps show and in what order | `AppTile`, `Hero`, `WidgetBoard`, `AppList`, `Feedback`, `AppRepo`, `Host` interface |
+| `AppTile`, `TileMotion` | One app tile: card, label, focus motion, the d-pad keys between tiles. `COLUMNS` is the one place the grid width lives | `Host` interface (`select`, `launch`, `menu`, `follow`, ...), `AppArt`, `Ui`, `Theme` |
+| `Hero` | The title and line above the tiles: greeting and date, the focused app and when it was last opened, or a widget's line; cross-fades | `Prefs`, `Recency`, `Ui`, `Host` interface |
+| `Chrome` | What stays while pages change: the tab bar with its sliding pill, the clock, the shade behind Settings | `Ui`, `Theme`, `Host` interface |
+| `SettingsScreen` | The Settings page: rows (value or switch), the live preview card, the scrolling list | `Overlays`, `ScreenHost`, `Prefs`, `PrivacyScreen`, `SetupGuide`, `AboutScreen`, `WallpaperPicker`, `NameEditor`, `HomeScreen`, `Host` interface |
+| `WallpaperPicker`, `NameEditor`, `HomeScreen` | Dialogs opened from Settings: live wallpaper picker, the name field, making shangOS the TV's home screen and the way back | `Overlays`, `ScreenHost`, `Prefs`, small `Host` interfaces |
+| `AppLauncher` | Opening an app (its window grows out of the tile) and remembering it, and the menu: first position, hide, App info, Uninstall | `AppList`, `Prefs`, `Overlays`, `Host` interface |
+| `StageLight` | The room light: the focused app's colour behind the tiles and a slight dim, two cross-faded gradient views (nothing per frame) | Android only; driven by `Wallpaper` |
+| `WatchNext`, `Resume`, `Posters` | Android TV's Continue watching list (read off the main thread, newest programme per app), the words for it ("Continue: ... · 18 min left", pure and unit tested), and programme pictures through `Net` | `Net`, `Images`, `Prefs` |
+| `PhotoStore`, `PhotoProvider` | "Your photo": the picture kept in private storage, and the write-only door for it, protected by DUMP so only adb can use it (`shangos.sh wallpaper`) | `Wallpaper`, `Prefs`, `Images` |
+| `Places`, `WeatherSettings` | Where the weather is for: the time zone's city or a pinned one, city search through Open-Meteo geocoding (pure helpers unit tested), and the Weather location and Temperature rows | `Net`, `Prefs`, `Daylight`, `Overlays` |
+| `Formats` | The time and date in the TV's language and 12/24-hour setting; shared by the clock, the greeting and the screen saver | Android only |
+| `Feedback`, `Performance`, `DaylightSync` | How moving feels (motion policy, navigation sounds, last d-pad direction); the performance tier; sunrise and sunset switching the page colours | `Prefs`, `SonicFeedback`, `Hardware`, `Daylight` |
+| `AppList` | Pure: which apps Home shows and in what order (saved order, pinned first, hidden), move first/left/right, hide, the recently-opened list. Unit tested | none |
 | `Prefs` | Every saved setting: typed accessors, defaults, schema version, migrations. **Only** class with key names | Android prefs |
 | `Net` | **Only** class that opens connections. Rules: https, port 443, public addresses, size/type caps, host-locked JSON | `Prefs`, `Flavor` |
 | `AppRepo`, `App`, `AppMeta`, `AppCache` | Installed apps: change-driven discovery, last list kept on disk so Home appears at once, lazy pictures, byte-bounded caches, memory trim. **Only** class that registers receivers | `Dbg` |
 | `Wallpaper` | One picture in a plain hardware view (GPU-only bitmap), crossfade, parallax, slow glides of light on the render thread (stop on any key, pause when idle), release on trim | `Host` interface, `Hardware`, `Motion`, `Ui` |
 | `Hardware` | Pure hardware classification (memory, bitness, cores) into Light / Balanced / Quality; `detect` only gathers the facts | Android only |
 | `Overlays` | Menus, notices, full-screen panels, focus trapping and restoring | `Host` interface, `Ui`, `Theme` |
-| `ScreenHost` | The five callbacks full-screen panels need (motion, sounds, post, back to Settings) | Android only |
+| `ScreenHost` | The five callbacks full-screen panels and Settings share (motion, sounds, post, back to Settings) | Android only |
 | `PrivacyScreen` | The Privacy screen | `Overlays`, `ScreenHost`, `Prefs`, `Net` |
 | `AboutScreen`, `LicensesScreen`, `Credits` | About, and the open-source licences with full texts (data in `Credits`, kept in step with `NOTICE.md`) | `Overlays`, `ScreenHost` |
 | `SetupGuide` | First-run guide: welcome, performance, privacy, optional permissions, home screen with a QR code to the website; remembers its step | `Overlays`, `PrivacyScreen`, `Hardware`, `Prefs` |
 | `WidgetEditor` | Settings, Home widgets: toggle, reorder, live miniature pages | `Overlays`, `ScreenHost`, `Prefs`, `WidgetBoard` |
-| `AppArt`, `Shine` | A tile's picture (banner or icon on its colour) and its focus highlight | `AppRepo`, `Ui` |
+| `AppArt`, `Shine` | A tile's picture (glass card tinted from the icon, banner or icon on a soft light) and its focus highlight | `AppRepo`, `Tint`, `Ui` |
+| `Tint`, `Recency` | Pure: an icon's dominant colour and tile gradient; "Opened 2 hours ago". Unit tested | none |
+| `AmbientDream` | The screen saver (a DreamService): clock and date over the dimmed wallpaper, moves each minute | `Wallpaper`, `Prefs`, `Daylight` |
 | `Widget`, `WidgetBoard`, `*Widget` | Home widgets and their pages | `Prefs`, `Net`, `Ui`, `Motion` |
 | `Motion`, `Spring`, `Theme`, `Ui` | Curves, colour tokens, view helpers | Android only |
 | `Images`, `Dbg`, `Flavor` (generated) | Safe decoding, debug-only logging, build flags | Android only |
@@ -35,8 +51,7 @@ pressing keys, and are off entirely on the Light tier. The previous engine (sepa
 while idle and slowed focus animations on a small stick.
 
 ## Known structural debt
-- `MainActivity` (about 2,200 lines once formatted) still holds the Settings page, the tile classes and the name/wallpaper pickers.
-- `AppArt` (the tile painter) hard-codes drawings for six named apps from the upstream project.
+- `MainActivity` was 2,334 lines in 0.4.0 and is under 800 now (`REFACTOR.md` has the slices). Next debt: the `Host` adapters still live in `MainActivity` (one narrow interface each, by design); `SettingsScreen` (667 lines) is the largest class and splits by group (Appearance, Home, System) when the next Settings rows land.
 - The website in `docs/` mirrors the Privacy and Licences screens by hand; they must be kept in step.
 - Code style is enforced by `tools/format.sh` (google-java-format `--aosp`, shfmt) and `tools/lint.sh`.
 - Strings are literals in code; they move to resources with the translations work.

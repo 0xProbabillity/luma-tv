@@ -38,14 +38,23 @@ final class SetupGuide {
 
         /** The choice changed: apply it to what is on screen. */
         void performanceChanged();
+
+        /** A wallpaper was chosen: show it now (the guide is still open over Home). */
+        void lookChanged();
+
+        /**
+         * The guide has closed: bring the text and glass colours in line with the chosen wallpaper.
+         */
+        void lookApplied();
     }
 
     private static final int WELCOME = 0,
-            PERFORMANCE = 1,
-            PRIVACY = 2,
-            PERMISSIONS = 3,
-            HOME = 4,
-            STEPS = 5;
+            LOOK = 1,
+            PERFORMANCE = 2,
+            PRIVACY = 3,
+            PERMISSIONS = 4,
+            HOME = 5,
+            STEPS = 6;
 
     /**
      * Where the default-launcher guide lives on the project website; the QR code on the last step
@@ -119,12 +128,16 @@ final class SetupGuide {
      */
     private void back(int current) {
         if (current > 0) show(current - 1);
-        else prefs.setSetupDone();
+        else {
+            prefs.setSetupDone();
+            host.lookApplied();
+        }
     }
 
     private void finish() {
         prefs.setSetupDone();
         overlays.close(false);
+        host.lookApplied();
     }
 
     void show(int step) {
@@ -132,7 +145,8 @@ final class SetupGuide {
         final int current = step;
         // Leaving for a system page, or by mistake, must not restart the guide.
         prefs.setSetupStep(step);
-        FrameLayout o = overlays.open(0xF20B0B0D);
+        // The look step lets the wallpaper show through, so the choice can be judged.
+        FrameLayout o = overlays.open(step == LOOK ? 0x8C060810 : 0xF20B0B0D);
         overlays.onCancel(() -> back(current));
         rows = new ArrayList<>();
         o.addView(
@@ -150,6 +164,9 @@ final class SetupGuide {
         LinearLayout list = column();
         o.addView(list, ui.pos(560, 220, 40, 218));
         switch (step) {
+            case LOOK:
+                lookRows(list, current);
+                break;
             case PERFORMANCE:
                 performanceRows(list, current);
                 break;
@@ -186,6 +203,27 @@ final class SetupGuide {
     }
 
     // ---- The steps ----
+    private void lookRows(LinearLayout list, int current) {
+        rows.add(
+                overlays.valueRow(
+                        list,
+                        "Wallpaper",
+                        () ->
+                                Wallpaper.NAMES[
+                                        Math.min(prefs.wallpaper(), Wallpaper.NAMES.length - 1)],
+                        () ->
+                                overlays.menu(
+                                        "Wallpaper",
+                                        Wallpaper.NAMES,
+                                        Math.min(prefs.wallpaper(), Wallpaper.NAMES.length - 1),
+                                        choice -> {
+                                            prefs.setWallpaper(choice);
+                                            host.lookChanged();
+                                            host.post(() -> show(current));
+                                        }),
+                        null));
+    }
+
     private void performanceRows(LinearLayout list, int current) {
         rows.add(
                 overlays.valueRow(
@@ -227,9 +265,9 @@ final class SetupGuide {
                 overlays.valueRow(
                         list,
                         "Up Next access",
-                        () -> privacy.granted(UpNextWidget.LISTINGS) ? "Allowed" : "Not allowed",
+                        () -> privacy.granted(WatchNext.LISTINGS) ? "Allowed" : "Not allowed",
                         () -> {
-                            if (!privacy.granted(UpNextWidget.LISTINGS)) host.requestListings();
+                            if (!privacy.granted(WatchNext.LISTINGS)) host.requestListings();
                         },
                         null));
         rows.add(
@@ -304,6 +342,8 @@ final class SetupGuide {
         switch (step) {
             case WELCOME:
                 return "Welcome to " + activity.getString(R.string.app_name);
+            case LOOK:
+                return "Pick a look";
             case PERFORMANCE:
                 return "Made to fit your TV";
             case PRIVACY:
@@ -321,6 +361,9 @@ final class SetupGuide {
                 return "A calm, fast home screen with no ads, no sponsored rows and no tracking."
                         + " This takes about a minute, every step can be skipped, and everything"
                         + " can be changed later in Settings.";
+            case LOOK:
+                return "Choose a wallpaper. Daybreak follows the sun: light by day, dark after"
+                        + " sunset. Change it any time in Settings.";
             case PERFORMANCE:
                 return "It checked this TV: "
                         + Hardware.describe(activity)

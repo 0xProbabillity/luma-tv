@@ -1,5 +1,70 @@
 # Changelog
 
+## 0.4.6: Weather for any city (from Luma 2.5)
+- **Settings, Weather location**: Automatic (the main city of the TV's time zone, as before, with no request) or any city you search for.
+  Results come as you type, Search on the keyboard jumps to the first, names in other alphabets are found in their own language, and only
+  towns and cities are listed, those called what you typed first. The search runs only when you type, needs Weather to be on, and sends only
+  what you typed to `geocoding-api.open-meteo.com` (the second host of the network allow-list).
+- Automatic Celsius/Fahrenheit follows the country of the weather's city. The window no longer pans under the keyboard.
+- Not taken from Luma 2.5: its automatic city from the TV's internet address (it would send the TV's address to GeoJS and ipwho.is). See
+  `NOTICE.md`.
+- `SettingsScreen` shrinks again: the temperature and location rows moved to `WeatherSettings`. Tests: 70.
+
+## 0.4.5: Grab to move, Uninstall, and your own photo
+- **Grab to move**: hold OK on a tile and it lifts; move it with the d-pad and press OK to put it down (Back puts it down where it is). It
+  works on Home and on the Apps page, and hidden or uninstalled apps in between never make a move a no-op. Put down without moving it,
+  the tile's menu opens as before.
+- **Uninstall** in the menu of an app you installed (not for the TV's own apps); Android shows its own confirmation. The freed menu space is
+  from dropping "Move left" and "Move right". This needs the normal `REQUEST_DELETE_PACKAGES` permission, listed on the privacy page and in
+  the audit.
+- **Your photo** as wallpaper: `./shangos.sh wallpaper ~/photo.jpg` hands a picture to the app's private storage over adb. No media
+  permission, no account, no network. It becomes the look "Your photo", and the screen saver shows it dimmed. `--remove` deletes it. The
+  receiving provider is exported but protected by the DUMP permission, which only the adb shell holds, and the audit checks that.
+- Docs: the guide no longer mentions a Menu key that did nothing.
+
+## 0.4.4: Launch as a departure
+- Opening an app from a tile now grows its window out of the card (the system draws it, nothing runs in shangOS meanwhile). With Fluid motion
+  off it simply appears, as before.
+
+## 0.4.3: The hero knows what you were doing, and the room follows your focus
+- **Resume hero**: focus an app that has something to continue and the line under its name reads "Continue: Stranger Things · S4 E3 ·
+  18 min left", with the programme's picture at the right. Apps with nothing to resume still say when you last opened them. It uses the
+  Continue watching list you already allowed for Up Next (and the same remote-poster setting for pictures); nothing new is requested.
+- **Room lighting**: the light behind your apps takes the colour of the app you are on (Netflix warms to red, Spotify to green) and the
+  wallpaper dims a little while focus is on the apps. Two cross-fading gradients, nothing per frame. Settings, Room lighting turns it off;
+  it is also off on the Light performance setting.
+- Under the hood: `AppLauncher` (opening apps and the long-press menu), `WatchNext`/`Resume`/`Posters` (Up Next now shares them),
+  `StageLight`. Tests: 60.
+
+## 0.4.2: Return where you were, and tell the truth
+- **Return where you were**: open an app and come back (Home or Back) and focus is on that app's tile, not on YouTube. The hero reads
+  "Opened just now". Pressing Home while on Home still returns to the first app and the greeting.
+- **The hero stays true**: "Opened 2 minutes ago" counts up while you sit on the tile (checked at the start of every minute), and the
+  greeting's date follows midnight.
+- **Clock and date follow the TV**: the Home clock uses the TV's 12/24-hour setting; the date uses the TV's language. The screen saver
+  shares the same code, so all three agree.
+- Copy: Settings said "Silver" and "silver silk to the Milky Way"; the default wallpaper is Daybreak and the list runs from Daybreak to
+  Calm Sea. README status updated.
+
+## 0.4.1: MainActivity split (no behaviour change)
+- `MainActivity` went from 2,334 to under 800 lines. Each job now has its own class: `AppList` (order, hiding and recents, unit tested),
+  `AppPages`, `AppTile`, `Hero`, `Chrome` (tabs and clock), `SettingsScreen`, `WallpaperPicker`, `NameEditor`, `HomeScreen`, `Feedback`,
+  `Performance` and `DaylightSync`, each with one narrow `Host` interface instead of the whole Activity.
+- `tools/lint.sh` now fails if `MainActivity` grows past 800 lines or any other non-widget class past 700.
+- Tests: 54 (adds `AppList`).
+- Removed code that was written but never read.
+
+## 0.4.0: Home that is shangOS's own
+- **Adaptive tiles**: every app gets the same glass card tinted from its own icon (dominant colour, weighted by saturation), with its banner or its icon on a
+  soft light. The hand-drawn art for six named apps and the per-app colour and tagline tables inherited from Luma are gone.
+- **Honest hero**: the line under the focused app is real information ("Opened 2 hours ago", from the times shangOS recorded), not marketing copy.
+- **shangOS Ambient screen saver**: a large clock and date over a dimmed copy of your wallpaper, moving to a new place every minute (no pixel stays lit).
+  No network, no permission. Settings has a Screen saver row; `shangos.sh ambient on|off|preview` sets it on TVs that hide the choice, and removing
+  shangOS puts the previous screen saver back first.
+- **Setup guide**: new "Pick a look" step (6 steps now); the wallpaper shows through while you choose.
+- Audit rule: every exported service must require a system-only (`BIND_`) permission.
+- Tests: 45 (colour extraction, relative time). Fixed a thread-ordering slip in the new accent code before release.
+
 ## 0.3.0
 - **New package id `dev.madusha.shangos`** (matches shangos.madusha.dev). An install of an earlier id is a different app: remove it and install this one;
   settings do not carry over.

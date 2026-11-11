@@ -45,7 +45,11 @@ final class Prefs {
 
     // ---- Switches shown as toggles in Settings (all on unless stated) ----
     /** Keys the Settings toggle rows use. */
-    static final String CLOCK = "clock", MOTION = "motion", AMBIENT = "ambient", SOUND = "sound";
+    static final String CLOCK = "clock",
+            MOTION = "motion",
+            AMBIENT = "ambient",
+            SOUND = "sound",
+            STAGE = "stage";
 
     boolean flag(String key) {
         return sp.getBoolean(key, true);
@@ -74,8 +78,13 @@ final class Prefs {
         return flag(SOUND);
     }
 
+    boolean stage() {
+        return flag(STAGE);
+    }
+
     // ---- Performance ----
     static final int PERF_AUTO = 0, PERF_QUALITY = 1, PERF_LIGHT = 2;
+    static final String[] PERF_NAMES = {"Auto", "Quality", "Light"};
 
     /**
      * Auto picks by the TV's memory; Quality never trades looks for speed; Light keeps the
@@ -133,6 +142,15 @@ final class Prefs {
         sp.edit().putInt("wallpaper", index).apply();
     }
 
+    /** True once "Your photo" has been pushed from a computer (see PhotoStore). */
+    boolean hasPhoto() {
+        return sp.getBoolean("photo", false);
+    }
+
+    void setHasPhoto(boolean value) {
+        sp.edit().putBoolean("photo", value).apply();
+    }
+
     /** "auto", "c" or "f". */
     String tempUnit() {
         return sp.getString("temp_unit", "auto");
@@ -186,6 +204,16 @@ final class Prefs {
     }
 
     // ---- Caches and one-time flags ----
+    /** The city pinned in Settings (Places), as JSON; empty for Automatic. */
+    String placePinned() {
+        return sp.getString("place_pinned", "");
+    }
+
+    /** Pins a city (or Automatic for ""); the forecast is then fetched again. */
+    void setPlacePinned(String json) {
+        sp.edit().putString("place_pinned", json).remove("weather_at").apply();
+    }
+
     String weatherJson() {
         return sp.getString("weather_json", "");
     }

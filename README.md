@@ -3,18 +3,19 @@
 A fast, private, modern home screen for Android TV. Plain Java, **no third-party libraries**, no telemetry, no
 accounts, no ads. Source: https://github.com/madushas/shangos-launcher. Forked from [Luma TV](https://github.com/0xProbabillity/luma-tv) (MIT); see `NOTICE.md`.
 
-**Status: 0.3.0 in preparation. Built, unit-tested and linted; field-tested on one TV stick.**
+**Status: 0.4.6 is the latest release. Built, unit-tested and linted; field-tested on one TV stick.**
 
 Website and setup guide: https://shangos.madusha.dev (source in `docs/`). Releases are signed; the fingerprint is on each release and in the app.
 
 Target: Android 12+ (API 31), landscape, leanback. Developed on a 1.4 GB, 32-bit, 720p Android 14 stick: if it is smooth there, it is smooth anywhere.
+A screen saver (clock over your wallpaper), tiles tinted from each app's own icon, and a hero line that is real information are shangOS's own.
 A hardware check picks how much the wallpaper animates (Light, Balanced or Quality); Settings, Performance overrides it.
 
 ## Privacy, in one table
 | | Full build (`release`) | `offline` build |
 |---|---|---|
 | INTERNET permission | yes | **none**: Android blocks every connection |
-| Weather | **off** until you turn it on; contacts `api.open-meteo.com` | not available |
+| Weather | **off** until you turn it on; contacts `api.open-meteo.com` (and `geocoding-api.open-meteo.com` while you search for a city to pin) | not available |
 | Remote Up Next posters | Wi-Fi/Ethernet only by default; https only, never to local addresses | not available |
 | Analytics, crash reports, accounts, update checks | none | none |
 | Cleartext http | refused (platform config and code) | refused |

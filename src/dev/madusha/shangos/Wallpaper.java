@@ -50,6 +50,9 @@ final class Wallpaper extends FrameLayout {
 
         boolean ambientSetting();
 
+        /** Settings, Room lighting: the focused app tints the light behind the tiles. */
+        boolean stageSetting();
+
         /** How much the launcher may animate on its own on this TV. */
         Hardware.Tier tier();
 
@@ -90,6 +93,9 @@ final class Wallpaper extends FrameLayout {
         }
     }
 
+    /** {@link Look#day} and {@link Look#thumb} of the look made from the user's photo. */
+    static final int PHOTO_PICTURE = -1, PHOTO_THUMB = -2;
+
     static final Look[] LOOKS = {
         new Look(
                 "Daybreak",
@@ -113,6 +119,9 @@ final class Wallpaper extends FrameLayout {
                 false,
                 false),
         new Look("Calm Sea", R.drawable.wp_sea, 0, R.drawable.thumb_7, 0xFFFFD08A, false, false),
+        // The last look is the user's own photo (PhotoStore); its picture and thumbnail are not
+        // resources, and the picker only offers it once a photo exists.
+        new Look("Your photo", PHOTO_PICTURE, 0, PHOTO_THUMB, 0xFFBFD4FF, false, false),
     };
     static final String[] NAMES = new String[LOOKS.length];
     static final int[] THUMBS = new int[LOOKS.length];
@@ -122,6 +131,25 @@ final class Wallpaper extends FrameLayout {
             NAMES[i] = LOOKS[i].name;
             THUMBS[i] = LOOKS[i].thumb;
         }
+    }
+
+    /** The choice of "Your photo": the last look. */
+    static final int PHOTO = LOOKS.length - 1;
+
+    /** A saved wallpaper number, kept inside the list of looks. */
+    static int clamp(int saved) {
+        return Math.max(0, Math.min(NAMES.length - 1, saved));
+    }
+
+    /** The wallpaper to show: the saved one, or the default when it is a photo that is gone. */
+    static int choice(Prefs prefs) {
+        int saved = clamp(prefs.wallpaper());
+        return saved == PHOTO && !prefs.hasPhoto() ? Prefs.DEFAULT_WALLPAPER : saved;
+    }
+
+    /** How many looks the picker offers: all of them, "Your photo" only once there is one. */
+    static int count(Prefs prefs) {
+        return prefs.hasPhoto() ? LOOKS.length : LOOKS.length - 1;
     }
 
     /**
@@ -138,6 +166,11 @@ final class Wallpaper extends FrameLayout {
 
     private static Look look(int variant) {
         return LOOKS[variant % LOOKS.length];
+    }
+
+    /** The picture resource shown for a variant (see {@link #variant}). */
+    static int picture(int variant) {
+        return isNight(variant) ? look(variant).night : look(variant).day;
     }
 
     /** The pale wallpaper: text and glass turn dark on it. */
@@ -159,10 +192,12 @@ final class Wallpaper extends FrameLayout {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private final PictureView picture;
+    private final StageLight stage;
     private final FrameLayout glowHolder;
     private final View glow;
     volatile boolean ambientRunning;
     private int requestedVariant = -1;
+    private long photoStamp;
     private int glides;
     private boolean released;
     private ValueAnimator fadeAnimator;
@@ -185,6 +220,8 @@ final class Wallpaper extends FrameLayout {
         full.leftMargin = -margin;
         full.topMargin = -margin;
         addView(picture, full);
+        stage = new StageLight(context);
+        addView(stage, new FrameLayout.LayoutParams(-1, -1));
         // The light sits in a holder so parallax can move the holder while a glide moves the light
         // inside it.
         glowHolder = new FrameLayout(context);
@@ -221,6 +258,24 @@ final class Wallpaper extends FrameLayout {
                     .setInterpolator(Motion.DRIFT)
                     .start();
         } else rest();
+    }
+
+    /**
+     * The app focused on Home lights the room: {@code accent} (0 for none) tints the light behind
+     * the tiles and the picture dims a little. Off on Light performance and when the user turned
+     * it off.
+     */
+    void stage(int accent) {
+        if (!host.tier().animates() || !host.stageSetting()) {
+            stage.clear();
+            return;
+        }
+        stage.show(accent, isPale(Math.max(0, requestedVariant)), host.motion());
+    }
+
+    /** Focus left the apps: the room light fades out unless another app takes it over. */
+    void stageOff() {
+        stage.hideSoon();
     }
 
     void rest() {
@@ -336,8 +391,11 @@ final class Wallpaper extends FrameLayout {
     /** Shows a wallpaper without saving it (the picker previews live). */
     void show(int choice) {
         final int variant = variant(Math.max(0, Math.min(LOOKS.length - 1, choice)), host.isDay());
-        if (requestedVariant == variant) return;
+        // A newer photo replaces the shown one even though it is the same look.
+        long stamp = variant == PHOTO ? PhotoStore.stamp(getContext()) : 0;
+        if (requestedVariant == variant && stamp == photoStamp) return;
         requestedVariant = variant;
+        photoStamp = stamp;
         released = false;
         final int width = picture.getLayoutParams().width,
                 height = picture.getLayoutParams().height;
@@ -356,8 +414,11 @@ final class Wallpaper extends FrameLayout {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap source =
-                BitmapFactory.decodeResource(
-                        getResources(), isNight(variant) ? look.night : look.day, options);
+                picture(variant) == PHOTO_PICTURE
+                        ? PhotoStore.decode(getContext(), width)
+                        : BitmapFactory.decodeResource(getResources(), picture(variant), options);
+        if (source == null) // the photo is gone or unreadable: the default look instead
+            source = BitmapFactory.decodeResource(getResources(), LOOKS[0].day, options);
         Bitmap composed = compose(source, isPale(variant), width, height);
         source.recycle();
         // A HARDWARE bitmap lives in graphics memory only: no second copy in the app's own memory.
@@ -430,6 +491,7 @@ final class Wallpaper extends FrameLayout {
      * is shown again.
      */
     void release() {
+        stage.clear();
         pauseAmbient();
         if (fadeAnimator != null) fadeAnimator.cancel();
         Bitmap current = picture.scene;

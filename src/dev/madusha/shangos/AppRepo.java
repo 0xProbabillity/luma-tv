@@ -67,6 +67,13 @@ final class AppRepo {
                     });
     private final AtomicBoolean refreshing = new AtomicBoolean();
     private final LruCache<String, Bitmap> icons, banners;
+
+    /**
+     * Accent colour per package, read from the icon when it is first decoded: a few bytes per app,
+     * kept when pictures are trimmed.
+     */
+    private final Map<String, Integer> accents = new java.util.concurrent.ConcurrentHashMap<>();
+
     private final Set<String> noBanner = Collections.synchronizedSet(new HashSet<>());
     private final Map<String, List<Runnable>> waiting = new HashMap<>();
     private volatile List<App> apps = Collections.emptyList();
@@ -353,8 +360,13 @@ final class AppRepo {
                     Bitmap b = banner ? loadBanner(app) : loadIcon(app);
                     // A failed load is remembered too, otherwise the redraw that follows would ask
                     // again, forever.
-                    if (b != null) cache.put(app.pkg, b);
-                    else if (banner) noBanner.add(app.pkg);
+                    if (b != null) {
+                        // Accent first: once the icon is visible to other threads, so must its
+                        // colour be.
+                        // (A banner has no say in the tint: the icon does.)
+                        if (!banner) accents.put(app.pkg, accentOf(b));
+                        cache.put(app.pkg, b);
+                    } else if (banner) noBanner.add(app.pkg);
                     else cache.put(app.pkg, BLANK);
                     List<Runnable> done;
                     synchronized (waiting) {
@@ -404,7 +416,29 @@ final class AppRepo {
         return bitmap;
     }
 
+    /**
+     * The tint for this app's tile: its icon's dominant colour, or neutral until the icon has been
+     * read. Asking starts the read, and {@code onLoaded} runs when it is done.
+     */
+    int accent(App app, Runnable onLoaded) {
+        Integer known = accents.get(app.pkg);
+        if (known != null) return known;
+        Bitmap icon =
+                icon(app, onLoaded); // starts the read if needed; the accent is stored with it
+        // An icon that failed to load (cached as blank) has no colour; never overwrite a real one.
+        if (icon != null) accents.putIfAbsent(app.pkg, Tint.NEUTRAL);
+        Integer now = accents.get(app.pkg);
+        return now != null ? now : Tint.NEUTRAL;
+    }
+
+    private static int accentOf(Bitmap icon) {
+        int[] pixels = new int[icon.getWidth() * icon.getHeight()];
+        icon.getPixels(pixels, 0, icon.getWidth(), 0, 0, icon.getWidth(), icon.getHeight());
+        return Tint.dominant(pixels);
+    }
+
     private void forget(String pkg) {
+        accents.remove(pkg);
         icons.remove(pkg);
         banners.remove(pkg);
         noBanner.remove(pkg);

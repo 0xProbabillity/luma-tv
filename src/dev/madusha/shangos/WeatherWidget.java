@@ -93,7 +93,7 @@ final class WeatherWidget extends Widget {
                 });
         try {
             String raw = host.prefs().weatherJson();
-            if (!raw.isEmpty() && key().equals(host.prefs().weatherKey())) {
+            if (!raw.isEmpty() && key(place()).equals(host.prefs().weatherKey())) {
                 data = new JSONObject(raw);
                 fill();
             }
@@ -141,19 +141,24 @@ final class WeatherWidget extends Widget {
         setElevation(px(focused ? 10 : 0));
     }
 
-    /** The time zone's main city, or Miami in the promo demo (Promo). */
+    /** The pinned city, else the time zone's main city; Miami in the promo demo (Promo). */
+    Places.Place place() {
+        return Promo.on
+                ? new Places.Place(Promo.CITY, "", "US", Promo.MIAMI[0], Promo.MIAMI[1])
+                : Places.current(getContext(), host.prefs());
+    }
+
     String city() {
-        return Promo.on ? Promo.CITY : Daylight.city();
+        Places.Place p = place();
+        return p == null ? Daylight.city() : p.name;
     }
 
-    double[] place() {
-        return Promo.on ? Promo.MIAMI : Daylight.place(getContext());
-    }
-
-    static boolean fahrenheit(Prefs prefs) {
+    static boolean fahrenheit(Prefs prefs, Places.Place place) {
         String unit = prefs.tempUnit();
         if (!unit.equals("auto")) return unit.equals("f");
         if (Promo.on) return true;
+        // A pinned city is judged by its own country.
+        if (place != null && !place.country.isEmpty()) return Places.fahrenheitCountry(place);
         // By the TV's time zone, not its language: many TVs outside the US run in US English.
         String zone = TimeZone.getDefault().getID();
         if (zone.startsWith("US/")
@@ -181,10 +186,9 @@ final class WeatherWidget extends Widget {
                         .contains(zone.substring(8));
     }
 
-    private String key() {
-        double[] p = place();
-        return (p == null ? "?" : String.format(Locale.US, "%.2f,%.2f", p[0], p[1]))
-                + (fahrenheit(host.prefs()) ? "F" : "C");
+    private String key(Places.Place p) {
+        return (p == null ? "?" : String.format(Locale.US, "%.2f,%.2f", p.lat, p.lon))
+                + (fahrenheit(host.prefs(), p) ? "F" : "C");
     }
 
     void load(boolean force) {
@@ -194,14 +198,14 @@ final class WeatherWidget extends Widget {
             showError("Weather is off. Turn it on in Settings.");
             return;
         }
-        final double[] place = place();
+        final Places.Place place = place();
         if (place == null) {
             showError("Set the TV's time zone to see the weather");
             return;
         }
         loading = true;
-        final boolean f = fahrenheit(host.prefs());
-        final String key = key();
+        final String key = key(place);
+        final boolean f = key.endsWith("F");
         WidgetBoard.IO.execute(
                 () -> {
                     JSONObject result = null;
@@ -212,8 +216,8 @@ final class WeatherWidget extends Widget {
                                         Locale.US,
                                         "https://api.open-meteo.com/v1/forecast?latitude=%.2f&longitude=%.2f&current=temperature_2m,weather_code,is_day"
                                             + "&hourly=temperature_2m,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=6&forecast_hours=6%s",
-                                        place[0],
-                                        place[1],
+                                        place.lat,
+                                        place.lon,
                                         f ? "&temperature_unit=fahrenheit" : "");
                         result = new JSONObject(Net.json(url));
                         if (!result.has("current")) {

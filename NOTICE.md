@@ -7,6 +7,10 @@ notice is kept in `LICENSE`, as the licence requires. The upstream remote is kep
 
 Changes made here are listed in `CHANGELOG.md`.
 
+Upstream was last checked against Luma 2.5 (`1c1bc52`). Taken from it: the city picker for the weather (Weather location),
+adapted to this code base's structure and network rules, and the keyboard window setting. Not taken: the automatic city lookup from the
+TV's internet address (GeoJS, ipwho.is), which would send the TV's address to two more services, and the promo-demo restyle (a film tool).
+
 ## Not carried over
 The upstream author's donation addresses, QR codes, contact links and "Support the author" screen were
 removed. They belong to the upstream author and must not appear in this fork.

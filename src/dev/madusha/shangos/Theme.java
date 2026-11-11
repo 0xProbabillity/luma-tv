@@ -1,7 +1,7 @@
 package dev.madusha.shangos;
 
 /**
- * Colour tokens. {@code light} is true on a pale wallpaper (Silver by day): text turns dark and
+ * Colour tokens. {@code light} is true on a pale wallpaper (Daybreak by day): text turns dark and
  * glass turns white.
  */
 final class Theme {

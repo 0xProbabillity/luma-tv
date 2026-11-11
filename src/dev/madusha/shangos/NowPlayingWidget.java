@@ -538,7 +538,7 @@ final class NowPlayingWidget extends Widget {
             return new String[] {
                 "music:" + titleOf(controller),
                 titleOf(controller),
-                UpNextWidget.join(artist.getText().toString(), appName(controller.getPackageName()))
+                Resume.join(artist.getText().toString(), appName(controller.getPackageName()))
             };
         return access
                 ? new String[] {

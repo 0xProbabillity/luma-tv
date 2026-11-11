@@ -314,9 +314,10 @@ final class PrivacyScreen {
                                 info(
                                         "Up Next access",
                                         "Lets the launcher read the Continue watching list that"
-                                            + " your apps share with Android TV. It only reads, and"
-                                            + " what it reads stays on this TV. OK opens this app's"
-                                            + " permissions.")));
+                                            + " your apps share with Android TV, for the Up Next"
+                                            + " card and for the line under an app's name on Home."
+                                            + " It only reads, and what it reads stays on this TV."
+                                            + " OK opens this app's permissions.")));
         rows.add(
                 overlays.valueRow(
                         list,

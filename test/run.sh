@@ -15,7 +15,7 @@ rm -rf "$OUT"
 mkdir -p "$OUT/gen"
 printf 'package %s;\nfinal class Flavor { static final boolean DEBUG=false, NETWORK=true; private Flavor(){} }\n' "$PKG" >"$OUT/gen/Flavor.java"
 SRC=src/${PKG//.//}
-SOURCES=("$SRC/Net.java" "$SRC/Dbg.java" "$SRC/Spring.java" "$SRC/Prefs.java" "$SRC/Hardware.java" "$SRC/AppCache.java" test/*.java)
+SOURCES=("$SRC/Net.java" "$SRC/Dbg.java" "$SRC/Spring.java" "$SRC/Prefs.java" "$SRC/Hardware.java" "$SRC/AppCache.java" "$SRC/Tint.java" "$SRC/Recency.java" "$SRC/AppList.java" "$SRC/Resume.java" "$SRC/Places.java" "$SRC/Daylight.java" test/*.java)
 javac -encoding UTF-8 -d "$OUT" -cp "$ANDROID_JAR:$J:$H" "$OUT/gen/Flavor.java" "${SOURCES[@]}"
 mapfile -t TESTS < <(find test -name '*Test.java' -printf '%f
 ' | sed "s/\.java\$//; s/^/$PKG./" | sort)
