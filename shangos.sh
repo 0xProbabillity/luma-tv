@@ -2,6 +2,8 @@
 # shangOS on your TV, from this computer.
 #   ./shangos.sh wizard                      guided: pick the TV, install, make it the home screen, clean up
 #   ./shangos.sh [-s DEVICE] build [VARIANT] | install [VARIANT] | home | widgets | restore | status | cleanup
+#   ./shangos.sh [-s DEVICE] ambient [on|off|preview]    the shangOS Ambient screen saver (a clock over your wallpaper)
+#   ./shangos.sh [-s DEVICE] wallpaper FILE | --remove    your own picture as the wallpaper (and screen saver), no permission needed
 # VARIANT: release (default), offline (no network permission at all) or debug.
 # DEVICE is the TV's adb address (192.168.1.50:5555) or serial. Default: $SHANGOS_DEVICE, else the only device adb sees.
 # Every command that changes the TV is printed first (lines starting "+"), so nothing happens out of sight.
@@ -15,6 +17,7 @@ fi
 ACTION="${1:-status}"
 PKG="dev.madusha.shangos"
 SHANGOS="$PKG/.MainActivity"
+AMBIENT="$PKG/$PKG.AmbientDream"
 REPO="madushas/shangos-launcher"
 # Earlier ids of this app, and the project it started from: cleanup can remove them, nothing else ever does.
 EARLIER_IDS="com.madushas.shangos app.vela.tv"
@@ -137,10 +140,53 @@ do_restore() {
     echo "Home now opens $(home_now). shangOS stays installed (./shangos.sh cleanup removes it)."
 }
 
+ambient_state() {
+    mkdir -p .local
+    echo ".local/ambient-$(tv getprop ro.serialno | tr -cd 'A-Za-z0-9').txt"
+}
+ambient_current() { tv settings get secure screensaver_components; }
+
+# do_ambient on|off|preview: sets shangOS Ambient as the screen saver, puts the previous one back, or shows it now.
+do_ambient() {
+    local mode="${1:-on}" state current previous
+    state="$(ambient_state)"
+    current="$(ambient_current)"
+    case "$mode" in
+        on)
+            installed "$PKG" || die "shangOS is not installed yet: ./shangos.sh install"
+            if [ "$current" != "$AMBIENT" ]; then echo "previous=$current" >"$state"; fi
+            run adb -s "$DEVICE" shell settings put secure screensaver_components "$AMBIENT"
+            run adb -s "$DEVICE" shell settings put secure screensaver_enabled 1
+            echo "shangOS Ambient is the screen saver. It starts after the TV's own screen saver delay (the TV's Settings, Display). Preview it now: ./shangos.sh ambient preview"
+            ;;
+        off)
+            if [ "$current" != "$AMBIENT" ]; then
+                echo "shangOS Ambient is not the screen saver on this TV."
+                return 0
+            fi
+            previous=""
+            if [ -s "$state" ]; then previous="$(sed -n 's/^previous=//p' "$state" | head -n 1)"; fi
+            if [ -z "$previous" ] || [ "$previous" = "null" ] || [ "$previous" = "$AMBIENT" ]; then
+                run adb -s "$DEVICE" shell settings delete secure screensaver_components
+            else
+                run adb -s "$DEVICE" shell settings put secure screensaver_components "$previous"
+            fi
+            rm -f "$state"
+            echo "The previous screen saver is back."
+            ;;
+        preview)
+            [ "$current" = "$AMBIENT" ] || die "shangOS Ambient is not the screen saver yet: ./shangos.sh ambient on"
+            run adb -s "$DEVICE" shell am start -n com.android.systemui/.Somnambulator
+            ;;
+        *) die "ambient takes on, off or preview" ;;
+    esac
+}
+
 do_status() {
     echo "TV:   $(tv getprop ro.product.manufacturer) $(tv getprop ro.product.model), Android $(tv getprop ro.build.version.release)"
     echo "shangOS: $(tv dumpsys package "$PKG" | sed -n 's/^ *versionName=//p' | head -n 1 | grep . || echo 'not installed')"
     echo "Home: $(home_now)"
+    if [ "$(ambient_current)" = "$AMBIENT" ]; then echo "Screen saver: shangOS Ambient"; fi
 }
 
 # ---- Asking questions (the wizard) ----
@@ -342,6 +388,10 @@ uninstall_package() {
         echo "shangOS is the home screen: giving Home back to the TV's own launcher first."
         do_restore
     fi
+    if [ "$pkg" = "$PKG" ] && [ "$(ambient_current)" = "$AMBIENT" ]; then
+        echo "shangOS Ambient is the screen saver: putting the previous one back first."
+        do_ambient off
+    fi
     run adb -s "$DEVICE" uninstall "$pkg"
 }
 
@@ -410,6 +460,9 @@ wizard() {
             "Install or update shangOS" \
             "Make shangOS the home screen" \
             "Allow the optional permissions (Up Next, Now Playing)" \
+            "Use shangOS Ambient as the screen saver" \
+            "Preview the screen saver now" \
+            "Go back to the previous screen saver" \
             "Give Home back to the TV's own launcher" \
             "Show the TV's status" \
             "Clean up" \
@@ -430,16 +483,40 @@ wizard() {
                 ;;
             3) do_home ;;
             4) do_widgets ;;
-            5) do_restore ;;
-            6) do_status ;;
-            7) do_cleanup ;;
-            8) choose_tv ;;
+            5) do_ambient on ;;
+            6) do_ambient preview ;;
+            7) do_ambient off ;;
+            8) do_restore ;;
+            9) do_status ;;
+            10) do_cleanup ;;
+            11) choose_tv ;;
             *)
                 echo "Done."
                 return
                 ;;
         esac
     done
+}
+
+# do_wallpaper FILE|--remove: hands a picture to the app's own storage over adb. The app reads no media, needs no
+# permission and no cloud account; only this computer, over adb, can write it (the provider is protected by DUMP).
+do_wallpaper() {
+    local file="${1:-}" uri="content://$PKG.photo/wallpaper"
+    installed "$PKG" || die "shangOS is not installed on this TV: ./shangos.sh install"
+    case "$file" in
+        "") die "wallpaper takes a picture: ./shangos.sh wallpaper ~/photo.jpg   (or --remove)" ;;
+        --remove)
+            run adb -s "$DEVICE" shell content delete --uri "$uri" >/dev/null
+            echo "Your photo is removed; the default wallpaper is back."
+            ;;
+        *)
+            [ -f "$file" ] || die "no such file: $file"
+            [ "$(wc -c <"$file")" -le 25165824 ] || die "that picture is larger than 24 MB; resize it first"
+            echo "+ adb -s $DEVICE shell content write --uri $uri < $file"
+            adb -s "$DEVICE" shell content write --uri "$uri" <"$file" || die "the TV refused the picture"
+            echo "Done. Settings, Wallpaper now offers \"Your photo\", and the screen saver shows it dimmed."
+            ;;
+    esac
 }
 
 # ---- The commands ----
@@ -473,7 +550,15 @@ case "$ACTION" in
         pick_device
         do_cleanup
         ;;
+    ambient)
+        pick_device
+        do_ambient "${2:-on}"
+        ;;
+    wallpaper)
+        pick_device
+        do_wallpaper "${2:-}"
+        ;;
     *)
-        die "unknown command '$ACTION'. Use wizard, build, install, home, widgets, restore, status or cleanup."
+        die "unknown command '$ACTION'. Use wizard, build, install, home, widgets, restore, status, cleanup, ambient or wallpaper."
         ;;
 esac
